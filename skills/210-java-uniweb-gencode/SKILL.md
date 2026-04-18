@@ -1,0 +1,206 @@
+---
+name: 210-java-uniweb-gencode
+description: Java代码生成与增量更新。当需要为Java后端项目生成或更新代码时触发：(1)首次生成entity/dto/controller，(2)库表变动后增量更新代码并生成变更报告，(3)备份旧文件供后续裁剪恢复。
+alwaysApply: false
+author: "axeon(23231269@qq.com)"
+version: "2.1.0"
+---
+
+# Java代码生成
+
+## 描述
+
+从 uw-code-center 自动生成 Java 后端代码（entity、dto、controller），自动替换包名并整合到项目中。支持库表变动后的增量更新。
+
+## 使用场景
+
+| 触发条件 | 示例 |
+|---------|------|
+| 首次生成代码 | "生成实体类代码"、"从数据库生成代码" |
+| 库表结构变动 | "更新entity代码"、"数据库改了重新生成" |
+| 新增/删除表 | "新增了一张表，生成代码" |
+
+## 角色职责
+
+| 角色 | 职责 | 智能体 |
+|------|------|--------|
+| 主导 | 代码生成 | `java-developer` |
+
+## 前置检查
+
+检查 `project-info.md` 是否存在且 5 个参数完整，不通过则引导用户执行 0-init。
+详见 [项目信息前置检查](../0-init/references/project-init-check.md)。
+
+## 初始化流程
+
+**执行前必须询问用户确认**。
+
+### 步骤1: 扫描可用后端项目
+
+**目标目录**：直接使用当前项目根目录（包含 `project-info.md` 的目录）。
+
+扫描 `backend/` 目录，列出所有可用的后端项目：
+
+```bash
+ls -1 backend/{项目名}-app/
+```
+
+**情况处理**：
+
+| 情况 | 操作 |
+|------|------|
+| 有后端项目 | 使用 `AskUserQuestion` 让用户选择目标项目 |
+| 没有后端项目 | 报错，提示先执行 210-java-uniweb-init |
+
+### 步骤2: 询问用户参数
+
+使用 `AskUserQuestion` 工具询问用户以下信息：
+
+| # | header | question | 参考选项 | multiSelect |
+|---|--------|----------|----------|-------------|
+| 1 | 目标后端项目 | 要为哪个后端项目生成代码？ | 列出所有 {项目名}-app 目录 | false |
+| 2 | 表名列表 | 要生成的表名（多个用逗号分隔，空表示全部）？ | 全部表, user, order, product | false |
+| 3 | 生成类型 | 需要生成哪些类型？(entity:实体类, dto:传输对象, controller:控制器) | entity, dto, controller | true |
+
+### 步骤3: 用户确认
+
+**必须**向用户展示以下信息并等待确认：
+
+```
+即将执行 Java 代码生成：
+- 项目根目录: {当前项目根目录}
+- 目标后端项目: {用户选择的后端项目名}
+- 表名列表: {用户输入的表名列表}
+- 生成类型: {用户选择的类型}
+
+确认执行吗？
+```
+
+用户确认后，再执行脚本。
+
+### 步骤4: 执行脚本
+
+用户确认后，执行命令（确保在技能目录下执行）：
+```bash
+bash scripts/gencode.sh [目标目录] [表名列表] [生成类型] [后端项目名]
+```
+
+**参数说明**：
+
+| 参数 | 说明 | 是否必填 | 默认值 |
+|------|------|----------|--------|
+| 目标目录 | 项目根目录（包含 `project-info.md`） | 是 | 当前目录 |
+| 表名列表 | 要生成的表名，多个用逗号分隔 | 否 | 全部表 |
+| 生成类型 | `entity,dto,controller` 的组合 | 否 | `entity,dto,controller` |
+| 后端项目名 | 指定具体的后端项目目录名 | 否 | 自动查找 |
+
+**执行示例**：
+
+```bash
+# 生成全部表的全部类型（自动查找后端项目）
+bash scripts/gencode.sh /Users/user/project
+
+# 只生成 user 和 order 表的全部类型
+bash scripts/gencode.sh /Users/user/project "user,order"
+
+# 全部表，只生成 entity 和 dto
+bash scripts/gencode.sh /Users/user/project "" "entity,dto"
+
+# 只生成 user 表的 entity
+bash scripts/gencode.sh /Users/user/project "user" "entity"
+
+# 指定后端项目名（多个项目时）
+bash scripts/gencode.sh /Users/user/project "" "entity,dto" "my-shop-app"
+```
+
+**脚本输出说明**：
+- `✓` 表示通过
+- `⚠` 表示警告
+- `ERROR` 表示错误，会终止执行
+
+## 生成流程
+
+脚本自动完成：
+1. 登录 `uw-auth-center` 获取访问token
+2. 调用 `uw-code-center` API 下载代码生成文件（zip），传入 `filterTableNames` 参数
+3. 解压代码文件
+4. 根据生成类型选择处理：entity、dto、controller
+5. 替换包名声明（`package ` → `package {项目包名}.`）
+6. 将 entity、dto 移动到项目对应包路径；controller 按 `admin/{module}/` 分包
+7. 执行 Maven 编译验证
+
+## 配置项
+
+**从 project-info.md 读取**：
+
+| 配置项 | 说明 | 示例 |
+|--------|------|------|
+| `project-name` | 项目英文名（短横线分隔） | `my-shop` |
+| `project-server` | 开发服务器地址 | `192.168.88.21` |
+
+**从 ~/.uniweb/project-server.config 读取**：
+
+| 配置项 | 说明 | 示例 |
+|--------|------|------|
+| `MSC_OPS_PASSWORD` | ops 用户密码 | `your_password` |
+
+**Schema规则**：项目名中的 `-` 替换为 `_` 作为数据库schema名
+- 项目名 `my-shop` → Schema `my_shop`
+
+**包名规则**：项目名中的短横线 `-` 替换为点 `.`
+- 项目名 `my-shop` → 包名 `my.shop`
+
+## 输出结构
+
+```
+项目根目录/
+├── project-info.md
+└── backend/
+    └── {项目名}-app/
+        ├── .gencode-backup/              # 增量更新时自动创建
+        │   └── {时间戳}/
+        │       ├── entity/
+        │       ├── dto/
+        │       └── controller/           # 按模块子目录备份
+        ├── .gencode-diff.md              # 变更报告
+        └── src/main/java/{包路径}/
+            ├── entity/                   # 平铺：{Module}{Entity}.java
+            ├── dto/                      # 平铺：{Module}{Entity}Dto.java
+            └── controller/
+                └── admin/                # 默认角色：admin
+                    ├── product/          # 模块目录（从表名前缀提取）
+                    │   └── InfoController.java
+                    ├── order/
+                    │   ├── InfoController.java
+                    │   └── ItemController.java
+                    └── guest/
+                        └── UserController.java
+```
+
+### Controller 分包规则
+
+**目录层级**：`controller/{角色}/{模块}/`
+
+| 层级 | 来源 | 示例 |
+|------|------|------|
+| 角色 | 默认 `admin`，后续由 220 按需求移动 | `admin`、`saas`、`mch`、`ops` |
+| 模块 | 代码生成器 zip 中已有的子目录 | `product/`、`order/`、`guest/` |
+| 文件 | 代码生成器产出 | `InfoController.java` |
+
+**代码生成器 zip 中的目录结构**：
+```
+controller/
+├── product/
+│   └── InfoController.java
+├── order/
+│   ├── InfoController.java
+│   └── ItemController.java
+└── guest/
+    └── UserController.java
+```
+
+**脚本处理**：保留 zip 中的 module 子目录，注入 `admin` 角色层，替换包名为 `{项目包名}.controller.admin.{模块}`。
+
+## 参考
+
+- [代码生成脚本](scripts/gencode.sh) - 支持 `--update` 增量更新模式
