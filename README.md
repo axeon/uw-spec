@@ -1,125 +1,234 @@
 # uw-spec 软件开发流程
 
-一套完整的 AI 辅助软件开发流程 Skills，采用 **uw-spec（氛围编程）** + **TDD（测试驱动开发）** 理念，让 AI 成为开发伙伴，人机协作完成软件开发生命周期的各个阶段。
+uw-spec 是一套完整的 AI 辅助软件开发流程 Skills，采用 **harness-engineering（工程约束）** + **TDD（测试驱动开发）** 理念，让 AI 作为开发伙伴，与人机协作完成软件开发生命周期的各个阶段。
 
 ## 🎯 核心理念
 
-### uw-spec（氛围编程）
-- **人机协作**：AI 不是替代开发者，而是作为开发伙伴
-- **轻松高效**：在轻松、高效的氛围中进行开发
-- **迭代优化**：持续改进，快速迭代
-- **知识共享**：AI 解释代码逻辑，开发者提供业务洞察
+### harness-engineering（工程约束）
+
+harness-engineering 是一种**以人为本的 AI 协作开发范式**，强调通过合理的工程约束来引导 AI 发挥最大效能，同时保持开发者的主导权和创造力。
+
+#### 核心原则
+
+| 原则 | 说明 | 实践方式 |
+|------|------|----------|
+| **人机协作** | AI 不是替代开发者，而是作为开发伙伴 | 开发者负责业务洞察和架构决策，AI 负责代码实现和细节处理 |
+| **约束引导** | 通过预设的工程规范约束 AI 行为 | 使用 Skills 定义清晰的开发流程、代码规范和评审标准 |
+| **轻松高效** | 在轻松、高效的氛围中进行开发 | 自动化重复性工作，让开发者专注于创造性任务 |
+| **迭代优化** | 持续改进，快速迭代 | 短周期开发循环，快速验证和反馈 |
+| **知识共享** | AI 解释代码逻辑，开发者提供业务洞察 | 代码即文档，AI 辅助生成和更新文档 |
+
+#### 优势详解
+
+**1. 可控性优势**
+- 通过 Skills 预设开发流程，确保每次 AI 输出都符合项目规范
+- 评审机制（review skills）作为质量闸门，防止低质量代码进入主干
+- 开发者始终掌握最终决策权，AI 作为执行助手
+
+**2. 效率优势**
+- 并行开发模式（设计阶段、实施阶段多流程并行）大幅缩短项目周期
+- 代码生成 Skills 自动化 boilerplate 代码编写，开发者专注业务逻辑
+- 自动化测试和文档生成减少重复劳动
+
+**3. 质量优势**
+- 每个阶段都有对应的评审 Skill，形成多层质量防护网
+- 固定的技术栈（uw-base + Vue3/UniApp）确保技术一致性
+- 测试驱动开发确保代码可测试性和功能正确性
+
+**4. 可维护性优势**
+- 标准化的项目结构和编码规范降低维护成本
+- 完整的文档体系（需求文档、运维文档、用户手册）保障知识传承
+- 功能开发和 Bug 修复都有独立的流程 Skills，确保变更可控
+
+---
 
 ### TDD（测试驱动开发）
-- **测试先行**：先写测试，再写实现
-- **红-绿-重构**：测试失败 → 实现通过 → 重构优化
-- **验收标准**：每个需求都要有可验证的验收标准
-- **持续测试**：测试贯穿整个开发周期
+
+TDD（Test-Driven Development）是一种**先写测试、后写实现**的开发方法论，通过测试来驱动设计，确保代码质量和功能正确性。
+
+#### TDD 循环（红-绿-重构）
+
+```
+┌─────────┐    ┌─────────┐    ┌─────────┐
+│  编写测试  │ → │  运行失败  │ → │  编写实现  │
+│  (Red)   │    │  (Red)   │    │  (Green) │
+└─────────┘    └─────────┘    └────┬────┘
+     ↑                               │
+     └───────────────────────────────┘
+              ┌─────────┐
+              │  重构优化  │
+              │(Refactor)│
+              └─────────┘
+```
+
+| 阶段 | 目标 | 产出 |
+|------|------|------|
+| **红（Red）** | 编写失败的测试 | 明确的验收标准和测试用例 |
+| **绿（Green）** | 编写最简单的实现让测试通过 | 可运行的功能代码 |
+| **重构（Refactor）** | 优化代码结构，消除重复 | 高质量的整洁代码 |
+
+#### 核心实践
+
+| 实践 | 说明 | 在本流程中的体现 |
+|------|------|------------------|
+| **测试先行** | 先写测试，再写实现 | 230-test-case-design 在开发前完成测试设计 |
+| **验收标准** | 每个需求都要有可验证的验收标准 | 需求规划阶段明确测试验收点 |
+| **持续测试** | 测试贯穿整个开发周期 | 开发阶段编写单元测试，测试阶段执行 API/E2E/压测/安全扫描 |
+| **自动化** | 测试自动运行，快速反馈 | 测试脚本开发（330）和测试执行（410）形成自动化流水线 |
+
+#### 优势详解
+
+**1. 设计优势**
+- **驱动良好设计**：先写测试迫使开发者思考接口设计，产出更易用的 API
+- **解耦模块化**：可测试的代码必然是松耦合、高内聚的模块化设计
+- **明确边界**：测试定义了组件的契约边界，便于团队协作
+
+**2. 质量优势**
+- **缺陷早发现**：在编码阶段发现问题，修复成本远低于生产环境
+- **回归保护**：完整的测试套件防止新代码破坏已有功能
+- **信心保障**：重构时有测试保护，开发者敢于优化代码结构
+
+**3. 文档优势**
+- **活文档**：测试代码是准确的 API 使用文档，随代码同步更新
+- **示例代码**：测试用例展示了组件的各种使用场景和边界情况
+- **需求验证**：测试通过即证明需求已实现，消除歧义
+
+**4. 在本流程中的具体实践**
+
+| 阶段 | TDD 实践 | 对应 Skills |
+|------|----------|-------------|
+| 设计阶段 | 测试用例设计 | 230-test-case-design |
+| 实施阶段 | 单元测试开发 | 310/320-java/web-dev（内置） |
+| 测试阶段 | API/E2E/压测/安全测试 | 330-test-case-dev, 410-test-case-execution |
+| 功能开发 | 功能测试先行 | 640-feature-test-dev |
+| Bug 修复 | 回归测试验证 | 740-bugfix-test |
 
 ## 🏗️ 固定技术栈
 
 ### 后端技术栈
-- **基础架构**: [uw-base](https://github.com/your-org/uw-base) - 基于 Spring Boot + Spring Cloud 的企业级多子模块基础类库
-  - 提供微服务架构的完整基础设施支持
-  - 涵盖数据访问、缓存管理、认证授权、任务调度、日志收集等功能模块
-  - 已实现 SaaS 基础技术支持，通过微服务提供 SaaS 基础设施
-- **微服务框架**: Spring Boot 3.x + Spring Cloud 2023
-- **服务注册与配置**: Nacos 2.3.2
-- **ORM框架**: MyBatis-Plus
-- **数据库**: MySQL 8.4
-- **全局缓存**: Redis 8.2
-- **消息队列**: RabbitMQ
-- **日志系统**: Elasticsearch
+
+#### 基础框架
+| 技术 | 版本 | 说明 |
+|------|------|------|
+| Java | 21+ | 运行环境 |
+| Spring Boot | 3.5.x | 微服务基础框架 |
+| Spring Cloud | 2025.0.0 | 微服务框架 |
+| Spring Cloud Alibaba | 2023.0.1.2 | Nacos 注册/配置中心 |
+| Maven | 3.8+ | 构建工具 |
+
+#### 基础设施
+| 技术 | 版本 | 用途 |
+|------|------|------|
+| MySQL | 8.4+ | 数据存储 |
+| Redis | 8.2+ | 缓存/分布式锁/序列 |
+| RabbitMQ | 3.10+ | 消息队列 |
+| Elasticsearch | 8.x | 日志存储与搜索 |
+| Nacos | 2.3.2+ | 服务注册与配置中心 |
+
+#### 核心类库（uw-base）
+| 模块 | 用途 |
+|------|------|
+| uw-dao | 数据访问层（DaoManager、DataEntity、QueryParam） |
+| uw-cache | 缓存管理（FusionCache） |
+| uw-auth-service | 认证服务端 |
+| uw-auth-client | 认证客户端（Token自动管理） |
+| uw-mfa | 多因素认证（TOTP） |
+| uw-task | 分布式任务框架（@TaskScheduler、@QueueWorker） |
+| uw-httpclient | HTTP客户端（连接池管理） |
+| uw-log-es | Elasticsearch 日志客户端 |
+| uw-logback-es | Logback ES Appender |
+| uw-ai | AI集成模块（Spring AI、Ollama、RAG） |
+| uw-oauth2-client | OAuth2客户端 |
+| uw-gateway-client | 网关客户端 |
+| uw-mydb-client | 数据库客户端（分库分表） |
+| uw-notify-client | 通知客户端（SSE推送） |
+| uw-tinyurl-client | 短链接客户端 |
+| uw-webot | Web自动化框架 |
+| uw-common | 通用工具类库（ResponseData、JsonUtils、AESUtils、SnowflakeIdGenerator） |
+| uw-common-app | Web应用公共类库 |
+
+#### 微服务平台
+| 微服务 | 功能说明 |
+|--------|----------|
+| uw-gateway | API网关（SSL、ACL、限流、负载均衡、HTTP/2） |
+| uw-gateway-center | 网关管理中心（灰度发布、监控、SSL证书） |
+| uw-auth-center | 统一鉴权中心（Token分发、API权限、MFA认证） |
+| uw-task-center | 任务管理中心 |
+| uw-ops-center | 运维管理中心（Docker全自动部署） |
+| uw-code-center | 代码生成服务 |
+| uw-mydb-center | 数据库运维中心 |
+| uw-mydb-proxy | MySQL分库分表代理（基于Netty） |
+| uw-tinyurl-center | 短链接服务 |
+| uw-notify-center | 实时通知推送中心（SSE） |
+| uw-ai-center | AI服务中心（向量数据库、RAG） |
+
+---
+
+### SaaS 技术栈
+
+SaaS 技术栈基于 UniWeb 框架构建的多租户 SaaS 架构体系，提供租户管理、产品授权计费、支付结算等 SaaS 核心能力。
+
+#### SaaS 微服务
+| 微服务 | 功能说明 |
+|--------|----------|
+| saas-base | SaaS 平台核心基础设施服务，负责租户管理、商户管理、产品授权计费（AIP）、应用接口服务（AIS）等 |
+| saas-finance | SaaS 平台财务核心服务，负责支付通道管理、余额账户管理、对账管理、汇率管理等 |
+
+#### SaaS 核心类库
+| 类库 | Maven坐标 | 功能说明 |
+|------|-----------|----------|
+| saas-base-common | `saas:saas-base-common` | SaaS 基础公共模块，提供租户管理、商户管理、消息通知、对象存储等基础能力 |
+| saas-finance-client | `saas:saas-finance-client` | SaaS 财务客户端，提供支付通道、余额管理、对账管理等财务功能 |
+
+#### SaaS 核心模块
+| 模块 | 核心概念 | 功能说明 |
+|------|----------|----------|
+| **AIP** (Application Infrastructure Provider) | Vendor, Product, Order, License, Balance | 应用基础设施与产品授权计费，支持 License/App/AppLicense/Task 四种计费模式 |
+| **AIS** (Application Interface Service) | LinkerType, Linker, LinkerConfig | 应用接口服务框架，通过 Linker 机制实现不同服务提供商的统一接入（邮件/短信/支付） |
+
+---
 
 ### 前端 Web 技术栈
-- **框架**: Vue 3 + TypeScript
-- **UI组件库**: Element Plus
-- **构建工具**: Vite 8
-- **状态管理**: Pinia
-- **路由**: Vue Router 4
-- **HTTP客户端**: Axios
-- **基础功能**: 多角色登录、MFA鉴权已内置
+| 技术 | 版本 | 用途 |
+|------|------|------|
+| Vue | 3.x | 前端框架 |
+| TypeScript | - | 类型安全 |
+| Element Plus | - | UI组件库 |
+| Vite | 8.x | 构建工具 |
+| Pinia | - | 状态管理 |
+| Vue Router | 4.x | 路由管理 |
+| Axios | - | HTTP客户端 |
+
+**内置功能**: 多角色登录、MFA鉴权
+
+---
 
 ### 前端移动端技术栈
-- **框架**: UniApp + Vue 3 + TypeScript
-- **跨平台支持**: H5、Android、iOS、微信小程序
-- **状态管理**: Pinia
-- **HTTP客户端**: uni.request / Axios
+| 技术 | 版本 | 用途 |
+|------|------|------|
+| UniApp | - | 跨平台框架 |
+| Vue | 3.x | 前端框架 |
+| TypeScript | - | 类型安全 |
+| Pinia | - | 状态管理 |
+| uni-ui | - | UI组件库 |
 
-## 📁 项目结构
+**支持平台**: H5、Android、iOS、微信小程序
 
-```
-.
-├── skills/                           # 技能文件目录（平铺结构）
-│   ├── 0-init/                       #    主流程入口技能
-│   ├── 100-rapid-idea-check/         #    快速想法验证
-│   ├── 110-requirement-planning/     #    需求规划
-│   ├── 111-requirement-review/       #    需求评审
-│   ├── 200-database-design/          #    数据库设计（MySQL 8.4）
-│   ├── 201-database-design-review/   #    数据库设计评审
-│   ├── 210-java-uniweb-init/           #    Java后端项目初始化（uw-base）
-│   ├── 210-java-uniweb-gencode/      #    Java代码生成
-│   ├── 210-java-uniweb-design/         #    Java SaaS架构设计（uw-base）
-│   ├── 211-java-uniweb-design-review/  #    架构设计评审
-│   ├── 220-web-vue-init/             #    Web端项目初始化（Vue3+ElementPlus）
-│   ├── 220-web-vue-gencode/          #    Web端代码生成
-│   ├── 220-web-vue-design/           #    Web端设计与原型开发（Vue3+ElementPlus）
-│   ├── 221-web-vue-design-review/    #    Web端设计评审
-│   ├── 220-md-uniapp-init/           #    移动端项目初始化（UniApp+Vue3）
-│   ├── 220-md-uniapp-gencode/        #    移动端代码生成
-│   ├── 220-md-uniapp-design/         #    移动端设计与原型开发（UniApp+Vue3）
-│   ├── 221-md-uniapp-design-review/  #    移动端设计评审
-│   ├── 230-test-case-design/         #    测试用例设计（API/E2E/压测/安全）
-│   ├── 231-test-case-design-review/  #    测试用例设计评审
-│   ├── 300-database-ddl-execution/   #    数据库DDL执行与验证
-│   ├── 301-database-ddl-execution-review/ # DDL执行评审
-│   ├── 310-java-uniweb-dev/            #    Java SaaS开发（uw-base）
-│   ├── 311-java-uniweb-dev-review/     #    Java SaaS开发评审
-│   ├── 320-web-vue-dev/              #    Web前端开发（Vue3+ElementPlus）
-│   ├── 321-web-vue-dev-review/       #    Web前端开发评审
-│   ├── 320-md-uniapp-dev/            #    UniApp开发
-│   ├── 321-md-uniapp-dev-review/     #    UniApp开发评审
-│   ├── 330-test-case-dev/            #    测试脚本开发（API/E2E/压测/安全）
-│   ├── 331-test-case-dev-review/     #    测试脚本开发评审
-│   ├── 410-test-case-execution/      #    测试执行（API/E2E/压测/安全）
-│   ├── 411-test-case-execution-review/ #  测试执行评审
-│   ├── 500-devops-doc/               #    运维文档编写
-│   ├── 501-ops-manual/               #    运维文档评审
-│   ├── 510-requirement-doc/          #    需求文档整理
-│   ├── 511-requirement-doc-review/   #    需求文档评审
-│   ├── 520-user-manual/              #    用户使用手册编写
-│   ├── 521-user-manual-review/       #    用户手册评审
-│   ├── 600-feature-clarify/          #    功能需求澄清
-│   ├── 601-feature-review/           #    功能评审
-│   ├── 610-feature-tech-design/      #    功能技术方案设计
-│   ├── 620-feature-java-uniweb-dev/    #    功能Java后端开发
-│   ├── 630-feature-web-vue-dev/      #    功能Web前端开发
-│   ├── 631-feature-md-uniapp-dev/    #    功能UniApp移动端开发
-│   ├── 640-feature-test-dev/         #    功能测试脚本开发
-│   ├── 650-feature-final-review/     #    功能最终验收评审
-│   ├── 660-feature-update-doc/       #    功能5xx文档更新
-│   ├── 700-bugfix-analysis/          #    Bug分析
-│   ├── 701-bugfix-review/            #    Bug评审
-│   ├── 710-bugfix-tech-design/       #    Bug修复方案设计
-│   ├── 720-bugfix-java-uniweb/         #    Bug Java后端修复
-│   ├── 730-bugfix-web-vue/           #    Bug Web前端修复
-│   ├── 731-bugfix-md-uniapp/         #    Bug UniApp移动端修复
-│   ├── 740-bugfix-test/              #    Bug回归测试
-│   ├── 750-bugfix-final-review/      #    Bug修复最终验收
-│   └── 760-bugfix-update-doc/        #    Bug修复5xx文档更新
-│
-├── agents/                           # 智能体配置目录
-│   ├── product-manager.md            # 产品经理
-│   ├── system-architect.md           # 系统架构师
-│   ├── project-manager.md            # 项目经理
-│   ├── java-developer.md             # Java后端工程师
-│   ├── js-developer.md               # JS前端工程师
-│   ├── test-engineer.md              # 测试工程师
-│   ├── java-code-reviewer.md         # Java代码审计员
-│   ├── js-code-reviewer.md           # JS代码审计员
-│   ├── security-auditor.md           # 安全审计员
-│   └── prototype-reviewer.md         # 原型评审员
-```
+**HTTP客户端**: uni.request / Axios
+
+---
+
+### 测试工具链
+| 类型 | 工具 | 用途 |
+|------|------|------|
+| 单元测试 | JUnit 5 / Vitest | Java / TypeScript 单元测试 |
+| 集成测试 | Spring Boot Test | 后端集成测试 |
+| API测试 | Playwright (request API) | 接口自动化测试 |
+| E2E测试 | Playwright (browser) | 端到端界面测试 |
+| 跨终端E2E | Playwright (Multi-BrowserContext) | 多终端协作流程测试 |
+| 性能测试 | JMeter | 压力/负载/稳定性测试 |
+| 安全扫描 | OWASP ZAP / Trivy | Web漏洞/依赖漏洞扫描 |
+| 覆盖率 | JaCoCo / Vitest Coverage | 代码覆盖率统计 |
 
 ## 👥 角色团队
 
@@ -548,12 +657,6 @@ project/
 3. **移动端必须使用UniApp+Vue3**：固定移动端技术栈
 4. **数据库必须使用MySQL 8.4**：固定数据库版本
 5. **配置必须使用Nacos 2.3.2**：统一配置中心
-
-## 📚 相关文档
-
-- [Trae Rules 文档](https://docs.trae.cn/ide/rules)
-- [Trae Skills 文档](https://docs.trae.cn/ide/skills)
-- [如何写好 Skill](https://docs.trae.cn/ide/best-practice-for-how-to-write-a-good-skill)
 
 ## 🤝 贡献指南
 

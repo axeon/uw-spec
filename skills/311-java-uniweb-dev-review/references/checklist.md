@@ -62,7 +62,7 @@ class ProductHelperTest {
 | DAO 使用 | 使用 DaoManager（ResponseData 风格），非 DaoFactory（抛异常风格） |
 | 响应格式 | 统一使用 ResponseData\<T\>，非自定义 Result |
 | 多租户 | AuthQueryParam 自动注入 saasId，手动 bindMchId()/bindUserId() |
-| 缓存 | FusionCache/GlobalCache/GlobalLocker，非 Spring @Cacheable |
+| 缓存 | FusionCache/GlobalCache/GlobalLocker |
 | 分布式 ID | daoManager.getSequenceId(Entity.class)，非自增 |
 | 权限注解 | @MscPermDeclare，非 Spring Security 注解 |
 | 分页查询 | AuthQueryParam + daoManager.list()，非 MyBatis-Plus Page |
