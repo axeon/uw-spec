@@ -52,16 +52,27 @@
 | 211 | 211-java-uniweb-design-review | 架构设计评审 | 系统架构师 |
 
 ### 前端初始化与设计组
-| 编号 | 技能名 | 说明 | 主导角色 |
-|------|--------|------|---------|
-| 220 | 220-web-vue-init | Web端项目初始化 | JS前端工程师 |
-| 220 | 220-web-vue-gencode | Web端代码生成 | JS前端工程师 |
-| 220 | 220-md-uniapp-init | 移动端项目初始化 | JS前端工程师 |
-| 220 | 220-md-uniapp-gencode | 移动端代码生成 | JS前端工程师 |
-| 220 | 220-web-vue-design | Web端设计与原型开发 | JS前端工程师 |
-| 220 | 220-md-uniapp-design | 移动端设计与原型开发 | JS前端工程师 |
-| 221 | 221-web-vue-design-review | Web端设计与原型评审 | 原型评审员 |
-| 221 | 221-md-uniapp-design-review | 移动端设计与原型评审 | 原型评审员 |
+
+> **角色约束**：`admin-*` 技能用于 root/ops/saas/mch 角色，`guest-*` 技能用于 guest 角色。详见 [角色-平台矩阵](role-platform-matrix.md)
+
+| 编号 | 技能名 | 说明 | 适用角色 | 主导角色 |
+|------|--------|------|---------|---------|
+| 220 | 220-admin-web-init | Admin Web端项目初始化 | root/ops/saas/mch | JS前端工程师 |
+| 220 | 220-guest-web-init | Guest Web端项目初始化 | guest | JS前端工程师 |
+| 220 | 220-admin-uniapp-init | Admin UniApp项目初始化 | root/ops/saas/mch | JS前端工程师 |
+| 220 | 220-guest-uniapp-init | Guest UniApp项目初始化 | guest | JS前端工程师 |
+| 220 | 220-admin-web-gencode | Admin Web端代码生成 | root/ops/saas/mch | JS前端工程师 |
+| 220 | 220-guest-web-gencode | Guest Web端代码生成 | guest | JS前端工程师 |
+| 220 | 220-admin-uniapp-gencode | Admin UniApp代码生成 | root/ops/saas/mch | JS前端工程师 |
+| 220 | 220-guest-uniapp-gencode | Guest UniApp代码生成 | guest | JS前端工程师 |
+| 220 | 220-admin-web-design | Admin Web端设计与原型开发 | root/ops/saas/mch | JS前端工程师 |
+| 220 | 220-guest-web-design | Guest Web端设计与原型开发 | guest | JS前端工程师 |
+| 220 | 220-admin-uniapp-design | Admin UniApp设计与原型开发 | root/ops/saas/mch | JS前端工程师 |
+| 220 | 220-guest-uniapp-design | Guest UniApp设计与原型开发 | guest | JS前端工程师 |
+| 221 | 221-admin-web-design-review | Admin Web端设计与原型评审 | root/ops/saas/mch | 原型评审员 |
+| 221 | 221-guest-web-design-review | Guest Web端设计与原型评审 | guest | 原型评审员 |
+| 221 | 221-admin-uniapp-design-review | Admin UniApp设计与原型评审 | root/ops/saas/mch | 原型评审员 |
+| 221 | 221-guest-uniapp-design-review | Guest UniApp设计与原型评审 | guest | 原型评审员 |
 
 ### 测试设计组
 | 编号 | 技能名 | 说明 | 主导角色 |
@@ -83,16 +94,20 @@
 ## 阶段 3: 实施阶段（高度并行 ⭐⭐⭐）
 
 ### 开发组（可并行）
-| 编号 | 技能名 | 说明 | 主导角色 |
-|------|--------|------|---------|
-| 310 | 310-java-uniweb-dev | Java SaaS开发 | Java后端工程师 |
-| 311 | 311-java-uniweb-dev-review | Java SaaS开发评审 | Java代码审计员 |
-| 320 | 320-web-vue-dev | Web前端开发 | JS前端工程师 |
-| 321 | 321-web-vue-dev-review | Web前端开发评审 | JS代码审计员 |
-| 320 | 320-md-uniapp-dev | UniApp开发 | JS前端工程师 |
-| 321 | 321-md-uniapp-dev-review | 移动端开发评审 | JS代码审计员 |
-| 330 | 330-test-case-dev | 测试脚本开发（API/E2E/压测/安全） | 测试工程师 |
-| 331 | 331-test-case-dev-review | 测试脚本开发评审 | 测试工程师 |
+| 编号 | 技能名 | 说明 | 适用角色 | 主导角色 |
+|------|--------|------|---------|---------|
+| 310 | 310-java-uniweb-dev | Java SaaS开发 | - | Java后端工程师 |
+| 311 | 311-java-uniweb-dev-review | Java SaaS开发评审 | - | Java代码审计员 |
+| 320 | 320-admin-web-dev | Admin Web前端开发 | root/ops/saas/mch | JS前端工程师 |
+| 320 | 320-guest-web-dev | Guest Web前端开发 | guest | JS前端工程师 |
+| 320 | 320-admin-uniapp-dev | Admin UniApp开发 | root/ops/saas/mch | JS前端工程师 |
+| 320 | 320-guest-uniapp-dev | Guest UniApp开发 | guest | JS前端工程师 |
+| 321 | 321-admin-web-dev-review | Admin Web前端开发评审 | root/ops/saas/mch | JS代码审计员 |
+| 321 | 321-guest-web-dev-review | Guest Web前端开发评审 | guest | JS代码审计员 |
+| 321 | 321-admin-uniapp-dev-review | Admin UniApp开发评审 | root/ops/saas/mch | JS代码审计员 |
+| 321 | 321-guest-uniapp-dev-review | Guest UniApp开发评审 | guest | JS代码审计员 |
+| 330 | 330-test-case-dev | 测试脚本开发（API/E2E/压测/安全） | - | 测试工程师 |
+| 331 | 331-test-case-dev-review | 测试脚本开发评审 | - | 测试工程师 |
 
 ## 阶段 4: 测试阶段
 
@@ -121,8 +136,10 @@
 | 601 | 601-feature-review | 功能评审 | 项目经理 |
 | 610 | 610-feature-tech-design | 功能技术方案设计 | 系统架构师 |
 | 620 | 620-feature-java-uniweb-dev | 功能Java后端开发 | Java后端工程师 |
-| 630 | 630-feature-web-vue-dev | 功能Web前端开发 | JS前端工程师 |
-| 631 | 631-feature-md-uniapp-dev | 功能UniApp移动端开发 | JS前端工程师 |
+| 630 | 630-feature-admin-web-dev | 功能Admin Web前端开发（root/ops/saas/mch） | JS前端工程师 |
+| 630 | 630-feature-guest-web-dev | 功能Guest Web前端开发（guest） | JS前端工程师 |
+| 631 | 631-feature-admin-uniapp-dev | 功能Admin UniApp移动端开发（root/ops/saas/mch） | JS前端工程师 |
+| 631 | 631-feature-guest-uniapp-dev | 功能Guest UniApp移动端开发（guest） | JS前端工程师 |
 | 640 | 640-feature-test-dev | 功能测试脚本开发 | 测试工程师 |
 | 650 | 650-feature-final-review | 功能最终验收评审 | 产品经理 |
 | 660 | 660-feature-update-doc | 功能5xx文档更新 | 技术写作 |
@@ -137,8 +154,10 @@
 | 701 | 701-bugfix-review | Bug评审 | 项目经理 |
 | 710 | 710-bugfix-tech-design | Bug修复方案设计 | 系统架构师 |
 | 720 | 720-bugfix-java-uniweb | Bug Java后端修复 | Java后端工程师 |
-| 730 | 730-bugfix-web-vue | Bug Web前端修复 | JS前端工程师 |
-| 731 | 731-bugfix-md-uniapp | Bug UniApp移动端修复 | JS前端工程师 |
+| 730 | 730-bugfix-admin-web | Bug Admin Web前端修复（root/ops/saas/mch） | JS前端工程师 |
+| 730 | 730-bugfix-guest-web | Bug Guest Web前端修复（guest） | JS前端工程师 |
+| 731 | 731-bugfix-admin-uniapp | Bug Admin UniApp移动端修复（root/ops/saas/mch） | JS前端工程师 |
+| 731 | 731-bugfix-guest-uniapp | Bug Guest UniApp移动端修复（guest） | JS前端工程师 |
 | 740 | 740-bugfix-test | Bug回归测试 | 测试工程师 |
 | 750 | 750-bugfix-final-review | Bug修复最终验收 | 产品经理 |
 | 760 | 760-bugfix-update-doc | Bug修复5xx文档更新 | 技术写作 |

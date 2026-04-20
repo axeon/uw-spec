@@ -36,20 +36,20 @@ version: "2.0.0"
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
 | 功能需求文档 | `issue/features/FEATURE-{YYMMDD}-{简述}.md` | 600阶段输出 |
-| 现有数据库设计 | `backend/{项目名}-app/database/database-design.md` | 现有DB设计 |
+| 现有数据库设计 | `database/database-design.md` | 现有DB设计 |
 | 现有后端架构 | `backend/{项目名}-app/README.md` | 现有架构文档 |
-| 现有前端架构 | `frontend/{用户角色}-{终端类型}/README.md` | 现有Web架构 |
-| 现有移动端架构 | `frontend/{用户角色}-{终端类型}/README.md` | 现有移动端架构 |
+| 现有前端架构 | `frontend/{项目名}-{用户角色}-{终端类型}/README.md` | 现有Web架构 |
+| 现有移动端架构 | `frontend/{项目名}-{用户角色}-{终端类型}/README.md` | 现有移动端架构 |
 | 现有测试设计 | `test/design/` | 现有测试设计文档 |
 
 ## 输出
 
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| DDL文件 | `backend/{项目名}-app/database/migrations/FEATURE-{YYMMDD}-{简述}.sql` | 数据库变更DDL |
+| DDL文件 | `database/migrations/FEATURE-{YYMMDD}-{简述}.sql` | 数据库变更DDL |
 | 后端技术方案 | `backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | Java后端方案 |
-| Web前端方案 | `frontend/{用户角色}-{终端类型}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | Web前端方案 |
-| 移动端方案 | `frontend/{用户角色}-{终端类型}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | 移动端方案 |
+| Web前端方案 | `frontend/{项目名}-{用户角色}-{终端类型}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | Web前端方案 |
+| 移动端方案 | `frontend/{项目名}-{用户角色}-{终端类型}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | 移动端方案 |
 | 测试方案 | `test/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-test-design.md` | 本功能的测试策略（供 640 参考，非 230 全量测试设计） |
 | 更新主文档 | 各端README.md + database-design.md | 合并后的主文档 |
 | 变更记录 | 各端CHANGELOG.md | 技术变更历史 |
@@ -65,7 +65,7 @@ version: "2.0.0"
 
 **生成DDL文件**:
 
-**文件命名**: `backend/{项目名}-app/database/migrations/FEATURE-{YYMMDD}-{简述}.sql`
+**文件命名**: `database/migrations/FEATURE-{YYMMDD}-{简述}.sql`
 
 **DDL内容**:
 ```sql
@@ -150,7 +150,7 @@ CREATE INDEX idx_{name} ON {table_name}({column_list});
 
 **生成Web前端技术方案文档**:
 
-**文件位置**: `frontend/{用户角色}-{终端类型}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md`
+**文件位置**: `frontend/{项目名}-{用户角色}-{终端类型}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md`
 
 ### 4. 移动端技术方案设计
 
@@ -158,7 +158,7 @@ CREATE INDEX idx_{name} ON {table_name}({column_list});
 
 **生成移动端技术方案文档**:
 
-**文件位置**: `frontend/{用户角色}-{终端类型}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md`
+**文件位置**: `frontend/{项目名}-{用户角色}-{终端类型}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md`
 
 ### 5. 测试方案设计
 
@@ -235,8 +235,8 @@ CREATE INDEX idx_{name} ON {table_name}({column_list});
 |------|---------|------|
 | DDL | database-design.md + database-ddl.sql | 追加 |
 | 后端方案 | backend/{项目名}-app/README.md | 更新架构章节 |
-| Web方案 | frontend/{用户角色}-{终端类型}/README.md | 更新架构章节 |
-| 移动端方案 | frontend/{用户角色}-{终端类型}/README.md | 更新架构章节 |
+| Web方案 | frontend/{项目名}-{用户角色}-{终端类型}/README.md | 更新架构章节 |
+| 移动端方案 | frontend/{项目名}-{用户角色}-{终端类型}/README.md | 更新架构章节 |
 | 测试方案 | test/CHANGELOG.md | 追加 |
 
 **CHANGELOG更新**：追加到各端 CHANGELOG.md，记录技术方案设计状态。
@@ -259,21 +259,21 @@ CREATE INDEX idx_{name} ON {table_name}({column_list});
 | 下游技能 | 提取文件 | 用途 |
 |---------|---------|------|
 | 620-feature-java-uniweb-dev | `backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-*-tech-design.md` | 后端技术方案 |
-| 630-feature-web-vue-dev | `frontend/{用户角色}-web/issues/FEATURE-DESIGN-{YYMMDD}-*-tech-design.md` | Web前端方案 |
-| 631-feature-md-uniapp-dev | `frontend/{用户角色}-uniapp/issues/FEATURE-DESIGN-{YYMMDD}-*-tech-design.md` | 移动端方案 |
+| 630-feature-admin-web-dev / 630-feature-guest-web-dev | `frontend/{项目名}-{用户角色}-web/issues/FEATURE-DESIGN-{YYMMDD}-*-tech-design.md` | Web前端方案 |
+| 631-feature-guest-uniapp-dev / 631-feature-admin-uniapp-dev | `frontend/{项目名}-{用户角色}-uniapp/issues/FEATURE-DESIGN-{YYMMDD}-*-tech-design.md` | 移动端方案 |
 | 640-feature-test-dev | `test/issues/FEATURE-DESIGN-{YYMMDD}-*-test-design.md` | 测试方案 |
 
 **并行约束**：四端天然独立，可同时由不同Agent开发。DDL需先执行，后端开发依赖DDL。
 
 ## 输出要求
 
-**DDL文件**: `backend/{项目名}-app/database/migrations/FEATURE-{YYMMDD}-{简述}.sql`
+**DDL文件**: `database/migrations/FEATURE-{YYMMDD}-{简述}.sql`
 
 **后端方案**: `backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md`
 
-**Web方案**: `frontend/{用户角色}-{终端类型}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md`
+**Web方案**: `frontend/{项目名}-{用户角色}-{终端类型}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md`
 
-**移动端方案**: `frontend/{用户角色}-{终端类型}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md`
+**移动端方案**: `frontend/{项目名}-{用户角色}-{终端类型}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md`
 
 **测试方案**: `test/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-test-design.md`
 

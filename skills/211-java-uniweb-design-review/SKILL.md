@@ -39,7 +39,7 @@ version: "2.0.0"
 | VO 代码 | `src/main/java/{包}/vo/` | 聚合数据（如有） |
 | 测试骨架代码 | `src/test/java/{包}/service/` | Helper 单元测试骨架（TDD Red） |
 | PRD 文档 | `requirement/` | 功能需求参考 |
-| 数据库设计 | `design/database/` | 数据模型参考 |
+| 数据库设计 | `database/` | 数据模型参考 |
 
 ## 输出
 

@@ -29,13 +29,13 @@ version: "1.0.0"
 ## 输入
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 数据库设计文档 | `backend/{项目名}-app/database/database-design.md` | 表结构、索引、关联关系 |
+| 数据库设计文档 | `database/database-design.md` | 表结构、索引、关联关系 |
 | 需求文档 | `requirement/prds/*` | 数据需求参考 |
 
 ## 输出
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 数据库设计评审报告 | `backend/{项目名}-app/reviews/REVIEW-DB-YYMMDDHHMM.md` | 按时间戳命名，24小时制 |
+| 数据库设计评审报告 | `database/reviews/REVIEW-DB-YYMMDDHHMM.md` | 按时间戳命名，24小时制 |
 
 ## 流转关系
 ```
@@ -96,12 +96,12 @@ version: "1.0.0"
 按维度检查，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。
 
 **维度**: 表结构/索引/关联关系/性能/安全
-**评审对象**: design/database/
+**评审对象**: database/
 **参与人员**: @system-architect @java-developer @test-engineer
 **流转方向**: 通过 -> 进入下一阶段评审；不通过 -> 返回数据库设计修改
 
 ## 输出要求
-**报告位置**: `backend/{项目名}-app/reviews/REVIEW-DB-YYMMDDHHMM.md`
+**报告位置**: `database/reviews/REVIEW-DB-YYMMDDHHMM.md`
 
 **命名规则**: 时间戳使用当前系统时间，24小时制，例如 `REVIEW-DB-2604021430.md`
 

@@ -1,6 +1,6 @@
 # 用户角色与终端平台
 
-> 跨技能共用的角色、平台和命名规则定义，被 110-requirement-planning、320-web-vue-dev 等技能引用。
+> 跨技能共用的角色、平台和命名规则定义，被 110-requirement-planning、320-admin-web-dev 等技能引用。
 
 ## 核心概念
 
@@ -52,6 +52,30 @@
 | admin | web + android | 需移动端巡检 |
 | mch | web | 商户后台 |
 | mch | uniapp | 商户移动端 |
+
+## 前端技能调用约束
+
+前端技能按 **admin / guest** 分为两组，调用时必须根据用户角色选择对应技能：
+
+| 技能前缀 | 适用角色 | 说明 |
+|---------|---------|------|
+| `admin-web` | root, ops, admin, saas, mch | 管理端PC（Vue3 + Element Plus） |
+| `admin-uniapp` | root, ops, admin, saas, mch | 管理端移动端（UniApp） |
+| `guest-web` | guest | 消费者端PC（Vue3 + Element Plus） |
+| `guest-uniapp` | guest | 消费者端移动端（UniApp） |
+
+**选择规则**：根据当前开发面向的用户角色，选择 `admin-*` 或 `guest-*` 技能。
+
+| 用户角色 | Web技能 | UniApp技能 |
+|---------|---------|-----------|
+| root | admin-web | admin-uniapp |
+| ops | admin-web | admin-uniapp |
+| admin | admin-web | admin-uniapp |
+| saas | admin-web | admin-uniapp |
+| mch | admin-web | admin-uniapp |
+| guest | guest-web | guest-uniapp |
+
+**示例**：为 saas 角色开发 Web 端 → 调用 `220-admin-web-init` → `220-admin-web-gencode` → `220-admin-web-design` → ...
 
 ## 角色快速推荐
 

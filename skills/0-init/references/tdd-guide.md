@@ -1,6 +1,6 @@
 # TDD驱动开发指南
 
-> 跨技能共用的TDD红绿重构说明和通用示例。被 310-java-uniweb-dev、320-web-vue-dev、320-md-uniapp-dev、620-feature-java-uniweb-dev、630-feature-web-vue-dev、631-feature-md-uniapp-dev、720-bugfix-java-uniweb、730-bugfix-web-vue、731-bugfix-md-uniapp 等技能引用。
+> 跨技能共用的TDD红绿重构说明和通用示例。被 310-java-uniweb-dev、320-admin-web-dev、320-guest-web-dev、320-admin-uniapp-dev、320-guest-uniapp-dev、620-feature-java-uniweb-dev、630-feature-admin-web-dev、630-feature-guest-web-dev、631-feature-admin-uniapp-dev、631-feature-guest-uniapp-dev、720-bugfix-java-uniweb、730-bugfix-admin-web、730-bugfix-guest-web、731-bugfix-admin-uniapp、731-bugfix-guest-uniapp 等技能引用。
 
 ## TDD开发原则
 

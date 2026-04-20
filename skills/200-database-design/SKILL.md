@@ -95,12 +95,12 @@ version: "1.0.0"
 ### 2. 概念逻辑模型
 - [数据库设计文档模板](references/database-design-template.md) - 设计文档编写模板
 - [数据库设计指南](references/database-design-guide.md) - 命名规范、设计流程、非功能设计
-- 编写 `backend/{项目名}-app/database/database-design.md`
+- 编写 `database/database-design.md`
 
 ### 3. 库表DDL设计
 - [数据库DDL模板](references/database-ddl-template.md) - 建库建表语句模板
 - [数据库设计指南 - 索引设计](references/database-design-guide.md) - 命名规范、设计流程、索引设计最佳实践
-- 编写 `backend/{项目名}-app/database/database-ddl.sql`
+- 编写 `database/database-ddl.sql`
 
 ### 4. PLAN-REVIEW 循环（必须执行）
 
@@ -118,9 +118,9 @@ version: "1.0.0"
 循环开始 (round=1)
   │
   ├─▶ 调用技能: 201-database-design-review
-  │    对 backend/{项目名}-app/database/ 下设计文档执行评审
+  │    对 database/ 下设计文档执行评审
   │
-  ├─▶ 获取评审报告: backend/{项目名}-app/reviews/REVIEW-DB-YYMMDDHHMM.md
+  ├─▶ 获取评审报告: database/reviews/REVIEW-DB-YYMMDDHHMM.md
   │
   ├─▶ 判断结果:
   │    ├─ 评分 ≥ 95 → 输出结论，循环结束 ✓
@@ -152,17 +152,16 @@ version: "1.0.0"
 
 ## 输出要求
 
-**输出位置**: `backend/{项目名}-app/database/`
+**输出位置**: `database/`
 
 **目录结构**:
 ```
-backend/{项目名}-app/
-├── database/
-│   ├── database-design.md              # 设计文档（E-R图、实体定义、覆盖度验证）
-│   ├── database-ddl.sql                # 建表语句
-│   └── migrations/                     # DDL变更文件
-└── reviews/                            # 评审报告（PLAN-REVIEW循环产出）
-    └── REVIEW-DB-YYMMDDHHMM.md         # 按时间戳命名，24小时制
+database/
+├── database-design.md              # 设计文档（E-R图、实体定义、覆盖度验证）
+├── database-ddl.sql                # 建表语句
+├── migrations/                     # DDL变更文件
+└── reviews/                        # 评审报告（PLAN-REVIEW循环产出）
+    └── REVIEW-DB-YYMMDDHHMM.md     # 按时间戳命名，24小时制
 ```
 
 **包含内容**:

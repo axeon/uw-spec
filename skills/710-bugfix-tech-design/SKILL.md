@@ -41,7 +41,7 @@ version: "2.0.0"
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
 | 修复方案文档 | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md` | 修复方案 |
-| DDL文件（如有） | `backend/{项目名}-app/database/migrations/BUGFIX-{YYMMDD}-{简述}.sql` | 数据库变更 |
+| DDL文件（如有） | `database/migrations/BUGFIX-{YYMMDD}-{简述}.sql` | 数据库变更 |
 
 ## 执行流程
 
@@ -152,8 +152,8 @@ version: "2.0.0"
 | 下游技能 | 提取文件 | 用途 |
 |---------|---------|------|
 | 720-bugfix-java-uniweb | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` + DDL文件（如有） | 修复方案 + 数据库变更 |
-| 730-bugfix-web-vue | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 修复方案（前端部分） |
-| 731-bugfix-md-uniapp | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 修复方案（移动端部分） |
+| 730-bugfix-admin-web / 730-bugfix-guest-web | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 修复方案（前端部分） |
+| 731-bugfix-guest-uniapp / 731-bugfix-admin-uniapp | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 修复方案（移动端部分） |
 | 740-bugfix-test | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` + `issue/bugs/BUGFIX-{YYMMDD}-*.md` | 修复方案 + Bug分析（回归测试） |
 
 **并行约束**：四端天然独立，可同时由不同Agent修复。DDL需先执行，后端修复依赖DDL。
@@ -162,7 +162,7 @@ version: "2.0.0"
 
 **修复方案**: `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md`
 
-**DDL文件（如有）**: `backend/{项目名}-app/database/migrations/BUGFIX-{YYMMDD}-{简述}.sql`
+**DDL文件（如有）**: `database/migrations/BUGFIX-{YYMMDD}-{简述}.sql`
 
 ## 流转关系
 

@@ -32,10 +32,10 @@ version: "1.1.0"
 
 | 输入项 | 来源路径 | 说明 |
 |--------|----------|------|
-| DDL文件 | `backend/{项目名}-app/database/database-ddl.sql` | 200阶段产出的全量建表语句 |
-| 迁移脚本 | `backend/{项目名}-app/database/migrations/*.sql` | 增量DDL变更文件 |
-| 设计文档 | `backend/{项目名}-app/database/database-design.md` | 表结构设计文档（验证参照） |
-| 评审报告 | `backend/{项目名}-app/reviews/REVIEW-DB-*.md` | 201评审通过的报告 |
+| DDL文件 | `database/database-ddl.sql` | 200阶段产出的全量建表语句 |
+| 迁移脚本 | `database/migrations/*.sql` | 增量DDL变更文件 |
+| 设计文档 | `database/database-design.md` | 表结构设计文档（验证参照） |
+| 评审报告 | `database/reviews/REVIEW-DB-*.md` | 201评审通过的报告 |
 
 ### 前置条件
 
@@ -99,7 +99,7 @@ db_name = project_name.replace('-', '_')
 **首次全量执行**：
 
 ```bash
-mysql -h {host} -P {port} -u {user} -p{pass} {db_name} < backend/{项目名}-app/database/database-ddl.sql
+mysql -h {host} -P {port} -u {user} -p{pass} {db_name} < database/database-ddl.sql
 ```
 
 **增量迁移执行**：
@@ -138,11 +138,11 @@ mysql -h {host} -P {port} -u {user} -p{pass} {db_name} < "{selected_file}"
 
 ### 5. 初始数据（如有）
 
-检查 `backend/{项目名}-app/database/` 下是否有初始数据脚本（如 `init-data.sql`），有则执行。
+检查 `database/` 下是否有初始数据脚本（如 `init-data.sql`），有则执行。
 
 ### 6. 生成执行报告
 
-**报告位置**：`backend/{项目名}-app/database/log/DDL-EXECUTION-REPORT-{YYMMDDHHMM}.md`
+**报告位置**：`database/log/DDL-EXECUTION-REPORT-{YYMMDDHHMM}.md`
 
 ```markdown
 # DDL执行报告
@@ -196,9 +196,9 @@ DDL执行完成后，必须进入 PLAN-REVIEW 循环。
 
 ## 输出要求
 
-**执行报告**: `backend/{项目名}-app/database/DDL-EXECUTION-REPORT-{YYMMDDHHMM}.md`
+**执行报告**: `database/DDL-EXECUTION-REPORT-{YYMMDDHHMM}.md`
 
-**评审报告**: `backend/{项目名}-app/reviews/REVIEW-DDL-EXECUTION-YYMMDDHHMM.md`
+**评审报告**: `database/reviews/REVIEW-DDL-EXECUTION-YYMMDDHHMM.md`
 
 ## 流转关系
 

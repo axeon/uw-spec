@@ -38,8 +38,8 @@ version: "3.0.0"
 | 输入项 | 来源路径 | 说明 |
 |--------|----------|------|
 | PRD | `requirement/prds/*` | 产品需求文档，功能模块及验收标准 |
-| 数据库设计文档 | `backend/{项目名}-app/database/database-design.md` | 表结构、实体关系 |
-| 数据库DDL | `backend/{项目名}-app/database/database-ddl.sql` | 建表语句 |
+| 数据库设计文档 | `database/database-design.md` | 表结构、实体关系 |
+| 数据库DDL | `database/database-ddl.sql` | 建表语句 |
 | 后端设计文档 | `backend/{项目名}-app/README.md` | 模块划分、接口设计、角色权限映射、缓存策略 |
 | Controller代码 | `backend/{项目名}-app/src/main/java/{包路径}/controller/` | 220阶段裁剪后的Controller |
 | Helper代码 | `backend/{项目名}-app/src/main/java/{包路径}/service/` | 220阶段新建的Helper方法签名 |

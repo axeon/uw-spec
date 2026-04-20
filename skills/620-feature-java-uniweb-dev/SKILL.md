@@ -55,7 +55,7 @@ version: "2.0.0"
 | 提取项 | 来源文件 | 用途 |
 |--------|---------|------|
 | 后端技术方案 | `backend/{项目名}-app/issues/FEATURE-DESIGN-*-tech-design.md` | 接口设计、数据模型、实现要点 |
-| DDL文件 | `backend/{项目名}-app/database/migrations/FEATURE-*.sql` | 数据库变更，需先执行 |
+| DDL文件 | `database/migrations/FEATURE-*.sql` | 数据库变更，需先执行 |
 | 现有架构 | `backend/{项目名}-app/README.md` | 编码规范、模块结构 |
 
 **并行约束**：620 与 630/631/640 天然独立可并行。DDL需先执行完毕后才能开始 620。

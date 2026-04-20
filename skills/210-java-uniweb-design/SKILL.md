@@ -52,8 +52,8 @@ version: "3.0.0"
 | 输入项 | 来源路径 | 说明 |
 |--------|----------|------|
 | PRD | `requirement/prds/*` | 产品需求文档，功能模块及各终端详细需求 |
-| 数据库设计文档 | `backend/{项目名}-app/database/database-design.md` | 表结构设计、实体关系、索引策略 |
-| 数据库DDL | `backend/{项目名}-app/database/database-ddl.sql` | DDL建表语句，用于对照表名和字段 |
+| 数据库设计文档 | `database/database-design.md` | 表结构设计、实体关系、索引策略 |
+| 数据库DDL | `database/database-ddl.sql` | DDL建表语句，用于对照表名和字段 |
 | 项目目录 | `backend/{项目名}-app/` | 210阶段项目代码以及产出的entity/dto/controller |
 
 ## 前置条件

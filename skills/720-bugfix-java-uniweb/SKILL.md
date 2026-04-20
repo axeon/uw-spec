@@ -55,7 +55,7 @@ version: "2.0.0"
 |--------|---------|------|
 | 修复方案 | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 修复思路、修改范围、影响评估 |
 | Bug分析报告 | `issue/bugs/BUGFIX-{YYMMDD}-*.md` | Bug复现步骤、根因分析 |
-| DDL文件（如有） | `backend/{项目名}-app/database/migrations/BUGFIX-*.sql` | 数据库变更，需先执行 |
+| DDL文件（如有） | `database/migrations/BUGFIX-*.sql` | 数据库变更，需先执行 |
 
 **并行约束**：720 与 730/731/740 天然独立可并行。DDL需先执行完毕后才能开始 720。
 

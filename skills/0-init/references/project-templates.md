@@ -45,21 +45,23 @@ project/
 │   │   └── INTERVIEW-{YYMMDDHHMM}-{主题}.md
 │   └── reviews/              # 需求评审报告
 │       └── REVIEW-PRD-{YYMMDDHHMM}.md
+├── database/                 # 数据库设计文档
+│   ├── database-design.md
+│   ├── database-ddl.sql
+│   ├── migrations/           # 日期开头的DDL文件
+│   │   ├── FEATURE-{YYMMDD}-{简述}.sql
+│   │   └── BUGFIX-{YYMMDD}-{简述}.sql
+│   └── reviews/              # 数据库相关评审报告
+│       ├── REVIEW-DB-{YYMMDDHHMM}.md
+│       └── REVIEW-DDL-EXECUTION-{YYMMDDHHMM}.md
 ├── backend/                  # 后端项目（Java + uw-base）
 │   └── {项目名}-app/
 │       ├── README.md     # 后端架构文档
 │       ├── CHANGELOG.md  # 代码变更历史
-│       ├── database/         # 数据库设计文档
-│       │   ├── database-design.md
-│       │   ├── database-ddl.sql
-│       │   └── migrations/   # 日期开头的DDL文件
-│       │       ├── FEATURE-{YYMMDD}-{简述}.sql
-│       │       └── BUGFIX-{YYMMDD}-{简述}.sql
 │       ├── issues/     # 功能级技术文档（6xx/7xx阶段）
 │       │    ├── FEATURE-DESIGN-{YYMMDD}-{简述}.md
 │       │    └── BUGFIX-DESIGN-{YYMMDD}-{简述}.md
 │       ├── reviews/      # 评审报告
-│       │   ├── REVIEW-DB-{YYMMDDHHMM}.md
 │       │   ├── REVIEW-DESIGN-{YYMMDDHHMM}.md
 │       │   └── REVIEW-CODE-{YYMMDDHHMM}.md
 │       └── src/              # 源代码
@@ -177,7 +179,7 @@ project/
 | 2-design | 前端组 | 220-init, 220-gencode, 220-design, 221-review | 完成后进入评审 |
 | 2-design | 测试组 | 230-design, 231-review | 完成后进入评审 |
 | 2.5-ddl | 执行组 | 300-execution, 301-review | 完成后进入开发 |
-| 3-project | 开发组 | 310, 320-web-vue, 320-md-uniapp, 330 | 全部完成后进入测试 |
+| 3-project | 开发组 | 310, 320-admin-web, 320-guest-web, 320-admin-uniapp, 320-guest-uniapp, 330 | 全部完成后进入测试 |
 | 6-feature | 开发组 | 620, 630, 631, 640 | 全部完成后进入验收 |
 | 7-bugfix | 修复组 | 720, 730, 731, 740 | 全部完成后进入验收 |
 | 5-manual | 文档组 | 500, 510, 520 | 全部完成后项目归档 |
@@ -220,9 +222,9 @@ project/
 |----------|----------|------|
 | 0-init | 确认项目根目录结构 | `project-name: my-shop` → `backend/my-shop-app/` |
 | 110-requirement | 添加PRD文档路径 | `requirement/prds/guest-web/README.md` |
-| 200-database-design | 添加数据库文档路径 | `backend/my-shop-app/database/database-design.md` |
+| 200-database-design | 添加数据库文档路径 | `database/database-design.md` |
 | 210-java-uniweb-init | 确认后端项目路径 | `backend/my-shop-app/`（已初始化） |
-| 220-web-vue-init | 确认前端项目路径 | `frontend/my-shop-web/`（已初始化） |
+| 220-admin-web-init | 确认前端项目路径 | `frontend/my-shop-admin-web/`（已初始化） |
 | 600-feature-clarify | 添加功能需求文档 | `requirement/prds/{角色}-{终端}/20240115-FEATURE-订单导出.md` |
 | 610-feature-tech-design | 添加技术方案文档 | `backend/my-shop-app/issues/FEATURE-DESIGN-240115-订单导出-tech-design.md` |
 | 620-feature-java-uniweb-dev | 添加后端开发文档 | `backend/my-shop-app/issues/FEATURE-DESIGN-240115-订单导出-java-uniweb.md` |
@@ -284,12 +286,13 @@ my-shop/
         ├── pom.xml
         ├── README.md
         ├── CHANGELOG.md
-        ├── database/
-        │   ├── database-design.md
-        │   ├── database-ddl.sql
-        │   └── migrations/
         ├── issues/
         └── reviews/
+└── database/
+    ├── database-design.md
+    ├── database-ddl.sql
+    ├── migrations/
+    └── reviews/
 ```
 ```
 
@@ -306,20 +309,20 @@ my-shop/
 │       │   ├── README.md
 │       │   └── 20240115-FEATURE-订单导出.md
 │       └── ...
+├── database/
+│   └── migrations/
+│       └── FEATURE-240115-订单导出.sql
 ├── backend/
 │   └── my-shop-app/
-│       ├── database/
-│       │   └── migrations/
-│       │       └── FEATURE-240115-订单导出.sql
 │       ├── issues/
 │       │   └── FEATURE-DESIGN-240115-订单导出-tech-design.md
 │       ├── reviews/
 │       │   └── REVIEW-CODE-2401151430.md
 │       └── src/
 ├── frontend/
-│   └── guest-web/
+│   └── my-shop-guest-web/
 │       ├── issues/
-│       │   └── FEATURE-DESIGN-240115-订单导出-web-vue.md
+│       │   └── FEATURE-DESIGN-240115-订单导出-guest-web.md
 │       ├── reviews/
 │       │   └── REVIEW-CODE-2401151430.md
 │       └── src/

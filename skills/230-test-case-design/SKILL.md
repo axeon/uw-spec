@@ -37,7 +37,7 @@ version: "3.0.0"
 | 输入项 | 来源路径 | 说明 |
 |--------|----------|------|
 | PRD | `requirement/prds/*` | 产品需求文档，功能模块及验收标准 |
-| 数据库设计文档 | `backend/{项目名}-app/database/database-design.md` | 表结构、字段定义、实体关系 |
+| 数据库设计文档 | `database/database-design.md` | 表结构、字段定义、实体关系 |
 | 后端设计文档 | `backend/{项目名}-app/README.md` | 接口设计、模块划分、角色权限映射 |
 | 后端Swagger | `backend/{项目名}-app/` 启动后 | OpenAPI Spec（接口路径、参数类型、枚举值、必填标记） |
 | 原型页面 | `{项目名}-{role}-{platform}/src/` | 页面组件结构、表单字段、操作流程 |

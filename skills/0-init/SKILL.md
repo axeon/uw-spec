@@ -187,7 +187,7 @@ AskUserQuestion({
    |--------|-----------|
    | 数据库设计组 | 200-database-design → 201-database-design-review |
    | 后端初始化与设计组 | 210-java-uniweb-init → 210-java-uniweb-gencode → 210-java-uniweb-design → 211-java-uniweb-design-review |
-   | 前端初始化与设计组 | 220-web-vue-init, 220-md-uniapp-init → 220-web-vue-gencode, 220-md-uniapp-gencode → 220-web-vue-design, 220-md-uniapp-design → 221-web-vue-design-review, 221-md-uniapp-design-review |
+   | 前端初始化与设计组 | 220-admin-web-init, 220-guest-web-init, 220-admin-uniapp-init, 220-guest-uniapp-init → 220-admin-web-gencode, 220-guest-web-gencode, 220-admin-uniapp-gencode, 220-guest-uniapp-gencode → 220-admin-web-design, 220-guest-web-design, 220-admin-uniapp-design, 220-guest-uniapp-design → 221-admin-web-design-review, 221-guest-web-design-review, 221-admin-uniapp-design-review, 221-guest-uniapp-design-review |
 
    **第二波：测试设计（依赖第一波产出）**
 
@@ -205,9 +205,9 @@ AskUserQuestion({
 
    | 并行组 | 可并行流程 |
    |--------|-----------|
-   | 开发组 | 310-java-uniweb-dev, 320-web-vue-dev, 320-md-uniapp-dev, 330-test-case-dev |
+   | 开发组 | 310-java-uniweb-dev, 320-admin-web-dev, 320-guest-web-dev, 320-admin-uniapp-dev, 320-guest-uniapp-dev, 330-test-case-dev |
 
-   评审流程（串行）：311-java-uniweb-dev-review, 321-web-vue-dev-review, 321-md-uniapp-dev-review, 331-test-case-dev-review...
+   评审流程（串行）：311-java-uniweb-dev-review, 321-admin-web-dev-review, 321-guest-web-dev-review, 321-admin-uniapp-dev-review, 321-guest-uniapp-dev-review, 331-test-case-dev-review...
 
    **阶段4 - 测试阶段**（串行）
    - 410-test-case-execution → 411-test-case-execution-review
