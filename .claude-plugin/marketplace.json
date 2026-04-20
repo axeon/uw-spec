@@ -1,24 +1,22 @@
 {
   "name": "uw-spec",
   "description": "uw-spec 开发流程规范（agents + skills）",
+  "owner": {
+    "name": "axeon",
+    "email": "23231269@qq.com"
+  },
+  "homepage": "https://github.com/axeon/uw-spec",
   "plugins": [
     {
       "name": "uw-spec",
-      "description": "开发流程规范（agents + skills），覆盖需求、设计、开发、测试、文档全流程",
       "version": "1.0.0",
-      "author": "axeon",
-      "repository": "https://github.com/axeon/uw-spec",
-      "installUrl": "https://github.com/axeon/uw-spec",
-      "keywords": [
-        "uw",
-        "uniweb",
-        "saas",
-        "tdd",
-        "workflow",
-        "specification",
-        "agents",
-        "skills"
-      ]
+      "description": "开发流程规范（agents + skills），覆盖需求、设计、开发、测试、文档全流程",
+      "author": {
+        "name": "axeon",
+        "email": "23231269@qq.com"
+      },
+      "source": ".",
+      "category": "development"
     }
   ]
 }

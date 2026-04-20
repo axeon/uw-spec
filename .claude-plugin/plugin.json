@@ -2,7 +2,10 @@
   "name": "uw-spec",
   "version": "1.0.0",
   "description": "uw-spec 开发流程规范（agents + skills）",
-  "author": "axeon",
+  "author": {
+    "name": "axeon",
+    "email": "23231269@qq.com"
+  },
   "license": "MIT",
   "repository": "https://github.com/axeon/uw-spec",
   "keywords": [
