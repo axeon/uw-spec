@@ -1,17 +1,16 @@
 {
   "name": "uw-spec",
   "version": "1.0.0",
-  "description": "uw-spec 六阶段 AI 辅助软件开发流程规范（agents + skills）",
+  "description": "uw-spec 开发流程规范（agents + skills）",
   "author": "axeon",
-  "email": "axeon@uw-spec.com",
   "license": "MIT",
+  "repository": "https://github.com/axeon/uw-spec",
   "keywords": [
     "uw",
+    "uniweb",
     "saas",
     "tdd",
     "workflow",
     "specification"
-  ],
-  "skills": "./skills/",
-  "agents": "./agents/"
+  ]
 }

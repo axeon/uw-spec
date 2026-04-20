@@ -1,6 +1,123 @@
-# uw-spec 软件开发流程
+# uw-spec 开发流程规范
 
-uw-spec 是一套完整的 AI 辅助软件开发流程 Skills，采用 **harness-engineering（工程约束）** + **TDD（测试驱动开发）** 理念，让 AI 作为开发伙伴，与人机协作完成软件开发生命周期的各个阶段。
+uw-spec 是一套完整的 AI 辅助开发流程规范（agents + Skills），采用 **harness-engineering（工程约束）** + **TDD（测试驱动开发）** 理念，让 AI 作为开发伙伴，与人机协作完成软件开发生命周期的各个阶段。
+
+## 📦 安装与使用
+
+### 方式一：Claude Code Plugin 安装（推荐）
+
+Claude Code 通过 Plugin 机制同时安装 Skills 和 Agents，一键完成：
+
+```bash
+# 在 Claude Code 中执行（推荐：从 GitHub 安装）
+/plugin install axeon/uw-spec
+
+# 或从本地路径安装（适合开发调试）
+/plugin install /path/to/uw-spec
+```
+
+安装后可在 Claude Code 中验证：
+
+```
+/skills    # 查看已安装的 Skills
+/agents    # 查看已安装的 Agents
+```
+
+**作用域选择**：
+
+| 作用域 | 安装位置 | 说明 |
+|--------|----------|------|
+| User（默认） | `~/.claude/` | 所有项目生效 |
+| Project | `.claude/` | 仅当前项目生效 |
+
+**更新方式**：
+
+```bash
+# 查看已安装的插件
+/plugin list
+
+# 更新：重新执行 install 即可覆盖更新
+/plugin install axeon/uw-spec
+```
+
+| 更新方式 | 命令 | 说明 |
+|---------|------|------|
+| 手动更新 | `/plugin install <url>` | 重新安装覆盖旧版本 |
+| 自动更新 | `/plugin install <url>#main` | 每次启动自动拉取最新 |
+| 禁用插件 | `/plugin disable uw-spec` | 暂时不卸载，停止使用 |
+| 卸载插件 | `/plugin uninstall uw-spec` | 彻底移除 |
+
+### 方式二：npx skills 安装（仅 Skills）
+
+`npx skills` 只能安装 Skills，**不支持安装 Agents**。如需 Agents 请使用方式一或方式三。
+
+```bash
+# 安装所有 Skills
+npx skills add axeon/uw-spec --all -y
+
+# 安装指定 Skill
+npx skills add axeon/uw-spec --skill 0-init -y
+
+# 查看已安装的 Skills
+npx skills list
+
+# 更新已安装的 Skills
+npx skills update -y
+```
+
+**指定安装目标**：
+
+```bash
+# 安装到 Claude Code
+npx skills add axeon/uw-spec --all -a claude-code -y
+
+# 安装到 Trae
+npx skills add axeon/uw-spec --all -a trae -y
+
+# 安装到多个工具
+npx skills add axeon/uw-spec --all -a claude-code -a trae -y
+
+# 全局安装（跨项目生效）
+npx skills add axeon/uw-spec --all -g -y
+```
+
+### 方式三：手动安装
+
+```bash
+# 克隆仓库
+git clone https://github.com/axeon/uw-spec.git
+
+# 安装 Skills（复制或 symlink 到目标目录）
+# Claude Code
+mkdir -p .claude/skills
+ln -s $(pwd)/uw-spec/skills/* .claude/skills/
+
+# Trae
+mkdir -p .trae/skills
+ln -s $(pwd)/uw-spec/skills/* .trae/skills/
+
+# 安装 Agents（仅 Claude Code 支持）
+mkdir -p .claude/agents
+ln -s $(pwd)/uw-spec/agents/* .claude/agents/
+```
+
+### 三种方式对比
+
+| 特性 | Plugin（方式一） | npx skills（方式二） | 手动（方式三） |
+|------|-----------------|--------------------|-------------|
+| 安装 Skills | ✅ | ✅ | ✅ |
+| 安装 Agents | ✅ | ❌ | ✅ |
+| 一键安装 | ✅ | ✅ | ❌ |
+| 自动更新 | ✅ | ✅ | ❌ |
+| 多工具支持 | Claude Code | 41+ 工具 | 任意 |
+
+### 快速开始
+
+安装完成后，在对话中直接说：
+
+> "我想开发一个 XXX 应用"
+
+`0-init` 技能会自动触发，引导你完成项目初始化并进入 uw-spec 开发流程。
 
 ## 🎯 核心理念
 
