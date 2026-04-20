@@ -81,8 +81,8 @@ description: 技能功能 + 使用场景 + 具体触发条件（数字编号）
 
 创建或修改 skill 后，检查以下项目：
 
-- [ ] description ≤ 500 字符
-- [ ] description 包含 3-5 个具体触发条件
+- [ ] description ≤ 300 字符
+- [ ] description 包含1-3个具体触发条件
 - [ ] SKILL.md ≤ 300 行
 - [ ] 使用表格替代长段落
 - [ ] 指令具体可执行（无量化词）
