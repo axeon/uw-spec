@@ -8,7 +8,9 @@
   "plugins": [
     {
       "name": "uw-spec",
-      "source": "./"
+      "description": "开发流程规范（agents + skills），覆盖需求、设计、开发、测试、文档全流程",
+      "source": ".",
+      "category": "development"
     }
   ]
 }
