@@ -242,28 +242,26 @@ void testGet{Entity}_NotFound_ReturnWarn() { fail("TDD Red"); }
 
 **代码模板**：参见 [references/templates.md](references/templates.md)
 
-### Phase 3: PLAN-REVIEW 循环
+## PLAN-REVIEW 循环（必须执行）
 
-设计完成后，必须进入 PLAN-REVIEW 循环。
+设计完成后，必须进入 PLAN-REVIEW 循环，确保设计质量达标。
 
-#### 循环规则
+调用技能 `211-java-uniweb-design-review`，评分 ≥ 95 通过，< 95 按下表修复后重新评审（最多5轮，round ≥ 6 强制退出）:
 
-| 规则 | 说明 |
-|------|------|
-| 通过条件 | review 评分 ≥ 95分 |
-| 强制退出 | 最多5轮review（round=1~5），round ≥ 6强制退出 |
-| 每轮操作 | review → 修复问题 → 重新 review |
+| 优先级 | 要求 |
+|--------|------|
+| Critical | 本轮必须全部修复，不可遗留 |
+| Major | 本轮修复 ≥ 80%，剩余标注下轮计划 |
+| Minor | 记录但不阻塞，按优先级排列 |
 
-#### 循环流程
-
-1. 调用技能 `211-java-uniweb-design-review`，评审 README.md + 代码质量 + 测试骨架
-2. 评分 ≥ 95 → 输出结论，循环结束
-3. 评分 < 95 → 按优先级修复（Critical 必须全修、Major ≥ 80%、Minor 记录），round++，回到步骤 1
-4. round ≥ 6 → 强制退出，输出当前结论 ⚠️
-
-#### 输出循环结论
-
-每轮在评审报告末尾追加：总轮次 X/5、最终评分、状态（通过/有条件通过/强制退出）、遗留问题数。
+循环结束时，在评审报告末尾追加：
+```markdown
+## PLAN-REVIEW 循环结论
+- 总轮次: {N}/5
+- 最终评分: {N}分
+- 状态: {通过 | 有条件通过 | 强制退出}
+- 遗留问题: Critical {N}, Major {N}, Minor {N}
+```
 
 ## 产出结构
 
