@@ -1,6 +1,6 @@
 ---
-name: 731-bugfix-admin-uniapp
-description: Bug UniApp移动端修复技能。当修复方案设计完成后触发：(1)基于修复方案修改UniApp移动端代码, (2)编写回归测试, (3)调用321-admin-uniapp-dev-review自动评审, (4)自动修复代码问题, (5)合并代码到主分支并更新CHANGELOG。请务必在用户提及Bug移动端修复、UniApp修复、小程序修复时使用此技能。适用于root/ops/saas/mch角色。
+name: 730-bugfix-admin-uniapp
+description: Bug UniApp移动端修复技能。当修复方案设计完成后触发：(1)基于修复方案修改UniApp移动端代码, (2)编写回归测试, (3)调用731-bugfix-admin-uniapp-review自动评审, (4)自动修复代码问题, (5)合并代码到主分支并更新CHANGELOG。请务必在用户提及Bug移动端修复、UniApp修复、小程序修复时使用此技能。适用于root/ops/saas/mch角色。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
 version: "1.0.0"
@@ -85,7 +85,7 @@ version: "1.0.0"
 
 ### 3. AI自动评审
 
-**调用评审Skill**: `321-admin-uniapp-dev-review`
+**调用评审Skill**: `731-bugfix-admin-uniapp-review`
 
 **评审维度**:
 
@@ -114,7 +114,7 @@ version: "1.0.0"
 ```
 循环开始 (round=1)
   │
-  ├─▶ 调用技能: 321-admin-uniapp-dev-review
+  ├─▶ 调用技能: 731-bugfix-admin-uniapp-review
   │
   ├─▶ 判断结果:
   │    ├─ 评分 ≥ 95 → 输出结论，循环结束 ✓
@@ -198,4 +198,4 @@ AI修复代码 → 平台适配 → AI评审(321) → 自动修复 → 测试执
 
 ## 参考
 
-- [UniApp开发评审技能](../321-admin-uniapp-dev-review/SKILL.md)
+- [UniApp开发评审技能](../731-bugfix-admin-uniapp-review/SKILL.md)

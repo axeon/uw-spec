@@ -1,6 +1,6 @@
 ---
 name: 620-feature-java-uniweb-dev
-description: 功能Java后端开发技能。当技术方案设计完成后触发：(1)基于技术方案生成Java后端代码, (2)实现Helper业务逻辑和Controller接口, (3)编写单元测试和集成测试, (4)调用311-java-uniweb-dev-review自动评审, (5)自动修复代码问题, (6)合并代码到主分支并更新CHANGELOG。请务必在用户提及Java后端开发、实现后端功能、开发API接口时使用此技能。
+description: 功能Java后端开发技能。当技术方案设计完成后触发：(1)基于技术方案生成Java后端代码, (2)实现Helper业务逻辑和Controller接口, (3)编写单元测试和集成测试, (4)调用621-feature-java-uniweb-dev-review自动评审, (5)自动修复代码问题, (6)合并代码到主分支并更新CHANGELOG。请务必在用户提及Java后端开发、实现后端功能、开发API接口时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
 version: "1.0.0"
@@ -82,7 +82,7 @@ version: "1.0.0"
 
 ### 2. AI自动评审
 
-**调用评审Skill**: `311-java-uniweb-dev-review`
+**调用评审Skill**: `621-feature-java-uniweb-dev-review`
 
 **评审维度**:
 
@@ -120,7 +120,7 @@ version: "1.0.0"
 ```
 循环开始 (round=1)
   │
-  ├─▶ 调用技能: 311-java-uniweb-dev-review
+  ├─▶ 调用技能: 621-feature-java-uniweb-dev-review
   │
   ├─▶ 判断结果:
   │    ├─ 评分 ≥ 95 → 输出结论，循环结束 ✓
@@ -216,6 +216,6 @@ AI生成代码 → AI评审(311) → 自动修复 → 测试执行
 
 ## 参考
 
-- [Java开发评审技能](../311-java-uniweb-dev-review/SKILL.md) - AI自动评审调用
+- [Java开发评审技能](../621-feature-java-uniweb-dev-review/SKILL.md) - AI自动评审调用
 - [UniWeb开发规范](../210-java-uniweb-design/references/backend/uniweb/dev-standards.md)
 - [SaaS开发规范](../210-java-uniweb-design/references/backend/saas/dev-standards.md)

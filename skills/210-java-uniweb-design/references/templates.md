@@ -170,7 +170,7 @@ stateDiagram-v2
 
 ---
 
-## 2. $PackageInfo$ 模板
+## 2. $PackageInfo$.java 模板
 
 > 每个 controller 角色包中必须包含此文件。声明角色级基础权限，Controller 方法级 `@MscPermDeclare` 在此基础上做细粒度控制。
 

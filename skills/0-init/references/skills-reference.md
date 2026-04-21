@@ -138,8 +138,8 @@
 | 620 | 620-feature-java-uniweb-dev | 功能Java后端开发 | Java后端工程师 |
 | 630 | 630-feature-admin-web-dev | 功能Admin Web前端开发（root/ops/saas/mch） | JS前端工程师 |
 | 630 | 630-feature-guest-web-dev | 功能Guest Web前端开发（guest） | JS前端工程师 |
-| 631 | 631-feature-admin-uniapp-dev | 功能Admin UniApp移动端开发（root/ops/saas/mch） | JS前端工程师 |
-| 631 | 631-feature-guest-uniapp-dev | 功能Guest UniApp移动端开发（guest） | JS前端工程师 |
+| 630 | 630-feature-admin-uniapp-dev | 功能Admin UniApp移动端开发（root/ops/saas/mch） | JS前端工程师 |
+| 630 | 630-feature-guest-uniapp-dev | 功能Guest UniApp移动端开发（guest） | JS前端工程师 |
 | 640 | 640-feature-test-dev | 功能测试脚本开发 | 测试工程师 |
 | 650 | 650-feature-final-review | 功能最终验收评审 | 产品经理 |
 | 660 | 660-feature-update-doc | 功能5xx文档更新 | 技术写作 |
@@ -156,10 +156,10 @@
 | 720 | 720-bugfix-java-uniweb | Bug Java后端修复 | Java后端工程师 |
 | 730 | 730-bugfix-admin-web | Bug Admin Web前端修复（root/ops/saas/mch） | JS前端工程师 |
 | 730 | 730-bugfix-guest-web | Bug Guest Web前端修复（guest） | JS前端工程师 |
-| 731 | 731-bugfix-admin-uniapp | Bug Admin UniApp移动端修复（root/ops/saas/mch） | JS前端工程师 |
-| 731 | 731-bugfix-guest-uniapp | Bug Guest UniApp移动端修复（guest） | JS前端工程师 |
+| 730 | 730-bugfix-admin-uniapp | Bug Admin UniApp移动端修复（root/ops/saas/mch） | JS前端工程师 |
+| 730 | 730-bugfix-guest-uniapp | Bug Guest UniApp移动端修复（guest） | JS前端工程师 |
 | 740 | 740-bugfix-test | Bug回归测试 | 测试工程师 |
 | 750 | 750-bugfix-final-review | Bug修复最终验收 | 产品经理 |
 | 760 | 760-bugfix-update-doc | Bug修复5xx文档更新 | 技术写作 |
 
-**流程**: 700 → 701 → 710 → (720/730/731/740并行) → 750 → 760
+**流程**: 700 → 701 → 710 → (720/730/740并行) → 750 → 760

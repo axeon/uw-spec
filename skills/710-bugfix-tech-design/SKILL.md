@@ -136,6 +136,44 @@ version: "1.0.0"
 - 状态: 方案已设计
 ```
 
+## PLAN-REVIEW 循环（必须执行）
+
+修复方案设计完成后，必须进入 PLAN-REVIEW 循环，确保方案质量达标。
+
+#### 循环规则
+| 规则 | 说明 |
+|------|------|
+| 通过条件 | review 评分 ≥ 95分 |
+| 强制退出 | 最多5轮review（round=1~5），round ≥ 6强制退出 |
+| 每轮操作 | review → 修复问题 → 重新 review |
+
+#### 循环流程
+```
+循环开始 (round=1)
+  │
+  ├─▶ 调用技能: 711-bugfix-tech-design-review
+  │    对修复方案执行评审
+  │
+  ├─▶ 获取评审报告: issue/reviews/REVIEW-BUGFIX-DESIGN-YYMMDDHHMM.md
+  │
+  ├─▶ 判断结果:
+  │    ├─ 评分 ≥ 95 → 输出结论，循环结束 ✓
+  │    └─ 评分 < 95 → 进入修复步骤
+  │
+  ├─▶ 修复问题:
+  │    按评审报告中的问题清单（Critical > Major > Minor）逐项修复
+  │    修复后 round++，回到循环开始
+  │
+  └─▶ round ≥ 6 → 强制退出，输出当前结论 ⚠️
+```
+
+#### 每轮修复要求
+| 优先级 | 要求 |
+|--------|------|
+| Critical | 本轮必须全部修复，不可遗留 |
+| Major | 本轮修复 ≥ 80%，剩余标注下轮计划 |
+| Minor | 记录但不阻塞，按优先级排列 |
+
 ## 人工检查点 ★
 
 **必须人工确认**:
@@ -153,7 +191,7 @@ version: "1.0.0"
 |---------|---------|------|
 | 720-bugfix-java-uniweb | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` + DDL文件（如有） | 修复方案 + 数据库变更 |
 | 730-bugfix-admin-web / 730-bugfix-guest-web | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 修复方案（前端部分） |
-| 731-bugfix-guest-uniapp / 731-bugfix-admin-uniapp | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 修复方案（移动端部分） |
+| 730-bugfix-admin-uniapp / 730-bugfix-guest-uniapp | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 修复方案（移动端部分） |
 | 740-bugfix-test | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` + `issue/bugs/BUGFIX-{YYMMDD}-*.md` | 修复方案 + Bug分析（回归测试） |
 
 **并行约束**：四端天然独立，可同时由不同Agent修复。DDL需先执行，后端修复依赖DDL。
@@ -177,5 +215,5 @@ AI自动评审
     ↓
 输出: 修复方案
     ↓
-并行进入: 720/730/731/740
+并行进入: 720/730/740
 ```

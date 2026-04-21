@@ -72,7 +72,7 @@ version: "1.0.0"
 |------|------|
 | Controller 路径第一级 | 必须为用户角色（`/saas/`、`/mch/`、`/admin/`、`/root/`、`/ops/`、`/rpc/`） |
 | Controller 初始位置 | 代码生成器产出在 `controller/admin/{module}/`，按角色权限映射移动到目标角色目录 |
-| `$PackageInfo$` | 每个 controller 角色包下的 `{module}/` 目录必须包含 package-info.java |
+| `$PackageInfo$.java` | 每个 controller 角色包下的 `{module}/` 目录必须包含 $PackageInfo$.java |
 | Helper 命名 | service 包内组件统一命名为 `{Module}Helper` |
 | Entity | 代码生成器产出，保留不修改 |
 | DTO | 代码生成器产出，仅裁剪不新建 |
@@ -174,7 +174,7 @@ version: "1.0.0"
 | 删除多余方法 | 如资源不允许删除，删除 delete() 方法 |
 | 补充权限注解 | 每个方法添加 `@MscPermDeclare` 权限声明 |
 | 补充 Javadoc | 每个方法添加完整设计说明（设计思路 + 实现步骤） |
-| 补充 package-info.java | 每个 `{角色}/{模块}/` 目录下新建 package-info.java，声明角色级权限 |
+| 补充 $PackageInfo$.java | 每个 `{角色}/{模块}/` 目录下新建 $PackageInfo$.java，声明角色级权限 |
 
 **角色移动示例**：
 ```bash
@@ -325,7 +325,6 @@ void testGet{Entity}_NotFound_ReturnWarn() { fail("TDD Red"); }
 |------|---------|
 | mch 控制器方法参数数量与 Helper 方法签名不匹配 — 编译通过但运行时参数缺失 | **创建控制器前先读 Helper 方法签名**，确保参数数量和类型完全对齐（如 `toggleVote(Long guestId, Long targetId, int targetType)` 对应控制器也要传 3 个参数） |
 | 自动生成了未使用的 import（如 `AuthType`） | 创建后检查并清理未使用的 import |
-| package-info.java 的 import 路径错误：`uw.auth.service.anno.MscPermDeclare` | 正确路径：`uw.auth.service.annotation.MscPermDeclare`，UserType 在 `uw.auth.service.constant.UserType` |
 
 ### README.md 编写
 

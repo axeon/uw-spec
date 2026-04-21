@@ -39,7 +39,6 @@ version: "1.0.0"
 |--------|----------|------|
 | PRD | `requirement/prds/*` | 产品需求文档，功能模块及验收标准 |
 | 数据库设计文档 | `database/database-design.md` | 表结构、实体关系 |
-| 数据库DDL | `database/database-ddl.sql` | 建表语句 |
 | 后端设计文档 | `backend/{项目名}-app/README.md` | 模块划分、接口设计、角色权限映射、缓存策略 |
 | Controller代码 | `backend/{项目名}-app/src/main/java/{包路径}/controller/` | 220阶段裁剪后的Controller |
 | Helper代码 | `backend/{项目名}-app/src/main/java/{包路径}/service/` | 220阶段新建的Helper方法签名 |
@@ -166,7 +165,7 @@ version: "1.0.0"
 | 路径第一级 | 必须为用户角色（`/saas/`、`/mch/`、`/admin/`、`/root/`、`/ops/`、`/rpc/`） |
 | 返回值 | 统一使用 `ResponseData` 包装 |
 | 权限声明 | 每个方法添加 `@MscPermDeclare` |
-| $PackageInfo$ | 每个角色包下的模块目录必须包含 package-info.java |
+| $PackageInfo$.java | 每个角色包下的模块目录必须包含 $PackageInfo$.java |
 | 参数校验 | `@RequestBody` 参数加 `@Valid`，触发 DTO 校验注解 |
 
 ### 4. TDD Green — 实现单元测试

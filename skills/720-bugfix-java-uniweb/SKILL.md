@@ -1,6 +1,6 @@
 ---
 name: 720-bugfix-java-uniweb
-description: Bug Java后端修复技能。当修复方案设计完成后触发：(1)基于修复方案修改Java后端代码, (2)编写回归测试, (3)调用311-java-uniweb-dev-review自动评审, (4)自动修复代码问题, (5)合并代码到主分支并更新CHANGELOG。请务必在用户提及Bug后端修复、Java修复、后端问题修复时使用此技能。
+description: Bug Java后端修复技能。当修复方案设计完成后触发：(1)基于修复方案修改Java后端代码, (2)编写回归测试, (3)调用721-bugfix-java-uniweb-dev-review自动评审, (4)自动修复代码问题, (5)合并代码到主分支并更新CHANGELOG。请务必在用户提及Bug后端修复、Java修复、后端问题修复时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
 version: "1.0.0"
@@ -86,7 +86,7 @@ version: "1.0.0"
 
 ### 3. AI自动评审
 
-**调用评审Skill**: `311-java-uniweb-dev-review`
+**调用评审Skill**: `721-bugfix-java-uniweb-dev-review`
 
 **评审维度**:
 
@@ -114,7 +114,7 @@ version: "1.0.0"
 ```
 循环开始 (round=1)
   │
-  ├─▶ 调用技能: 311-java-uniweb-dev-review
+  ├─▶ 调用技能: 721-bugfix-java-uniweb-dev-review
   │
   ├─▶ 判断结果:
   │    ├─ 评分 ≥ 95 → 输出结论，循环结束 ✓
@@ -189,4 +189,4 @@ AI修复代码 → AI评审(311) → 自动修复 → 测试执行
 
 ## 参考
 
-- [Java开发评审技能](../311-java-uniweb-dev-review/SKILL.md)
+- [Java开发评审技能](../721-bugfix-java-uniweb-dev-review/SKILL.md)

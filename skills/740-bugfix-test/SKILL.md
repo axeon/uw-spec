@@ -1,6 +1,6 @@
 ---
 name: 740-bugfix-test
-description: Bug回归测试技能。当修复方案设计完成后触发：(1)基于修复方案生成回归测试脚本, (2)编写Bug复现测试, (3)编写边界条件测试, (4)调用331-test-case-dev-review自动评审, (5)执行测试并生成报告。请务必在用户提及Bug回归测试、修复验证、测试脚本开发时使用此技能。
+description: Bug回归测试技能。当修复方案设计完成后触发：(1)基于修复方案生成回归测试脚本, (2)编写Bug复现测试, (3)编写边界条件测试, (4)调用741-bugfix-test-review自动评审, (5)执行测试并生成报告。请务必在用户提及Bug回归测试、修复验证、测试脚本开发时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
 version: "1.0.0"
@@ -77,7 +77,7 @@ version: "1.0.0"
 
 ### 2. AI自动评审
 
-**调用评审Skill**: `331-test-case-dev-review`
+**调用评审Skill**: `741-bugfix-test-review`
 
 > **评审范围限定**：740 仅生成回归测试脚本（API + E2E），调用 331 评审时仅检查 API 测试脚本和 E2E 测试脚本两个维度，跳过 JMeter/安全/bin 评审。
 
@@ -107,7 +107,7 @@ version: "1.0.0"
 ```
 循环开始 (round=1)
   │
-  ├─▶ 调用技能: 331-test-case-dev-review
+  ├─▶ 调用技能: 741-bugfix-test-review
   │
   ├─▶ 判断结果:
   │    ├─ 评分 ≥ 95 → 输出结论，循环结束 ✓
@@ -197,4 +197,4 @@ AI生成测试 → AI评审(331) → 自动修复 → 测试执行
 
 ## 参考
 
-- [测试脚本评审技能](../331-test-case-dev-review/SKILL.md)
+- [测试脚本评审技能](../741-bugfix-test-review/SKILL.md)

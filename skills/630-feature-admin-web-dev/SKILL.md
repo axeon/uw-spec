@@ -1,6 +1,6 @@
 ---
 name: 630-feature-admin-web-dev
-description: 功能Web前端开发技能。当技术方案设计完成后触发：(1)基于技术方案生成Web前端代码, (2)实现Vue页面组件和交互逻辑, (3)对接后端API, (4)编写单元测试, (5)调用321-admin-web-dev-review自动评审, (6)自动修复代码问题, (7)合并代码到主分支并更新CHANGELOG。请务必在用户提及Web前端开发、Vue开发、实现前端功能时使用此技能。适用于root/ops/saas/mch角色。
+description: 功能Web前端开发技能。当技术方案设计完成后触发：(1)基于技术方案生成Web前端代码, (2)实现Vue页面组件和交互逻辑, (3)对接后端API, (4)编写单元测试, (5)调用631-feature-admin-web-dev-review自动评审, (6)自动修复代码问题, (7)合并代码到主分支并更新CHANGELOG。请务必在用户提及Web前端开发、Vue开发、实现前端功能时使用此技能。适用于root/ops/saas/mch角色。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
 version: "1.0.0"
@@ -83,7 +83,7 @@ version: "1.0.0"
 
 ### 2. AI自动评审
 
-**调用评审Skill**: `321-admin-web-dev-review`
+**调用评审Skill**: `631-feature-admin-web-dev-review`
 
 **评审维度**:
 
@@ -113,7 +113,7 @@ version: "1.0.0"
 ```
 循环开始 (round=1)
   │
-  ├─▶ 调用技能: 321-admin-web-dev-review
+  ├─▶ 调用技能: 631-feature-admin-web-dev-review
   │
   ├─▶ 判断结果:
   │    ├─ 评分 ≥ 95 → 输出结论，循环结束 ✓
@@ -217,6 +217,6 @@ AI生成代码 → AI评审(321) → 自动修复 → 测试执行
 
 ## 参考
 
-- [Web前端评审技能](../321-admin-web-dev-review/SKILL.md) - AI自动评审调用
+- [Web前端评审技能](../631-feature-admin-web-dev-review/SKILL.md) - AI自动评审调用
 - [Vue3速查](../0-init/references/frontend/vue3-cheatsheet.md)
 - [Element Plus速查](../0-init/references/frontend/element-plus-cheatsheet.md)

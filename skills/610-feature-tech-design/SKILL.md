@@ -241,6 +241,44 @@ CREATE INDEX idx_{name} ON {table_name}({column_list});
 
 **CHANGELOG更新**：追加到各端 CHANGELOG.md，记录技术方案设计状态。
 
+## PLAN-REVIEW 循环（必须执行）
+
+技术方案设计完成后，必须进入 PLAN-REVIEW 循环，确保方案质量达标。
+
+#### 循环规则
+| 规则 | 说明 |
+|------|------|
+| 通过条件 | review 评分 ≥ 95分 |
+| 强制退出 | 最多5轮review（round=1~5），round ≥ 6强制退出 |
+| 每轮操作 | review → 修复问题 → 重新 review |
+
+#### 循环流程
+```
+循环开始 (round=1)
+  │
+  ├─▶ 调用技能: 611-feature-tech-design-review
+  │    对技术方案执行评审
+  │
+  ├─▶ 获取评审报告: issue/reviews/REVIEW-DESIGN-YYMMDDHHMM.md
+  │
+  ├─▶ 判断结果:
+  │    ├─ 评分 ≥ 95 → 输出结论，循环结束 ✓
+  │    └─ 评分 < 95 → 进入修复步骤
+  │
+  ├─▶ 修复问题:
+  │    按评审报告中的问题清单（Critical > Major > Minor）逐项修复
+  │    修复后 round++，回到循环开始
+  │
+  └─▶ round ≥ 6 → 强制退出，输出当前结论 ⚠️
+```
+
+#### 每轮修复要求
+| 优先级 | 要求 |
+|--------|------|
+| Critical | 本轮必须全部修复，不可遗留 |
+| Major | 本轮修复 ≥ 80%，剩余标注下轮计划 |
+| Minor | 记录但不阻塞，按优先级排列 |
+
 ## 人工检查点 ★
 
 **必须人工确认**:
@@ -250,7 +288,7 @@ CREATE INDEX idx_{name} ON {table_name}({column_list});
 - [ ] 测试方案是否覆盖所有需求点
 - [ ] 技术方案是否可实施
 
-**确认后流转**: 并行进入 620/630/631/640
+**确认后流转**: 并行进入 620/630/640
 
 ## 610→下游衔接协议
 
@@ -260,7 +298,7 @@ CREATE INDEX idx_{name} ON {table_name}({column_list});
 |---------|---------|------|
 | 620-feature-java-uniweb-dev | `backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-*-tech-design.md` | 后端技术方案 |
 | 630-feature-admin-web-dev / 630-feature-guest-web-dev | `frontend/{项目名}-{用户角色}-web/issues/FEATURE-DESIGN-{YYMMDD}-*-tech-design.md` | Web前端方案 |
-| 631-feature-guest-uniapp-dev / 631-feature-admin-uniapp-dev | `frontend/{项目名}-{用户角色}-uniapp/issues/FEATURE-DESIGN-{YYMMDD}-*-tech-design.md` | 移动端方案 |
+| 630-feature-admin-uniapp-dev / 630-feature-guest-uniapp-dev | `frontend/{项目名}-{用户角色}-uniapp/issues/FEATURE-DESIGN-{YYMMDD}-*-tech-design.md` | 移动端方案 |
 | 640-feature-test-dev | `test/issues/FEATURE-DESIGN-{YYMMDD}-*-test-design.md` | 测试方案 |
 
 **并行约束**：四端天然独立，可同时由不同Agent开发。DDL需先执行，后端开发依赖DDL。

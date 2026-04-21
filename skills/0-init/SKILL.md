@@ -222,11 +222,11 @@ AskUserQuestion({
 
    **阶段6 - 功能开发阶段**（按需执行）
    - 600-feature-clarify → 610-feature-tech-design
-   - → 620/630/631/640并行开发 → 650-final-review → 660-update-doc
+   - → 620/630/640并行开发 → 650-final-review → 660-update-doc
 
    **阶段7 - Bug修复阶段**（按需执行）
    - 700-bugfix-analysis → 710-bugfix-tech-design
-   - → 720/730/731/740并行修复 → 750-final-review → 760-update-doc
+   - → 720/730/740并行修复 → 750-final-review → 760-update-doc
 
 ## 八阶段流转规则
 
