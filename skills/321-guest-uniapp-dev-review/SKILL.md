@@ -1,9 +1,9 @@
 ---
 name: 321-guest-uniapp-dev-review
-description: 移动端UniApp开发评审技能。当UniApp移动端代码开发完成后触发：(1)检查TDD测试驱动开发实践，(2)评审UniApp跨平台规范遵循，(3)检查多端兼容性H5/小程序/App，(4)评审Vue3组合式API代码质量，(5)检查移动端性能优化和体验，(6)检查组件复用和代码规范。请务必在用户提及UniApp代码评审、移动端评审、小程序代码检查、跨平台开发评审时使用此技能。适用于guest（消费者）角色。
+description: 移动端UniApp开发评审技能。当UniApp移动端代码开发完成后触发：(1)检查TDD测试驱动开发实践, (2)评审UniApp跨平台规范遵循, (3)检查多端兼容性H5/小程序/App, (4)评审Vue3组合式API代码质量, (5)检查移动端性能优化和体验, (6)检查组件复用和代码规范。请务必在用户提及UniApp代码评审、移动端评审、小程序代码检查、跨平台开发评审时使用此技能。适用于guest（消费者）角色。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "3.0.0"
+version: "1.0.0"
 ---
 
 # 移动端开发评审
@@ -89,6 +89,8 @@ version: "3.0.0"
 
 ### 2. 执行评审
 按维度检查，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。报告中需包含"覆盖率统计"扩展统计节。
+
+详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
 **维度**: TDD/UniApp/兼容性/代码质量/字段一致性/性能/安全性
 **评审对象**: frontend/{项目名}-guest-uniapp/

@@ -1,9 +1,9 @@
 ---
 name: 310-java-uniweb-dev
-description: Java SaaS后端开发技能。当需要基于UniWeb+Saas技术栈开发Java后端服务时触发：(1)实现Helper业务逻辑，(2)开发RESTful API接口，(3)集成DaoManager/FusionCache，(4)对接AIP/AIS/saas-finance，(5)指定模块开发或并行开发全部模块，(6)TDD Green实现单元测试。当用户提及Java后端开发、uw-base、SaaS开发、API开发、Helper实现、指定模块、并行开发时使用此技能。
+description: Java SaaS后端开发技能。当需要基于UniWeb+Saas技术栈开发Java后端服务时触发：(1)实现Helper业务逻辑, (2)开发RESTful API接口, (3)集成DaoManager/FusionCache, (4)对接AIP/AIS/saas-finance, (5)指定模块开发或并行开发全部模块, (6)TDD Green实现单元测试。当用户提及Java后端开发、uw-base、SaaS开发、API开发、Helper实现、指定模块、并行开发时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "3.0.0"
+version: "1.0.0"
 ---
 
 # Java SaaS开发
@@ -80,9 +80,9 @@ version: "3.0.0"
 
 > **默认模式**：未明确指定时，按"顺序全量"执行（安全）。
 
-## 220→310 衔接协议
+## 210→310 衔接协议
 
-220 设计完成后，310 从 README.md 提取以下信息作为开发输入：
+210 设计完成后，310 从 README.md 提取以下信息作为开发输入：
 
 | 提取项 | README.md 章节 | 用途 |
 |--------|---------------|------|

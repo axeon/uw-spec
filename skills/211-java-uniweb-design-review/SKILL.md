@@ -1,9 +1,9 @@
 ---
 name: 211-java-uniweb-design-review
-description: SaaS后端设计评审技能（TDD驱动，设计即代码模式）。当Java后端设计完成后触发：(1)评审README.md总体设计的完整性与合理性，(2)检查Controller/Helper/DTO代码质量与Javadoc完整性，(3)评审测试骨架质量（TDD Red阶段），(4)验证缓存策略与uw-cache API使用正确性，(5)验证权限注解与角色映射一致性，(6)检查编译通过且测试可运行。当用户提及设计评审、架构评审、代码评审时使用此技能。
+description: SaaS后端设计评审技能（TDD驱动, 设计即代码模式）。当Java后端设计完成后触发：(1)评审README.md总体设计的完整性与合理性, (2)检查Controller/Helper/DTO代码质量与Javadoc完整性, (3)评审测试骨架质量（TDD Red阶段）, (4)验证缓存策略与uw-cache API使用正确性, (5)验证权限注解与角色映射一致性, (6)检查编译通过且测试可运行。当用户提及设计评审、架构评审、代码评审时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "2.0.0"
+version: "1.0.0"
 ---
 
 # SaaS 后端设计评审

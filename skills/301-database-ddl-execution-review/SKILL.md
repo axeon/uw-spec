@@ -1,6 +1,6 @@
 ---
 name: 301-database-ddl-execution-review
-description: 数据库DDL执行评审技能。当DDL执行完成后触发：(1)验证表结构与设计文档一致，(2)检查索引是否正确创建，(3)验证通用字段完整性，(4)检查初始数据正确性，(5)评估执行结果和异常处理，(6)输出评审结论。请务必在用户提及DDL执行评审、建表验证、数据库验证、Schema验证时使用此技能。
+description: 数据库DDL执行评审技能。当DDL执行完成后触发：(1)验证表结构与设计文档一致, (2)检查索引是否正确创建, (3)验证通用字段完整性, (4)检查初始数据正确性, (5)评估执行结果和异常处理, (6)输出评审结论。请务必在用户提及DDL执行评审、建表验证、数据库验证、Schema验证时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
 version: "1.0.0"
@@ -93,6 +93,8 @@ version: "1.0.0"
 ### 2. 执行评审
 逐表验证，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。
 
+详细的评审检查清单见 [checklist.md](references/checklist.md)。
+
 **维度**: 表完整性/字段一致性/索引正确性/通用字段/初始数据
 **评审对象**: `database/` + 实际数据库
 **参与人员**: @system-architect @java-developer
@@ -113,5 +115,7 @@ version: "1.0.0"
 ## 参考
 
 - [评审报告模版](../0-init/references/review-report-template.md) - 通用评审报告格式
+
+详细的评审检查清单见 [checklist.md](references/checklist.md)。
 - [DDL执行技能](../300-database-ddl-execution/SKILL.md) - 被评审的上游技能
 - [数据库设计评审技能](../201-database-design-review/SKILL.md) - 设计评审参考

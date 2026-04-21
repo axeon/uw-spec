@@ -1,6 +1,6 @@
 ---
 name: 700-bugfix-analysis
-description: Bug分析技能。当需要修复Bug时首先触发：(1)分析Bug现象和复现步骤，(2)定位Bug根因和影响范围，(3)评估修复复杂度和风险，(4)生成Bug分析报告，(5)人工确认Bug根因。请务必在用户提及Bug分析、问题定位、根因分析、Bug修复准备时使用此技能。
+description: Bug分析技能。当需要修复Bug时首先触发：(1)分析Bug现象和复现步骤, (2)定位Bug根因和影响范围, (3)评估修复复杂度和风险, (4)生成Bug分析报告, (5)人工确认Bug根因。请务必在用户提及Bug分析、问题定位、根因分析、Bug修复准备时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
 version: "1.0.0"

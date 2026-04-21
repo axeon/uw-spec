@@ -1,9 +1,9 @@
 ---
 name: 300-database-ddl-execution
-description: 数据库DDL执行与验证技能。当用户需要执行数据库初始化或迁移时触发：(1)执行DDL建表语句，(2)执行增量迁移脚本，(3)验证表结构一致性，(4)执行初始数据脚本。支持从配置文件读取MySQL连接参数。
+description: 数据库DDL执行与验证技能。当用户需要执行数据库初始化或迁移时触发：(1)执行DDL建表语句, (2)执行增量迁移脚本, (3)验证表结构一致性, (4)执行初始数据脚本。支持从配置文件读取MySQL连接参数。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "1.1.0"
+version: "1.0.0"
 ---
 
 # 数据库DDL执行与验证

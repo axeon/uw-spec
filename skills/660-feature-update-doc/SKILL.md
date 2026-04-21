@@ -1,6 +1,6 @@
 ---
 name: 660-feature-update-doc
-description: 功能5xx文档更新技能。当功能最终验收通过后触发：(1)更新运维文档（部署手册、监控配置），(2)更新用户手册（操作指南、FAQ），(3)更新需求文档（功能清单、变更记录），(4)生成文档更新记录，(5)合并到5xx主文档。请务必在用户提及更新文档、文档同步、维护文档时使用此技能。
+description: 功能5xx文档更新技能。当功能最终验收通过后触发：(1)更新运维文档（部署手册、监控配置）, (2)更新用户手册（操作指南、FAQ）, (3)更新需求文档（功能清单、变更记录）, (4)生成文档更新记录, (5)合并到5xx主文档。请务必在用户提及更新文档、文档同步、维护文档时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
 version: "1.0.0"
@@ -33,7 +33,7 @@ version: "1.0.0"
 
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 验收报告 | `issue/reviews/REVIEW-FEATURE-{YYMMDD}-{简述}-{HHMM}.md` | 650阶段输出 |
+| 验收报告 | `issue/reviews/REVIEW-FEATURE-{YYMMDDHHMM}.md` | 650阶段输出 |
 | 功能需求 | `issue/features/FEATURE-{YYMMDD}-{简述}.md` | 600阶段输出 |
 | 技术方案 | `backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | 610阶段输出 |
 | 现有5xx文档 | `manual/` | 现有交付文档 |

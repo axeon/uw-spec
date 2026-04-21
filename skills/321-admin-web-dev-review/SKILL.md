@@ -1,9 +1,9 @@
 ---
 name: 321-admin-web-dev-review
-description: Web前端Vue3开发评审技能。当Vue3前端代码开发完成后触发：(1)检查TDD测试驱动开发实践，(2)评审Vue3组合式API规范，(3)检查Pinia状态管理设计，(4)评审组件代码质量和复用性，(5)检查前端性能优化和懒加载，(6)检查XSS等安全漏洞防护。请务必在用户提及Vue3代码评审、前端代码检查、Web开发评审、Element Plus评审时使用此技能。适用于root/ops/saas/mch角色。
+description: Web前端Vue3开发评审技能。当Vue3前端代码开发完成后触发：(1)检查TDD测试驱动开发实践, (2)评审Vue3组合式API规范, (3)检查Pinia状态管理设计, (4)评审组件代码质量和复用性, (5)检查前端性能优化和懒加载, (6)检查XSS等安全漏洞防护。请务必在用户提及Vue3代码评审、前端代码检查、Web开发评审、Element Plus评审时使用此技能。适用于root/ops/saas/mch角色。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "3.0.0"
+version: "1.0.0"
 ---
 
 # Web前端开发评审
@@ -97,6 +97,8 @@ version: "3.0.0"
 
 ### 2. 执行评审
 按维度检查，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。报告中需包含"覆盖率统计"扩展统计节。
+
+详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
 **维度**: TDD/Vue3/状态管理/代码质量/性能/安全性
 **评审对象**: frontend/{项目名}-admin-web/

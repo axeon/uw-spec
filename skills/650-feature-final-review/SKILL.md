@@ -1,9 +1,9 @@
 ---
 name: 650-feature-final-review
-description: 功能最终验收评审技能。当所有开发阶段完成后触发：(1)执行针对性自动化测试，(2)执行核心流程回归测试，(3)进行代码安全扫描和性能扫描，(4)生成完整验收报告，(5)人工确认上线决策。请务必在用户提及功能验收、最终评审、上线确认、功能完成时使用此技能。
+description: 功能最终验收评审技能。当所有开发阶段完成后触发：(1)执行针对性自动化测试, (2)执行核心流程回归测试, (3)进行代码安全扫描和性能扫描, (4)生成完整验收报告, (5)人工确认上线决策。请务必在用户提及功能验收、最终评审、上线确认、功能完成时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "3.0.0"
+version: "1.0.0"
 ---
 
 # 功能最终验收评审
@@ -45,12 +45,14 @@ version: "3.0.0"
 
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 验收报告 | `issue/reviews/REVIEW-FEATURE-{YYMMDD}-{简述}-{HHMM}.md` | 最终验收报告 |
-| 测试报告 | `test/reports/summary/final-{YYYYMMDD-HHMM}.md` | 测试执行报告 |
+| 验收报告 | `issue/reviews/REVIEW-FEATURE-{YYMMDDHHMM}.md` | 最终验收报告 |
+| 测试报告 | `test/reports/summary/final-YYMMDDHHMM.md` | 测试执行报告 |
 | 扫描报告 | `issue/` | 安全扫描报告 |
 | 风险评估 | `issue/reviews/` | 风险评估报告 |
 
 ## 执行流程
+
+详细的验收检查清单见 [checklist.md](references/checklist.md)。
 
 ### 1. 针对性自动化测试
 
@@ -103,7 +105,7 @@ npx playwright test --grep "FEATURE-{简述}"
 
 ### 5. 生成验收报告
 
-**文件位置**: `issue/reviews/REVIEW-FEATURE-{YYMMDD}-{简述}-{HHMM}.md`
+**文件位置**: `issue/reviews/REVIEW-FEATURE-{YYMMDDHHMM}.md`
 
 **报告内容**:
 ```markdown
@@ -177,9 +179,9 @@ npx playwright test --grep "FEATURE-{简述}"
 
 ## 输出要求
 
-**验收报告**: `issue/reviews/REVIEW-FEATURE-{YYMMDD}-{简述}-{HHMM}.md`
+**验收报告**: `issue/reviews/REVIEW-FEATURE-{YYMMDDHHMM}.md`
 
-**测试报告**: `test/reports/summary/final-{YYYYMMDD-HHMM}.md`
+**测试报告**: `test/reports/summary/final-YYMMDDHHMM.md`
 
 **安全报告**: `issue/`
 

@@ -1,9 +1,9 @@
 ---
 name: 330-test-case-dev
-description: 测试脚本开发技能。当需要开发自动化测试脚本时触发：(1)编写API接口测试脚本（Playwright request），(2)编写E2E界面测试脚本（Playwright browser），(3)编写跨终端协作测试脚本（多BrowserContext），(4)编写JMeter压测脚本（.jmx），(5)编写安全测试脚本（ZAP+Trivy+Playwright），(6)编写执行bash脚本（bin/），(7)指定类型开发或并行开发全部类型。当用户提及测试脚本开发、Playwright脚本、JMeter脚本、自动化测试开发、指定类型、并行开发时使用此技能。
+description: 测试脚本开发技能。当需要开发自动化测试脚本时触发：(1)编写API接口测试脚本（Playwright request）, (2)编写E2E界面测试脚本（Playwright browser）, (3)编写跨终端协作测试脚本（多BrowserContext）, (4)编写JMeter压测脚本（.jmx）, (5)编写安全测试脚本（ZAP+Trivy+Playwright）, (6)编写执行bash脚本（bin/）, (7)指定类型开发或并行开发全部类型。当用户提及测试脚本开发、Playwright脚本、JMeter脚本、自动化测试开发、指定类型、并行开发时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "3.0.0"
+version: "1.0.0"
 ---
 
 # 测试脚本开发

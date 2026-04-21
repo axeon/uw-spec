@@ -1,9 +1,9 @@
 ---
 name: 701-bugfix-review
-description: Bug修复评审技能。当Bug修复代码开发完成后触发：(1)检查根因理解和分析准确性，(2)评审修复方案正确性和彻底性，(3)验证代码质量和规范遵循，(4)检查单元测试和回归测试覆盖，(5)评估修复影响范围和兼容性，(6)检查修复文档完整性。请务必在用户提及Bug修复评审、代码修复检查、缺陷修复评审、Bugfix Review时使用此技能。
+description: Bug修复评审技能。当Bug修复代码开发完成后触发：(1)检查根因理解和分析准确性, (2)评审修复方案正确性和彻底性, (3)验证代码质量和规范遵循, (4)检查单元测试和回归测试覆盖, (5)评估修复影响范围和兼容性, (6)检查修复文档完整性。请务必在用户提及Bug修复评审、代码修复检查、缺陷修复评审、Bugfix Review时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "3.0.0"
+version: "1.0.0"
 ---
 
 # Bug修复评审
@@ -38,7 +38,7 @@ version: "3.0.0"
 ## 输出
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| Bug修复评审报告 | `issue/reviews/REVIEW-BUGFIX-{YYMMDD}-{简述}-{HHMM}.md` | 评审结论和问题清单 |
+| Bug修复评审报告 | `issue/reviews/REVIEW-BUGFIX-{YYMMDDHHMM}.md` | 评审结论和问题清单 |
 
 ## 流转关系
 ```
@@ -85,13 +85,15 @@ version: "3.0.0"
 ### 2. 执行评审
 按维度检查，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。
 
+详细的评审检查清单见 [checklist.md](references/checklist.md)。
+
 **维度**: 根因理解/修复正确性/代码质量/测试覆盖/影响范围
 **评审对象**: Bug修复分支
 **参与人员**: @lead @developer @test-engineer
 **流转方向**: 通过 -> 合并代码并部署上线；不通过 -> 返回重新修复
 
 ## 输出要求
-**报告位置**: `issue/reviews/REVIEW-BUGFIX-{YYMMDD}-{简述}-{HHMM}.md`
+**报告位置**: `issue/reviews/REVIEW-BUGFIX-{YYMMDDHHMM}.md`
 
 **必须包含**:
 - 评审信息（日期、人员、对象、Bug编号）

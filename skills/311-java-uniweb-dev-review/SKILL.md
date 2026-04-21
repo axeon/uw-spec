@@ -1,9 +1,9 @@
 ---
 name: 311-java-uniweb-dev-review
-description: Java SaaS开发评审技能。当Java后端代码开发完成后触发：(1)检查TDD测试驱动开发实践，(2)评审uw-base架构规范遵循情况，(3)检查多租户数据隔离实现，(4)评审代码质量和设计模式，(5)检查安全漏洞和OWASP风险，(6)检查单元测试覆盖率和质量。请务必在用户提及Java代码评审、后端评审、TDD检查、代码质量评审、安全漏洞检查时使用此技能。
+description: Java SaaS开发评审技能。当Java后端代码开发完成后触发：(1)检查TDD测试驱动开发实践, (2)评审uw-base架构规范遵循情况, (3)检查多租户数据隔离实现, (4)评审代码质量和设计模式, (5)检查安全漏洞和OWASP风险, (6)检查单元测试覆盖率和质量。请务必在用户提及Java代码评审、后端评审、TDD检查、代码质量评审、安全漏洞检查时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "3.0.0"
+version: "1.0.0"
 ---
 
 # Java SaaS开发评审
@@ -93,6 +93,8 @@ version: "3.0.0"
 
 ### 2. 执行评审
 按维度检查，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。报告中需包含"覆盖率统计"扩展统计节。
+
+详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
 **维度**: TDD/uw-base/代码质量/安全性
 **评审对象**: backend/{项目名}-app/

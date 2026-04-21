@@ -1,6 +1,6 @@
 ---
 name: 201-database-design-review
-description: 数据库设计评审技能。当数据库设计文档完成后触发：(1)检查表结构合理性和规范性，(2)评审索引设计和查询优化，(3)验证数据一致性和完整性保障，(4)检查数据库性能和扩展性，(5)检查数据安全和敏感信息保护，(6)输出评审结论和改进建议。请务必在用户提及数据库评审、表结构评审、索引评审、SQL评审、数据模型评审时使用此技能。
+description: 数据库设计评审技能。当数据库设计文档完成后触发：(1)检查表结构合理性和规范性, (2)评审索引设计和查询优化, (3)验证数据一致性和完整性保障, (4)检查数据库性能和扩展性, (5)检查数据安全和敏感信息保护, (6)输出评审结论和改进建议。请务必在用户提及数据库评审、表结构评审、索引评审、SQL评审、数据模型评审时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
 version: "1.0.0"
@@ -53,18 +53,7 @@ version: "1.0.0"
 | 性能优化 | 分区策略、归档方案、查询优化 |
 | 安全性 | 敏感数据加密、权限控制 |
 
-**命名规范检查清单**（对照 [命名规范](../200-database-design/references/naming-convention.md)）：
-
-| # | 检查项 | 标准 | 严重程度 |
-|---|--------|------|---------|
-| 1 | 表名格式 | `{模块简称}_{实体简称}`，全小写，恰好2段 | Critical |
-| 2 | 字段名格式 | `snake_case`，全小写 | Major |
-| 3 | 外键字段命名 | `{关联表简称}_{关联实体简称}_id` | Major |
-| 4 | 索引命名 | `idx_{表名缩写}_{字段名}` / `uk_{表名缩写}_{字段名}` | Major |
-| 5 | 通用字段完整 | id/saas_id/state/create_date/modify_date 齐全 | Major |
-| 6 | 金额字段 | BIGINT存储分，注释注明"(分)" | Minor |
-| 7 | 字段注释 | 每个字段有COMMENT，枚举注明取值 | Minor |
-| 8 | 保留字冲突 | 表名/字段名未使用数据库保留字 | Critical |
+详细的各维度检查项见 [checklist.md](references/checklist.md)。命名规范对照 [命名规范](../200-database-design/references/naming-convention.md)。
 
 ## 量化通过标准
 
@@ -94,6 +83,8 @@ version: "1.0.0"
 
 ### 2. 执行评审
 按维度检查，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。
+
+详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
 **维度**: 表结构/索引/关联关系/性能/安全
 **评审对象**: database/

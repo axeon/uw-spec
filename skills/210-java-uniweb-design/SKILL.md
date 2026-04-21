@@ -1,9 +1,9 @@
 ---
 name: 210-java-uniweb-design
-description: SaaS后端技术设计（TDD驱动，设计即代码）。当需要基于PRD和数据库设计进行后端技术设计时触发：(1)确认模块划分与定制API，(2)编写项目README.md总体设计（含测试策略），(3)裁剪DTO和Controller，(4)新建Helper方法签名与缓存定义，(5)编写Helper单元测试骨架（TDD Red阶段），(6)确保编译通过且测试可运行。当用户提及后端设计、接口设计、技术设计、生成脚手架时使用此技能。
+description: SaaS后端技术设计（TDD驱动, 设计即代码）。当需要基于PRD和数据库设计进行后端技术设计时触发：(1)确认模块划分与定制API, (2)编写项目README.md总体设计（含测试策略）, (3)裁剪DTO和Controller, (4)新建Helper方法签名与缓存定义, (5)编写Helper单元测试骨架（TDD Red阶段）, (6)确保编译通过且测试可运行。当用户提及后端设计、接口设计、技术设计、生成脚手架时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "3.0.0"
+version: "1.0.0"
 ---
 
 # SaaS 后端技术设计（TDD 驱动，设计即代码）
@@ -147,10 +147,22 @@ version: "3.0.0"
 
 | 裁剪类型 | 操作 |
 |---------|------|
-| 搜索条件 | 在 QueryParam DTO 中删除不需要的 `@QueryMeta` 搜索字段 |
-| 排序字段 | 从 ALLOWED_SORT_PROPERTY 中移除不需要的排序字段 |
-| 校验注解 | 按设计补充 `@NotNull`、`@Size` 等约束 |
-| Swagger注解 | 补充 `@Schema(description=...)` 说明 |
+| 搜索字段 | 删除不需要的 `@QueryMeta` 字段（含注释+注解+声明+getter+setter+链式调用，共6部分） |
+| 排序字段 | **不裁剪** ALLOWED_SORT_PROPERTY，保留无害，裁剪风险大于收益 |
+| 校验注解 | 按设计补充 `@NotNull`、`@Size` 等约束（开发阶段补充即可） |
+
+通用删除字段（所有 DTO 一律删除）：`stateGte`、`stateLte`、`modifyDateRange`（无业务场景）。
+
+**裁剪方法（重要）**：
+
+| 方法 | 可靠性 | 说明 |
+|------|--------|------|
+| Edit 工具逐块删除 | 最高 | 用 old_string 精确匹配完整代码块，每次删除后确认结构完整 |
+| Python 行号定位脚本 | 中等 | 从 `/**` 追踪到 `}` 结束，用花括号计数定位方法边界 |
+| Python re.sub 多行正则 | **禁止** | 正则只删签名不删方法体，必留孤儿代码导致编译失败 |
+| sed 批量删除 | **禁止** | 多行块边界匹配不可靠 |
+
+**裁剪后必须**：`mvn compile` 验证。文件损坏时用代码生成器重新生成 dto 再裁剪，不手动修补。
 
 #### Step 2: 裁剪 Controller
 
@@ -291,6 +303,44 @@ void testGet{Entity}_NotFound_ReturnWarn() { fail("TDD Red"); }
 - [ ] `mvn test` 可运行（全红为预期）
 - [ ] Swagger UI 可展示所有接口
 - [ ] 前端可基于 Swagger 开始联调
+
+## 踩坑记录
+
+> 以下为实际设计过程中遇到的问题及正确做法，防止重复犯错。
+
+### DTO 裁剪
+
+| 踩坑 | 正确做法 |
+|------|---------|
+| Python `re.sub` 多行正则删 Java 代码块 — 只删签名不删方法体，留下孤儿 `return this;`、`}` 导致编译失败 | **禁止用正则删代码块**。用 Edit 工具逐块删，或用 Python 行号定位（从 `/**` 追踪到 `}` 结束 + 花括号计数定位方法边界） |
+| sed 批量删多行块 — 字段名出现在注释/注解/方法名等多上下文，边界匹配不可靠 | **禁止用 sed 处理结构化代码** |
+| DTO 文件被批量损坏后手动修补 — 漏改导致反复编译失败 | **直接用代码生成器重新生成 dto 再裁剪**：`bash scripts/gencode.sh {项目根目录} "" "dto" "{项目名}-app"` |
+| 尝试裁剪 ALLOWED_SORT_PROPERTY 中的排序项 — HashMap 语法易破坏 | **不裁剪排序字段**，保留无害，风险大于收益 |
+| 每个字段漏删 getter/setter/chain 中的某一部分 | 字段 = 注释 + @QueryMeta + @Schema + private 声明 + getter + setter + 链式调用，**必须 6 部分完整删除** |
+| 16 个文件批量操作后不编译，问题叠加 | **每批操作后立即 `mvn compile`** 验证 |
+
+### Controller 创建
+
+| 踩坑 | 正确做法 |
+|------|---------|
+| mch 控制器方法参数数量与 Helper 方法签名不匹配 — 编译通过但运行时参数缺失 | **创建控制器前先读 Helper 方法签名**，确保参数数量和类型完全对齐（如 `toggleVote(Long guestId, Long targetId, int targetType)` 对应控制器也要传 3 个参数） |
+| 自动生成了未使用的 import（如 `AuthType`） | 创建后检查并清理未使用的 import |
+| package-info.java 的 import 路径错误：`uw.auth.service.anno.MscPermDeclare` | 正确路径：`uw.auth.service.annotation.MscPermDeclare`，UserType 在 `uw.auth.service.constant.UserType` |
+
+### README.md 编写
+
+| 踩坑 | 正确做法 |
+|------|---------|
+| 插入新章节后章节编号重复（如两个 "## 5."） | **插入章节后全局更新所有后续章节编号**，包括 `##` 和 `###` 级别 |
+| 首次评审缺少 PRD 映射表、性能预算、状态机等章节被扣大分 | **首次编写即覆盖所有"必须"章节**：PRD 功能点映射、角色权限 R/W 矩阵、状态机、性能预算、缓存策略、测试策略 |
+
+### 代码生成器产出
+
+| 踩坑 | 正确做法 |
+|------|---------|
+| 生成代码 import 了 `tripmax.dto/entity` 而非实际包名 | gencode 后**全局搜索替换错误包名**：`find . -name "*.java" -exec sed -i '' 's/tripmax\.dto/zihu.dto/g' {} +` |
+| 生成 Controller import 了 `ChatSession`/`ChatSessionQueryParam` | gencode 后检查并**删除错误 import 行** |
+| Helper 中 `AuthQueryParam` import 指向了不存在的 `zihu.dto.AuthQueryParam` | 正确 import：`uw.common.app.dto.AuthQueryParam` |
 
 ## 参考
 

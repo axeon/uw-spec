@@ -1,9 +1,9 @@
 ---
 name: 210-java-uniweb-gencode
-description: Java代码生成与增量更新。当需要为Java后端项目生成或更新代码时触发：(1)首次生成entity/dto/controller，(2)库表变动后增量更新代码并生成变更报告，(3)备份旧文件供后续裁剪恢复。
+description: Java代码生成与增量更新。当需要为Java后端项目生成或更新代码时触发：(1)首次生成entity/dto/controller, (2)库表变动后增量更新代码并生成变更报告, (3)备份旧文件供后续裁剪恢复。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "2.1.0"
+version: "1.0.0"
 ---
 
 # Java代码生成

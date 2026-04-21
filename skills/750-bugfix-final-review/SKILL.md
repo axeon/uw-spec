@@ -1,9 +1,9 @@
 ---
 name: 750-bugfix-final-review
-description: Bug修复最终验收技能。当所有Bug修复阶段完成后触发：(1)执行回归测试验证Bug已修复，(2)执行核心流程回归测试确保无新Bug，(3)生成修复验收报告，(4)人工确认修复完成。请务必在用户提及Bug验收、修复确认、Bug完成时使用此技能。
+description: Bug修复最终验收技能。当所有Bug修复阶段完成后触发：(1)执行回归测试验证Bug已修复, (2)执行核心流程回归测试确保无新Bug, (3)生成修复验收报告, (4)人工确认修复完成。请务必在用户提及Bug验收、修复确认、Bug完成时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "3.0.0"
+version: "1.0.0"
 ---
 
 # Bug修复最终验收
@@ -41,10 +41,12 @@ version: "3.0.0"
 
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 修复验收报告 | `issue/reviews/REVIEW-BUGFIX-{YYMMDD}-{简述}-{HHMM}.md` | 最终验收报告 |
-| 测试报告 | `test/reports/summary/final-{YYYYMMDD-HHMM}.md` | 测试执行报告 |
+| 修复验收报告 | `issue/reviews/REVIEW-BUGFIX-{YYMMDDHHMM}.md` | 最终验收报告 |
+| 测试报告 | `test/reports/summary/final-YYMMDDHHMM.md` | 测试执行报告 |
 
 ## 执行流程
+
+详细的验收检查清单见 [checklist.md](references/checklist.md)。
 
 ### 1. Bug修复验证
 
@@ -72,7 +74,7 @@ version: "3.0.0"
 
 ### 3. 生成修复验收报告
 
-**文件位置**: `issue/reviews/REVIEW-BUGFIX-{YYMMDD}-{简述}-{HHMM}.md`
+**文件位置**: `issue/reviews/REVIEW-BUGFIX-{YYMMDDHHMM}.md`
 
 **报告内容**:
 ```markdown
@@ -135,9 +137,9 @@ version: "3.0.0"
 
 ## 输出要求
 
-**修复验收报告**: `issue/reviews/REVIEW-BUGFIX-{YYMMDD}-{简述}-{HHMM}.md`
+**修复验收报告**: `issue/reviews/REVIEW-BUGFIX-{YYMMDDHHMM}.md`
 
-**测试报告**: `test/reports/summary/final-{YYYYMMDD-HHMM}.md`
+**测试报告**: `test/reports/summary/final-YYMMDDHHMM.md`
 
 ## 流转关系
 
@@ -153,6 +155,27 @@ Bug修复验证 → 回归测试 → 生成报告
 ├─ 通过 → 进入 760-bugfix-update-doc
 └─ 不通过 → 返回对应修复阶段
 ```
+
+## 量化通过标准
+
+### 通过（≥95分）
+| 检查项 | 标准 | 分值 |
+|--------|------|------|
+| Bug修复验证 | Bug场景100%修复 | 30分 |
+| 回归测试通过率 | 核心流程100%通过 | 25分 |
+| 无新问题 | 未引入新的缺陷 | 20分 |
+| 人工确认 | 产品经理确认修复完成 | 15分 |
+| 文档更新 | 修复文档记录完整 | 10分 |
+
+### 有条件通过（85-94分）
+- Bug已修复但边界场景有小问题
+- 回归测试有≤2个非核心用例失败
+- 无新Critical/Major问题
+
+### 不通过（<85分）
+- Bug未完全修复
+- 回归测试核心流程失败
+- 引入了新的Critical问题
 
 ## 通过标准
 

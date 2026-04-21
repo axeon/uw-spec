@@ -1,6 +1,6 @@
 ---
 name: 210-java-uniweb-init
-description: Java后端项目初始化技能。当需要创建Java后端API项目时触发：(1)从uw-app-template.zip模板解压项目结构，(2)全文替换模板关键字为实际项目名，(3)验证项目结构完整性。请务必在用户提及Java项目初始化、后端项目创建、Spring Boot项目、API项目搭建时使用此技能。
+description: Java后端项目初始化技能。当需要创建Java后端API项目时触发：(1)从uw-app-template.zip模板解压项目结构, (2)全文替换模板关键字为实际项目名, (3)验证项目结构完整性。请务必在用户提及Java项目初始化、后端项目创建、Spring Boot项目、API项目搭建时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
 version: "1.0.0"
@@ -10,7 +10,7 @@ version: "1.0.0"
 
 ## 描述
 
-从 `asserts/` 目录下的模板 zip 解压创建后端API项目，全文替换模板关键字为实际项目名，生成可用的项目脚手架。
+从 `assets/` 目录下的模板 zip 解压创建后端API项目，全文替换模板关键字为实际项目名，生成可用的项目脚手架。
 
 ## 使用场景
 
@@ -132,5 +132,5 @@ bash scripts/init.sh /Users/user/project skip
 ## 参考
 
 - [初始化脚本](scripts/init.sh) - 自动化初始化脚本
-- [SaaS模板](asserts/saas-app-template.zip) - SaaS后端项目模板
-- [UniWeb模板](asserts/uw-app-template.zip) - UniWeb后端项目模板
+- [SaaS模板](assets/saas-app-template.zip) - SaaS后端项目模板
+- [UniWeb模板](assets/uw-app-template.zip) - UniWeb后端项目模板

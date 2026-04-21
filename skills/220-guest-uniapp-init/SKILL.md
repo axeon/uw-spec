@@ -1,16 +1,16 @@
 ---
 name: 220-guest-uniapp-init
-description: 移动端UniApp项目初始化技能。当需要创建UniApp跨平台项目时触发：(1)从uw-uniapp-template.zip模板解压项目结构，(2)全文替换模板关键字为实际项目名，(3)验证项目结构完整性。请务必在用户提及UniApp项目初始化、小程序项目创建、移动端项目搭建、跨平台项目初始化时使用此技能。适用于guest（消费者）角色。
+description: 移动端UniApp项目初始化技能。当需要创建UniApp跨平台项目时触发：(1)从uw-uniapp-template.zip模板解压项目结构, (2)全文替换模板关键字为实际项目名, (3)验证项目结构完整性。请务必在用户提及UniApp项目初始化、小程序项目创建、移动端项目搭建、跨平台项目初始化时使用此技能。适用于guest（消费者）角色。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "2.0.0"
+version: "1.0.0"
 ---
 
 # 移动端项目初始化
 
 ## 描述
 
-从 `asserts/` 目录下的模板 zip 解压创建移动端 UniApp 项目，全文替换模板关键字为实际项目名，生成可用的项目脚手架。
+从 `assets/` 目录下的模板 zip 解压创建移动端 UniApp 项目，全文替换模板关键字为实际项目名，生成可用的项目脚手架。
 
 ## 使用场景
 
@@ -134,5 +134,5 @@ bash scripts/init.sh /Users/user/project skip guest
 ## 参考
 
 - [初始化脚本](scripts/init.sh) - 自动化初始化脚本
-- [SaaS模板](asserts/saas-uniapp-template.zip) - SaaS UniApp模板
-- [UniWeb模板](asserts/uw-uniapp-template.zip) - UniWeb UniApp模板
+- [SaaS模板](assets/saas-uniapp-template.zip) - SaaS UniApp模板
+- [UniWeb模板](assets/uw-uniapp-template.zip) - UniWeb UniApp模板

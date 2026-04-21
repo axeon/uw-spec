@@ -1,9 +1,9 @@
 ---
 name: 331-test-case-dev-review
-description: 测试脚本开发评审技能。当测试脚本开发完成后触发：(1)评审API测试脚本质量和断言准确性，(2)评审E2E测试脚本和Page Object规范性，(3)评审跨终端测试脚本和多BrowserContext管理，(4)评审JMeter压测脚本配置合理性，(5)评审安全扫描脚本覆盖完整性，(6)评审bin/执行脚本可用性。当用户提及测试脚本评审、Playwright评审、JMeter评审、自动化测试评审时使用此技能。
+description: 测试脚本开发评审技能。当测试脚本开发完成后触发：(1)评审API测试脚本质量和断言准确性, (2)评审E2E测试脚本和Page Object规范性, (3)评审跨终端测试脚本和多BrowserContext管理, (4)评审JMeter压测脚本配置合理性, (5)评审安全扫描脚本覆盖完整性, (6)评审bin/执行脚本可用性。当用户提及测试脚本评审、Playwright评审、JMeter评审、自动化测试评审时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "3.0.0"
+version: "1.0.0"
 ---
 
 # 测试脚本开发评审

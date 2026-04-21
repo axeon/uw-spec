@@ -1,9 +1,9 @@
 ---
 name: 601-feature-review
-description: 功能添加评审技能。当功能添加代码开发完成后触发：(1)检查功能需求符合度和完整性，(2)评审代码质量和设计模式，(3)验证单元测试和集成测试覆盖，(4)检查功能影响范围和兼容性，(5)检查安全漏洞和风险，(6)评估性能影响和优化建议。请务必在用户提及功能评审、新功能检查、Feature Review、代码功能评审时使用此技能。
+description: 功能添加评审技能。当功能添加代码开发完成后触发：(1)检查功能需求符合度和完整性, (2)评审代码质量和设计模式, (3)验证单元测试和集成测试覆盖, (4)检查功能影响范围和兼容性, (5)检查安全漏洞和风险, (6)评估性能影响和优化建议。请务必在用户提及功能评审、新功能检查、Feature Review、代码功能评审时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "3.0.0"
+version: "1.0.0"
 ---
 
 # 功能添加评审
@@ -38,7 +38,7 @@ version: "3.0.0"
 ## 输出
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 功能添加评审报告 | `issue/reviews/REVIEW-FEATURE-{YYMMDD}-{简述}-{HHMM}.md` | 评审结论和问题清单 |
+| 功能添加评审报告 | `issue/reviews/REVIEW-FEATURE-{YYMMDDHHMM}.md` | 评审结论和问题清单 |
 
 ## 流转关系
 ```
@@ -86,13 +86,15 @@ version: "3.0.0"
 ### 2. 执行评审
 按维度检查，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。
 
+详细的评审检查清单见 [checklist.md](references/checklist.md)。
+
 **维度**: 需求符合度/代码质量/测试覆盖/影响范围/安全性
 **评审对象**: 功能分支
 **参与人员**: @lead @developer @test-engineer
 **流转方向**: 通过 -> 合并代码并部署上线；不通过 -> 返回功能开发修改
 
 ## 输出要求
-**报告位置**: `issue/reviews/REVIEW-FEATURE-{YYMMDD}-{简述}-{HHMM}.md`
+**报告位置**: `issue/reviews/REVIEW-FEATURE-{YYMMDDHHMM}.md`
 
 **必须包含**:
 - 评审信息（日期、人员、对象、功能编号）

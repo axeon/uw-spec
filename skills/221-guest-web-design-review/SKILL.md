@@ -1,9 +1,9 @@
 ---
 name: 221-guest-web-design-review
-description: Web端设计与原型评审技能。当Web端设计与原型完成后触发：(1)评审设计规范完整性，(2)按前端类型Admin/Guest/Mch分别评审原型，(3)检查需求符合度和完整性，(4)评估用户体验和交互流畅性，(5)确认技术可行性和实现难度，(6)输出评审结论和改进建议。请务必在用户提及Web原型评审、Vue原型检查、前端设计评审、Web设计评审时使用此技能。适用于guest（消费者）角色。
+description: Web端设计与原型评审技能。当Web端设计与原型完成后触发：(1)评审设计规范完整性, (2)按前端类型Admin/Guest/Mch分别评审原型, (3)检查需求符合度和完整性, (4)评估用户体验和交互流畅性, (5)确认技术可行性和实现难度, (6)输出评审结论和改进建议。请务必在用户提及Web原型评审、Vue原型检查、前端设计评审、Web设计评审时使用此技能。适用于guest（消费者）角色。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "3.0.0"
+version: "1.0.0"
 ---
 
 # Web端原型评审
@@ -115,6 +115,8 @@ version: "3.0.0"
 
 ### 2. 执行评审
 按维度检查，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。
+
+详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
 **维度**: 需求符合度/用户体验/视觉设计/技术可行性/一致性
 **评审对象**: frontend/{项目名}-guest-web/

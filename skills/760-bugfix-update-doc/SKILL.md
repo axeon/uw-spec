@@ -1,6 +1,6 @@
 ---
 name: 760-bugfix-update-doc
-description: Bug修复5xx文档更新技能。当Bug修复验收通过后触发：(1)更新运维文档（故障处理手册），(2)更新用户手册（FAQ），(3)更新需求文档（已知问题清单），(4)生成文档更新记录，(5)合并到5xx主文档。请务必在用户提及Bug文档更新、修复文档同步时使用此技能。
+description: Bug修复5xx文档更新技能。当Bug修复验收通过后触发：(1)更新运维文档（故障处理手册）, (2)更新用户手册（FAQ）, (3)更新需求文档（已知问题清单）, (4)生成文档更新记录, (5)合并到5xx主文档。请务必在用户提及Bug文档更新、修复文档同步时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
 version: "1.0.0"
@@ -32,7 +32,7 @@ version: "1.0.0"
 
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 修复验收报告 | `issue/reviews/REVIEW-BUGFIX-{YYMMDD}-{简述}-{HHMM}.md` | 750阶段输出 |
+| 修复验收报告 | `issue/reviews/REVIEW-BUGFIX-{YYMMDDHHMM}.md` | 750阶段输出 |
 | Bug分析报告 | `issue/bugs/BUGFIX-{YYMMDD}-{简述}.md` | 700阶段输出 |
 | 修复方案 | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md` | 710阶段输出 |
 | 现有5xx文档 | `manual/` | 现有交付文档 |

@@ -1,9 +1,9 @@
 ---
 name: 731-bugfix-guest-uniapp
-description: Bug UniApp移动端修复技能。当修复方案设计完成后触发：(1)基于修复方案修改UniApp移动端代码，(2)编写回归测试，(3)调用321-guest-uniapp-dev-review自动评审，(4)自动修复代码问题，(5)合并代码到主分支并更新CHANGELOG。请务必在用户提及Bug移动端修复、UniApp修复、小程序修复时使用此技能。适用于guest（消费者）角色。
+description: Bug UniApp移动端修复技能。当修复方案设计完成后触发：(1)基于修复方案修改UniApp移动端代码, (2)编写回归测试, (3)调用321-guest-uniapp-dev-review自动评审, (4)自动修复代码问题, (5)合并代码到主分支并更新CHANGELOG。请务必在用户提及Bug移动端修复、UniApp修复、小程序修复时使用此技能。适用于guest（消费者）角色。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "2.0.0"
+version: "1.0.0"
 ---
 
 # Bug UniApp移动端修复

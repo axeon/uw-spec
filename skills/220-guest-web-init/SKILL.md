@@ -1,16 +1,16 @@
 ---
 name: 220-guest-web-init
-description: Web端Vue3项目初始化技能。当需要创建Web前端项目时触发：(1)从模板zip解压项目结构，(2)全文替换模板关键字为实际项目名，(3)验证项目结构完整性。请务必在用户提及Vue3项目初始化、前端项目创建、Web项目搭建、Vue脚手架时使用此技能。适用于guest（消费者）角色。
+description: Web端Vue3项目初始化技能。当需要创建Web前端项目时触发：(1)从模板zip解压项目结构, (2)全文替换模板关键字为实际项目名, (3)验证项目结构完整性。请务必在用户提及Vue3项目初始化、前端项目创建、Web项目搭建、Vue脚手架时使用此技能。适用于guest（消费者）角色。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "2.0.0"
+version: "1.0.0"
 ---
 
 # Web端项目初始化
 
 ## 描述
 
-从 `asserts/` 目录下的模板 zip 解压创建 Web 前端项目，全文替换模板关键字为实际项目名，生成可用的项目脚手架。
+从 `assets/` 目录下的模板 zip 解压创建 Web 前端项目，全文替换模板关键字为实际项目名，生成可用的项目脚手架。
 
 ## 使用场景
 
@@ -134,5 +134,5 @@ bash scripts/init.sh /Users/user/project skip mch
 ## 参考
 
 - [初始化脚本](scripts/init.sh) - 自动化初始化脚本
-- [SaaS模板](asserts/saas-web-template.zip) - SaaS Web前端模板
-- [UniWeb模板](asserts/uw-web-template.zip) - UniWeb Web前端模板
+- [SaaS模板](assets/saas-web-template.zip) - SaaS Web前端模板
+- [UniWeb模板](assets/uw-web-template.zip) - UniWeb Web前端模板

@@ -1,9 +1,9 @@
 ---
 name: 220-guest-uniapp-design
-description: UniApp移动端原型设计与开发（设计即代码）。当需要基于PRD进行移动端页面原型设计时触发：(1)确认页面清单与角色权限映射，(2)编写项目README.md页面清单，(3)裁剪230-gencode生成的页面代码，(4)配置pages.json路由，(5)确保字段命名与数据库/后端一致，(6)输出可运行的原型项目。当用户提及移动端原型、UniApp设计、小程序原型、跨平台设计时使用此技能。适用于guest（消费者）角色。
+description: UniApp移动端原型设计与开发（设计即代码）。当需要基于PRD进行移动端页面原型设计时触发：(1)确认页面清单与角色权限映射, (2)编写项目README.md页面清单, (3)裁剪230-gencode生成的页面代码, (4)配置pages.json路由, (5)确保字段命名与数据库/后端一致, (6)输出可运行的原型项目。当用户提及移动端原型、UniApp设计、小程序原型、跨平台设计时使用此技能。适用于guest（消费者）角色。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "2.0.0"
+version: "1.0.0"
 ---
 
 # UniApp移动端原型设计与开发（设计即代码）

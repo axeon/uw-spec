@@ -1,9 +1,9 @@
 ---
 name: 640-feature-test-dev
-description: 功能测试脚本开发技能。当技术方案设计完成后触发：(1)基于技术方案生成自动化测试脚本，(2)编写API接口测试（Playwright），(3)编写E2E界面测试（Playwright），(4)编写回归测试用例，(5)调用331-test-case-dev-review自动评审，(6)自动修复测试脚本，(7)执行测试并生成报告。请务必在用户提及测试脚本开发、自动化测试、Playwright测试时使用此技能。
+description: 功能测试脚本开发技能。当技术方案设计完成后触发：(1)基于技术方案生成自动化测试脚本, (2)编写API接口测试（Playwright）, (3)编写E2E界面测试（Playwright）, (4)编写回归测试用例, (5)调用331-test-case-dev-review自动评审, (6)自动修复测试脚本, (7)执行测试并生成报告。请务必在用户提及测试脚本开发、自动化测试、Playwright测试时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "2.0.0"
+version: "1.0.0"
 ---
 
 # 功能测试脚本开发
@@ -201,7 +201,7 @@ version: "2.0.0"
 
 **评审报告**: `test/reviews/REVIEW-CODE-{YYMMDDHHMM}.md`
 
-**测试报告**: `test/reports/report-{YYYYMMDD-HHMM}.md`
+**测试报告**: `test/reports/report-YYMMDDHHMM.md`
 
 ## 流转关系
 

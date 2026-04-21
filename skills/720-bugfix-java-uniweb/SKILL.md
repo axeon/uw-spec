@@ -1,9 +1,9 @@
 ---
 name: 720-bugfix-java-uniweb
-description: Bug Java后端修复技能。当修复方案设计完成后触发：(1)基于修复方案修改Java后端代码，(2)编写回归测试，(3)调用311-java-uniweb-dev-review自动评审，(4)自动修复代码问题，(5)合并代码到主分支并更新CHANGELOG。请务必在用户提及Bug后端修复、Java修复、后端问题修复时使用此技能。
+description: Bug Java后端修复技能。当修复方案设计完成后触发：(1)基于修复方案修改Java后端代码, (2)编写回归测试, (3)调用311-java-uniweb-dev-review自动评审, (4)自动修复代码问题, (5)合并代码到主分支并更新CHANGELOG。请务必在用户提及Bug后端修复、Java修复、后端问题修复时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "2.0.0"
+version: "1.0.0"
 ---
 
 # Bug Java后端修复

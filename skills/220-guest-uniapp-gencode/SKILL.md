@@ -1,6 +1,6 @@
 ---
 name: 220-guest-uniapp-gencode
-description: UniApp移动端代码生成与增量更新。当需要为UniApp跨平台项目生成或更新代码时触发：(1)首次生成TypeScript接口定义和API调用，(2)库表变动后增量更新代码并生成变更报告，(3)备份旧文件供后续裁剪恢复。适用于guest（消费者）角色。
+description: UniApp移动端代码生成与增量更新。当需要为UniApp跨平台项目生成或更新代码时触发：(1)首次生成TypeScript接口定义和API调用, (2)库表变动后增量更新代码并生成变更报告, (3)备份旧文件供后续裁剪恢复。适用于guest（消费者）角色。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
 version: "1.0.0"

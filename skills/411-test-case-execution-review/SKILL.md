@@ -1,9 +1,9 @@
 ---
 name: 411-test-case-execution-review
-description: 测试执行评审技能。当测试执行完成后触发：(1)审计API测试结果真实性和覆盖率，(2)审计E2E测试结果和缺陷管理，(3)评审压力测试结果是否达到SLA指标，(4)评审安全扫描结果和漏洞修复状态，(5)评估整体发布风险，(6)输出评审结论和发布建议。当用户提及测试执行评审、测试结果审计、发布评审时使用此技能。
+description: 测试执行评审技能。当测试执行完成后触发：(1)审计API测试结果真实性和覆盖率, (2)审计E2E测试结果和缺陷管理, (3)评审压力测试结果是否达到SLA指标, (4)评审安全扫描结果和漏洞修复状态, (5)评估整体发布风险, (6)输出评审结论和发布建议。当用户提及测试执行评审、测试结果审计、发布评审时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "3.0.0"
+version: "1.0.0"
 ---
 
 # 测试执行评审
@@ -120,6 +120,8 @@ version: "3.0.0"
 ### 2. 执行评审
 按维度检查，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。
 
+详细的评审检查清单见 [checklist.md](references/checklist.md)。
+
 **评审对象**: `test/reports/`
 **参与人员**: @project-manager @test-engineer @system-architect
 **流转方向**: 通过 → 发布阶段；不通过 → 返回 410 重新测试
@@ -139,4 +141,6 @@ version: "3.0.0"
 
 ## 参考
 - [评审报告模版](../0-init/references/review-report-template.md) - 通用评审报告格式
+
+详细的评审检查清单见 [checklist.md](references/checklist.md)。
 - [测试执行技能](../410-test-case-execution/SKILL.md) - 被评审的上游技能

@@ -1,9 +1,9 @@
 ---
 name: 740-bugfix-test
-description: Bug回归测试技能。当修复方案设计完成后触发：(1)基于修复方案生成回归测试脚本，(2)编写Bug复现测试，(3)编写边界条件测试，(4)调用331-test-case-dev-review自动评审，(5)执行测试并生成报告。请务必在用户提及Bug回归测试、修复验证、测试脚本开发时使用此技能。
+description: Bug回归测试技能。当修复方案设计完成后触发：(1)基于修复方案生成回归测试脚本, (2)编写Bug复现测试, (3)编写边界条件测试, (4)调用331-test-case-dev-review自动评审, (5)执行测试并生成报告。请务必在用户提及Bug回归测试、修复验证、测试脚本开发时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
-version: "2.0.0"
+version: "1.0.0"
 ---
 
 # Bug回归测试
@@ -179,7 +179,7 @@ version: "2.0.0"
 
 **测试文档**: `test/issues/BUGFIX-DESIGN-{YYMMDD}-{简述}-test.md`
 
-**测试报告**: `test/reports/report-{YYYYMMDD-HHMM}.md`
+**测试报告**: `test/reports/report-YYMMDDHHMM.md`
 
 ## 流转关系
 
