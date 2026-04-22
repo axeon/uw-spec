@@ -5,7 +5,7 @@
 ## TDD 开发流程
 
 ```
-Red（220设计阶段）→ 编写测试骨架（fail）
+Red（210设计阶段）→ 编写测试骨架（fail）
   ↓
 Green（310开发阶段）→ 实现 Helper 逻辑（测试变绿）
   ↓
@@ -14,39 +14,28 @@ Refactor（310开发阶段）→ 重构优化（测试保持全绿）
 
 ## Helper 实现 + TDD 示例
 
-### 1. 设计阶段产出（220，Red）
+### 1. 设计阶段产出（210，Red）
 
 ```java
-@Component
 public class ProductHelper {
 
-    private final DaoManager daoManager;
+    private static final DaoManager daoManager = DaoManager.getInstance();
 
-    public ProductHelper(DaoManager daoManager) {
-        this.daoManager = daoManager;
-    }
-
-    public ResponseData<Product> getProduct(Long id) {
+    public static ResponseData<Product> getProduct(Long id) {
         return ResponseData.success(null);
     }
 
-    public ResponseData<Product> saveProduct(Product entity) {
+    public static ResponseData<Product> saveProduct(Product entity) {
         return ResponseData.success(null);
     }
 }
 ```
 
-### 2. 设计阶段测试骨架（220，Red）
+### 2. 设计阶段测试骨架（210，Red）
 
 ```java
 @ExtendWith(MockitoExtension.class)
 class ProductHelperTest {
-
-    @Mock
-    private DaoManager daoManager;
-
-    @InjectMocks
-    private ProductHelper productHelper;
 
     @Test
     @DisplayName("查询商品详情 - 正常返回")
@@ -71,23 +60,18 @@ class ProductHelperTest {
 ### 3. 开发阶段实现 Helper（310，Green）
 
 ```java
-@Component
 public class ProductHelper {
 
     private static final Logger log = LoggerFactory.getLogger(ProductHelper.class);
-    private final DaoManager daoManager;
+    private static final DaoManager daoManager = DaoManager.getInstance();
     private static final int CACHE_MAX_NUM = 500;
     private static final long CACHE_EXPIRE_MILLIS = 1800_000L;
 
-    public ProductHelper(DaoManager daoManager) {
-        this.daoManager = daoManager;
-    }
-
-    public ResponseData<Product> getProduct(Long id) {
+    public static ResponseData<Product> getProduct(Long id) {
         return daoManager.load(Product.class, id);
     }
 
-    public ResponseData<Product> saveProduct(Product entity) {
+    public static ResponseData<Product> saveProduct(Product entity) {
         entity.setId(daoManager.getSequenceId(Product.class));
         entity.setSaasId(AuthServiceHelper.getSaasId());
         return daoManager.save(entity);
@@ -101,12 +85,6 @@ public class ProductHelper {
 @ExtendWith(MockitoExtension.class)
 class ProductHelperTest {
 
-    @Mock
-    private DaoManager daoManager;
-
-    @InjectMocks
-    private ProductHelper productHelper;
-
     @Test
     @DisplayName("查询商品详情 - 正常返回")
     void testGetProduct_Found_ReturnEntity() {
@@ -115,24 +93,33 @@ class ProductHelperTest {
         product.setName("测试商品");
         ResponseData<Product> mockResponse = ResponseData.success(product);
 
-        when(daoManager.load(Product.class, 1L)).thenReturn(mockResponse);
+        try (MockedStatic<DaoManager> daoMock = mockStatic(DaoManager.class)) {
+            DaoManager mockInstance = mock(DaoManager.class);
+            daoMock.when(DaoManager::getInstance).thenReturn(mockInstance);
+            when(mockInstance.load(Product.class, 1L)).thenReturn(mockResponse);
 
-        ResponseData<Product> result = productHelper.getProduct(1L);
+            ResponseData<Product> result = ProductHelper.getProduct(1L);
 
-        assertTrue(result.isSuccess());
-        assertNotNull(result.getData());
-        assertEquals(1L, result.getData().getId());
+            assertTrue(result.isSuccess());
+            assertNotNull(result.getData());
+            assertEquals(1L, result.getData().getId());
+        }
     }
 
     @Test
     @DisplayName("查询商品详情 - ID不存在返回warn")
     void testGetProduct_NotFound_ReturnWarn() {
         ResponseData<Product> mockResponse = ResponseData.warn("商品不存在");
-        when(daoManager.load(Product.class, 999L)).thenReturn(mockResponse);
 
-        ResponseData<Product> result = productHelper.getProduct(999L);
+        try (MockedStatic<DaoManager> daoMock = mockStatic(DaoManager.class)) {
+            DaoManager mockInstance = mock(DaoManager.class);
+            daoMock.when(DaoManager::getInstance).thenReturn(mockInstance);
+            when(mockInstance.load(Product.class, 999L)).thenReturn(mockResponse);
 
-        assertFalse(result.isSuccess());
+            ResponseData<Product> result = ProductHelper.getProduct(999L);
+
+            assertFalse(result.isSuccess());
+        }
     }
 
     @Test
@@ -141,12 +128,15 @@ class ProductHelperTest {
         Product entity = new Product();
         entity.setName("新商品");
 
-        try (MockedStatic<AuthServiceHelper> authMock = mockStatic(AuthServiceHelper.class)) {
+        try (MockedStatic<DaoManager> daoMock = mockStatic(DaoManager.class);
+             MockedStatic<AuthServiceHelper> authMock = mockStatic(AuthServiceHelper.class)) {
+            DaoManager mockInstance = mock(DaoManager.class);
+            daoMock.when(DaoManager::getInstance).thenReturn(mockInstance);
             authMock.when(AuthServiceHelper::getSaasId).thenReturn(1001L);
-            when(daoManager.getSequenceId(Product.class)).thenReturn(1L);
-            when(daoManager.save(any(Product.class))).thenReturn(ResponseData.success(entity));
+            when(mockInstance.getSequenceId(Product.class)).thenReturn(1L);
+            when(mockInstance.save(any(Product.class))).thenReturn(ResponseData.success(entity));
 
-            ResponseData<Product> result = productHelper.saveProduct(entity);
+            ResponseData<Product> result = ProductHelper.saveProduct(entity);
 
             assertTrue(result.isSuccess());
         }
@@ -157,7 +147,7 @@ class ProductHelperTest {
 ## FusionCache 使用示例
 
 ```java
-public ResponseData<Product> getProductCached(Long id) {
+public static ResponseData<Product> getProductCached(Long id) {
     Optional<Product> cached = FusionCache.getIfPresent(Product.class, id);
     if (cached.isPresent()) {
         return ResponseData.success(cached.get());
@@ -169,7 +159,7 @@ public ResponseData<Product> getProductCached(Long id) {
     return result;
 }
 
-public ResponseData<Product> updateProduct(Product entity) {
+public static ResponseData<Product> updateProduct(Product entity) {
     ResponseData<Product> result = daoManager.update(entity);
     if (result.isSuccess()) {
         FusionCache.invalidate(Product.class, entity.getId());
@@ -181,7 +171,7 @@ public ResponseData<Product> updateProduct(Product entity) {
 ## GlobalLocker 分布式锁示例
 
 ```java
-public ResponseData<Integer> processOrder(Long orderId) {
+public static ResponseData<Integer> processOrder(Long orderId) {
     long stamp = GlobalLocker.tryLock(Order.class, orderId, 30000L);
     if (stamp <= 0) {
         return ResponseData.warn("操作正在处理中，请稍后重试");
@@ -203,11 +193,11 @@ public ResponseData<Integer> processOrder(Long orderId) {
 ## AuthQueryParam 多租户查询示例
 
 ```java
-public ResponseData<DataList<Product>> listProduct(AuthQueryParam param) {
+public static ResponseData<DataList<Product>> listProduct(AuthQueryParam param) {
     return daoManager.list(Product.class, param);
 }
 
-public ResponseData<DataList<Product>> listMyProducts(AuthQueryParam param) {
+public static ResponseData<DataList<Product>> listMyProducts(AuthQueryParam param) {
     param.bindMchId();
     return daoManager.list(Product.class, param);
 }
@@ -222,24 +212,18 @@ public ResponseData<DataList<Product>> listMyProducts(AuthQueryParam param) {
 @MscPermDeclare(name = "商品管理", user = UserType.SAAS, log = ActionLog.NONE)
 public class ProductController {
 
-    private final ProductHelper productHelper;
-
-    public ProductController(ProductHelper productHelper) {
-        this.productHelper = productHelper;
-    }
-
     @Operation(summary = "查询商品详情")
     @GetMapping("/detail")
     @MscPermDeclare(name = "商品详情", log = ActionLog.REQUEST)
     public ResponseData<Product> detail(@RequestParam Long id) {
-        return productHelper.getProduct(id);
+        return ProductHelper.getProduct(id);
     }
 
     @Operation(summary = "新增商品")
     @PostMapping("/save")
     @MscPermDeclare(name = "新增商品", log = ActionLog.ALL)
     public ResponseData<Product> save(@RequestBody @Valid Product entity) {
-        return productHelper.saveProduct(entity);
+        return ProductHelper.saveProduct(entity);
     }
 }
 ```

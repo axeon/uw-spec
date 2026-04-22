@@ -10,7 +10,7 @@ version: "1.0.0"
 
 ## 描述
 
-基于 UniWeb + SaaS 技术栈（uw-base / saas-base / saas-finance）实现后端业务逻辑。220 设计阶段已产出 Controller 骨架和 Helper 签名，本阶段在此基础上填充实现代码。
+基于 UniWeb + SaaS 技术栈（uw-base / saas-base / saas-finance）实现后端业务逻辑。210 设计阶段已产出 Controller 骨架和 Helper 签名，本阶段在此基础上填充实现代码。
 
 ## 使用场景
 
@@ -31,7 +31,7 @@ version: "1.0.0"
 | 主导 | 后端开发 + 单元测试实现 | `java-developer` |
 | 协作 | 技术方案确认 | `system-architect` |
 
-> **职责边界**：单元测试由 Java 开发工程师负责（TDD Green 阶段，从 220 设计阶段产出的 Red 骨架实现为 Green）。测试工程师不参与单元测试，专职于测试脚本、API/E2E/压力/安全测试（阶段 330+）。
+> **职责边界**：单元测试由 Java 开发工程师负责（TDD Green 阶段，从 210 设计阶段产出的 Red 骨架实现为 Green）。测试工程师不参与单元测试，专职于测试脚本、API/E2E/压力/安全测试（阶段 330+）。
 
 ## 输入
 
@@ -40,10 +40,10 @@ version: "1.0.0"
 | PRD | `requirement/prds/*` | 产品需求文档，功能模块及验收标准 |
 | 数据库设计文档 | `database/database-design.md` | 表结构、实体关系 |
 | 后端设计文档 | `backend/{项目名}-app/README.md` | 模块划分、接口设计、角色权限映射、缓存策略 |
-| Controller代码 | `backend/{项目名}-app/src/main/java/{包路径}/controller/` | 220阶段裁剪后的Controller |
-| Helper代码 | `backend/{项目名}-app/src/main/java/{包路径}/service/` | 220阶段新建的Helper方法签名 |
-| DTO代码 | `backend/{项目名}-app/src/main/java/{包路径}/dto/` | 220阶段裁剪后的DTO |
-| 测试骨架代码 | `backend/{项目名}-app/src/test/java/{包路径}/service/` | 220阶段产出的 Helper 单元测试骨架（TDD Red） |
+| Controller代码 | `backend/{项目名}-app/src/main/java/{包路径}/controller/` | 210阶段裁剪后的Controller |
+| Helper代码 | `backend/{项目名}-app/src/main/java/{包路径}/service/` | 210阶段新建的Helper方法签名 |
+| DTO代码 | `backend/{项目名}-app/src/main/java/{包路径}/dto/` | 210阶段裁剪后的DTO |
+| 测试骨架代码 | `backend/{项目名}-app/src/test/java/{包路径}/service/` | 210阶段产出的 Helper 单元测试骨架（TDD Red） |
 | 测试用例设计 | `test/design/` | 测试场景和用例覆盖（API/E2E/压测/安全） |
 
 ## 技术栈
@@ -141,9 +141,10 @@ version: "1.0.0"
 
 | 开发规范 | 说明 |
 |---------|------|
-| 类注解 | `@Component` |
-| 依赖注入 | 构造器注入 DaoManager、其他 Helper |
-| 数据访问 | 使用 `DaoManager`（ResponseData 链式 lambda 风格），不使用 DaoFactory |
+| 类注解 | 无（纯静态工具类，不加 `@Component`） |
+| 依赖获取 | `DaoManager.getInstance()` 静态获取，FusionCache/GlobalCache/GlobalLocker 本身是静态API |
+| 方法风格 | **全部 static 方法**，210 阶段已定义签名 |
+| 数据访问 | 使用 `DaoManager.getInstance()`（ResponseData 链式 lambda 风格），不使用 DaoFactory |
 | 查询参数 | 使用 QueryParam 系列（IdQueryParam、AuthQueryParam 等） |
 | 批量操作 | 使用 `BatchUpdateManager` |
 | 缓存 | 使用 `FusionCache`，Kryo 序列化用具体实现类（ArrayList/LinkedHashMap/HashSet） |
@@ -151,7 +152,7 @@ version: "1.0.0"
 
 ### 3. Controller裁剪与权限声明
 
-> Controller 由代码生成器产出，220 阶段已裁剪移动，本阶段补充业务调用。
+> Controller 由代码生成器产出，210 阶段已裁剪移动，本阶段补充业务调用。
 
 **读取技术栈**：按需读取权限相关文档。
 
@@ -170,13 +171,13 @@ version: "1.0.0"
 
 ### 4. TDD Green — 实现单元测试
 
-> 220 阶段已产出测试骨架（Red），本阶段实现 Helper 逻辑并让测试逐个变绿。
+> 210 阶段已产出测试骨架（Red），本阶段实现 Helper 逻辑并让测试逐个变绿。
 
 **TDD 详细指南**：参见 [TDD设计指南](../210-java-uniweb-design/references/tdd-design-guide.md)
 
 | 步骤 | 操作 |
 |------|------|
-| 读取测试骨架 | 读取 220 产出的 `{Module}HelperTest.java`，了解测试意图 |
+| 读取测试骨架 | 读取 210 产出的 `{Module}HelperTest.java`，了解测试意图 |
 | 实现 Helper 方法 | 按 Javadoc 实现步骤填充方法体 |
 | 补充 Mock 初始化 | 在测试类中补充 `@BeforeEach` 的 MockedStatic 设置（FusionCache/GlobalLocker/AuthServiceHelper） |
 | 替换 fail() 为断言 | 将 `fail("TDD Red")` 替换为具体的 Mock + assert 断言 |
@@ -186,7 +187,7 @@ version: "1.0.0"
 
 | 依赖 | Mock 方式 |
 |------|----------|
-| DaoManager | `@Mock` + `@InjectMocks`（构造器注入） |
+| DaoManager | `mockStatic(DaoManager.class)` + try-with-resources，mock `DaoManager.getInstance()` 返回 mocked 实例 |
 | FusionCache | `mockStatic(FusionCache.class)` + try-with-resources |
 | GlobalLocker | `mockStatic(GlobalLocker.class)` + try-with-resources |
 | AuthServiceHelper | `mockStatic(AuthServiceHelper.class)` + try-with-resources |

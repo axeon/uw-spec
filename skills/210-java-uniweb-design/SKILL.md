@@ -81,7 +81,7 @@ version: "1.0.0"
 | `$PackageInfo$.java` | 仅标准角色（saas/mch/admin/root/ops/rpc）的 controller 包下 `{module}/` 目录必须包含。**guest 角色不适用** |
 | Helper 命名 | service 包内组件统一命名为 `{Module}Helper` |
 | Helper 存在前提 | **三条件满足其一才创建**：(1)逻辑非常复杂（状态机/多步流程/计算），(2)功能性（缓存/分布式锁/事务），(3)多处调用（2个以上调用方）。简单CRUD直接在Controller调DaoManager，不建Helper |
-| Helper 方法风格 | **全部 static 方法**，可通过 `@Component`构造器注入Bean。DaoManager 通过 `DaoManager.getInstance()` 获取，FusionCache/GlobalCache/GlobalLocker 本身就是静态API |
+| Helper 方法风格 | **全部 static 方法**。DaoManager 通过 `DaoManager.getInstance()` 获取，FusionCache/GlobalCache/GlobalLocker 本身就是静态API |
 | Entity | 代码生成器产出，保留不修改 |
 | DTO | 代码生成器产出，仅裁剪不新建 |
 | 禁用 Lombok | 全局禁用，getter/setter/构造器均手写 |
