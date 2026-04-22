@@ -149,6 +149,44 @@ version: "1.0.0"
 
 **README.md 模板**：参见 [references/templates.md](references/templates.md)
 
+### Phase 1.5: 编写 TASKS.md
+
+**输入**：Phase 1 的模块总览 + 依赖图 + Phase 0 的确认结果
+
+**输出**：后端项目根目录 `TASKS.md`（独立于 README.md，专供 310 开发消费）
+
+**为什么独立**：README.md 是设计文档（全体角色阅读），TASKS.md 是执行计划（仅 310 Sub Agent 消费）。分离后 Sub Agent 只加载轻量的 TASKS.md，不加载重量级 README.md。
+
+**必须包含的章节**：
+
+| 章节 | 内容 |
+|------|------|
+| 并行分组 | 按依赖图拓扑排序，无依赖同组并行，有依赖串行 |
+| 任务卡片 | 每个复杂模块一张卡片（含 PRD/文件/方法/依赖路径） |
+| 联调验证清单 | 自动化检查项（grep + mvn test + 启动检查） |
+
+**任务卡片编写规则**：
+
+每个复杂模块（需建 Helper）生成一张任务卡片，简单模块（仅 CRUD）不列入。卡片中的任务 ID 与代码中 `// TODO: [Tn]` 标记一一对应。
+
+卡片必须包含以下字段：
+
+| 字段 | 说明 | 示例 |
+|------|------|------|
+| PRD | 关联的 PRD 文件路径 | `requirement/prds/product.md` |
+| 数据库 | 关联的数据库表（含文档位置） | `database/database-design.md` § Product 表 |
+| 待实现 | Helper.java 文件的完整路径 | `src/main/java/.../service/ProductHelper.java` |
+| 测试骨架 | HelperTest.java 文件的完整路径 | `src/test/java/.../service/ProductHelperTest.java` |
+| 技术栈 | 该模块需要读取的技术栈文档 | `uw-dao.md`、`uw-cache.md` |
+| 待实现方法 | 所有带 `// TODO: [Tn]` 标记的方法签名 | `getProduct()`、`saveProduct()` |
+| 依赖任务 | 前置任务 ID | 无 / T1 |
+
+并行分组规则：按 Mermaid 依赖图拓扑排序，无依赖模块同组可并行，有依赖模块串行。
+
+末尾必须包含联调验证清单（自动化检查项），供 310 联调阶段直接执行。
+
+**TASKS.md 模板**：参见 [references/templates.md](references/templates.md)
+
 ### Phase 2: 设计即代码
 
 **读取技术栈**：按需读取以下文档确认 API 签名。
@@ -260,6 +298,7 @@ mv controller/admin/product/ controller/saas/product/
 | 类注解 | 无（纯静态工具类，不加 `@Component`） |
 | 依赖获取 | `DaoManager.getInstance()` 静态获取，FusionCache/GlobalCache/GlobalLocker 本身是静态API |
 | 方法签名 | `public static`，入参、出参明确定义，方法体返回默认值 |
+| **TODO 标记** | **每个方法体上方添加 `// TODO: [Tn] implement {methodName}`，Tn 为 README.md 任务卡片中的任务 ID** |
 | 缓存常量 | `private static final` FusionCache.Config 参数、缓存 Key 常量 |
 | **缓存初始化** | **设计阶段必须完成**：所有使用 FusionCache 的 Helper 必须在 `static {}` 块中调用 `FusionCache.config(new FusionCache.Config(...), new CacheDataLoader<>() {...})` 完成初始化，包括 Config 参数和 CacheDataLoader 数据加载器。缓存参数（localCacheMaxNum、cacheExpireMillis）在设计阶段就确定，开发阶段仅实现 CacheDataLoader.load() 内部的查询逻辑 |
 | Javadoc | 设计思路 + 实现步骤 + 缓存策略 + 事务策略 |
@@ -272,7 +311,6 @@ public class XxxHelper {
     private static final int CACHE_MAX_NUM = 500;
     private static final long CACHE_EXPIRE_MILLIS = 1800_000L;
 
-    // 设计阶段必须完成此初始化块
     static {
         FusionCache.config(new FusionCache.Config(
             XxxEntity.class,
@@ -284,6 +322,16 @@ public class XxxHelper {
                 return daoManager.load(XxxEntity.class, key).getData();
             }
         });
+    }
+
+    // TODO: [Tn] implement getXxx with FusionCache
+    public static ResponseData<XxxEntity> getXxx(Long id) {
+        return ResponseData.success(null);
+    }
+
+    // TODO: [Tn] implement saveXxx
+    public static ResponseData<XxxEntity> saveXxx(XxxEntity entity) {
+        return ResponseData.success(null);
     }
 }
 ```
@@ -306,7 +354,7 @@ public class XxxHelper {
 | 命名规范 | `test{Method}_{Scenario}_{ExpectedResult}` |
 | 注解 | `@Test` + `@DisplayName("...")` |
 | Javadoc | 测试意图 + 准备数据 + 预期结果 |
-| 方法体 | `fail("TDD Red: Helper 方法尚未实现")` 标记 Red 状态 |
+| 方法体 | `fail("TDD Red: [Tn] Helper 方法尚未实现")` 标记 Red 状态，Tn 为任务 ID |
 | MockedStatic | DaoManager.getInstance()、FusionCache、GlobalLocker、AuthServiceHelper 的静态 Mock 在开发阶段补充 |
 
 **测试模板**：参见 [references/templates.md](references/templates.md) 第6节 Helper 单元测试模板
@@ -315,10 +363,10 @@ public class XxxHelper {
 ```java
 // {Module}HelperTest.java - 每个Helper方法 ≥ 2个测试方法
 @Test @DisplayName("查询详情 - 正常返回")
-void testGet{Entity}_Found_ReturnEntity() { fail("TDD Red"); }
+void testGet{Entity}_Found_ReturnEntity() { fail("TDD Red: [Tn]"); }
 
 @Test @DisplayName("查询详情 - 不存在返回warn")
-void testGet{Entity}_NotFound_ReturnWarn() { fail("TDD Red"); }
+void testGet{Entity}_NotFound_ReturnWarn() { fail("TDD Red: [Tn]"); }
 ```
 
 ##### Controller 单元测试
@@ -389,6 +437,7 @@ void testSave_Normal_ReturnSuccess() { fail("TDD Red"); }
 ```
 {后端项目根目录}/
 ├── README.md                         # 总体设计文档（Phase 1 产出）
+├── TASKS.md                          # 开发任务分工（Phase 1.5 产出，310 消费）
 ├── src/main/java/{包路径}/
 │   ├── controller/
 │   │   ├── saas/                     # 裁剪 + Javadoc + $PackageInfo$
@@ -411,11 +460,14 @@ void testSave_Normal_ReturnSuccess() { fail("TDD Red"); }
 ## 设计完成标准
 
 - [ ] README.md 覆盖所有模块和全局策略（含测试策略章节）
+- [ ] TASKS.md 包含并行分组、任务卡片和联调验证清单
 - [ ] 所有 Controller 方法有 Javadoc + @MscPermDeclare
 - [ ] 所有 Helper 方法有 Javadoc（设计思路 + 实现步骤 + 缓存策略）
+- [ ] 所有 Helper 方法体上方有 `// TODO: [Tn]` 标记，与 TASKS.md 任务卡片 ID 一一对应
 - [ ] 所有使用 FusionCache 的 Helper 有 `static { FusionCache.config(...) }` 初始化块
 - [ ] 所有 Helper 有对应测试类 `{Module}HelperTest.java`
 - [ ] 每个 Helper 方法有 ≥ 2 个测试方法（正常 + 边界/异常）
+- [ ] 所有测试方法体有 `fail("TDD Red: [Tn]")` 标记，与任务 ID 一致
 - [ ] 所有 Controller 有对应测试类 `{Module}ControllerTest.java`
 - [ ] 每个 Controller 方法有 ≥ 1 个测试方法
 - [ ] 测试方法有 `@DisplayName` + Javadoc

@@ -34,7 +34,8 @@ version: "1.0.0"
 | Java后端代码 | `backend/{项目名}-app/src/` | 开发完成的代码 |
 | 测试代码 | `backend/{项目名}-app/src/test/` | 单元测试和集成测试 |
 | 覆盖率报告 | `backend/{项目名}-app/target/site/jacoco/` | 测试覆盖率数据 |
-| 架构设计 | `backend/{项目名}-app/README.md` | 220阶段产出的总体设计文档 |
+| 架构设计 | `backend/{项目名}-app/README.md` | 210阶段产出的总体设计文档 |
+| 开发任务 | `backend/{项目名}-app/TASKS.md` | 210阶段产出的任务卡片和联调验证清单 |
 
 ## 输出
 | 输出项 | 位置 | 说明 |
@@ -50,8 +51,8 @@ version: "1.0.0"
 ## 评审维度
 | 维度 | 检查要点 |
 |------|---------|
-| TDD实践 | 220 Red骨架→310 Green实现、覆盖率≥80%、@ExtendWith+@Mock+@InjectMocks、无fail()残留 |
-| UniWeb规范 | DaoManager/ResponseData/AuthQueryParam/FusionCache、禁用Lombok、构造器注入 |
+| TDD实践 | 210 Red骨架→310 Green实现、覆盖率≥80%、@ExtendWith+MockedStatic、无fail()残留、无TODO残留 |
+| UniWeb规范 | DaoManager/ResponseData/AuthQueryParam/FusionCache、禁用Lombok、static方法风格 |
 | 代码质量 | 单一职责、分层清晰、命名规范、复杂度 |
 | 安全性 | @Valid校验、QueryParam参数化、@MscPermDeclare、租户隔离 |
 

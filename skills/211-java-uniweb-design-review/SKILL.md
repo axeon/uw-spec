@@ -61,8 +61,8 @@ version: "1.0.0"
 | README.md 完整性 | 模块总览、依赖关系、PRD映射、权限映射、缓存策略、性能预算、测试策略 | 20分 |
 | 代码可编译性 | mvn compile 通过、mvn test-compile 通过、mvn test 可运行（全红为预期）、Swagger 可用 | 必须 |
 | Controller 质量 | 权限注解完整、Javadoc 完整、方法签名合理 | 15分 |
-| Helper 质量 | 方法签名合理、Javadoc 含实现步骤、缓存定义正确、构造器注入 | 15分 |
-| 测试骨架质量 | 每个 Helper 有测试类、每个方法 ≥2 测试、@ExtendWith+@Mock+@InjectMocks、@DisplayName | 15分 |
+| Helper 质量 | 方法签名合理、Javadoc 含实现步骤、缓存定义正确、static 方法风格 | 15分 |
+| 测试骨架质量 | 每个 Helper 有测试类、每个方法 ≥2 测试、@ExtendWith+MockedStatic、@DisplayName、fail("TDD Red: [Tn]") | 15分 |
 | DTO/VO 质量 | 搜索字段裁剪合理、校验注解完整 | 15分 |
 | PRD 覆盖度 | 所有 PRD 功能点都有对应接口 | 20分 |
 

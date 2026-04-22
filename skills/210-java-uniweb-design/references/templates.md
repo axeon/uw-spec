@@ -170,7 +170,59 @@ stateDiagram-v2
 
 ---
 
-## 2. $PackageInfo$.java 模板
+## 2. TASKS.md 开发任务分工模板
+
+```markdown
+# 开发任务分工
+
+### 并行分组
+
+| 组别 | 任务 | 开发顺序 | 说明 |
+|------|------|---------|------|
+| 组1 | T1, T2 | 并行 | 无依赖 |
+| 组2 | T3 | 等组1完成 | 依赖 T1 |
+
+### 任务卡片
+
+#### T1: {模块A}
+
+| 项目 | 路径 |
+|------|------|
+| PRD | `requirement/prds/{prd-file}.md` |
+| 数据库 | `database/database-design.md` § {TableA} 表 |
+| 待实现 | `src/main/java/{包路径}/service/{ModuleA}Helper.java` |
+| 测试骨架 | `src/test/java/{包路径}/service/{ModuleA}HelperTest.java` |
+| 技术栈 | `references/backend/uniweb/uw-dao.md`、`uw-cache.md` |
+| 待实现方法 | `getXxx()`、`saveXxx()`、`updateXxx()` |
+| 依赖任务 | 无 |
+
+#### T2: {模块B}
+
+| 项目 | 路径 |
+|------|------|
+| PRD | `requirement/prds/{prd-file}.md` |
+| 数据库 | `database/database-design.md` § {TableB} 表 |
+| 待实现 | `src/main/java/{包路径}/service/{ModuleB}Helper.java` |
+| 测试骨架 | `src/test/java/{包路径}/service/{ModuleB}HelperTest.java` |
+| 技术栈 | `references/backend/uniweb/uw-dao.md` |
+| 待实现方法 | `listXxx()`、`getXxx()` |
+| 依赖任务 | 无 |
+
+> 简单模块（仅 CRUD，无 Helper）不列入开发任务，由代码生成器产出即可。
+
+### 联调验证
+
+| 检查项 | 命令 | 通过标准 |
+|--------|------|---------|
+| 无残留 TODO | `grep -r "// TODO:" src/main/java/` | 0 行 |
+| 无残留 TDD Red | `grep -r "TDD Red" src/test/java/` | 0 行 |
+| 全量测试通过 | `mvn test` | 全绿 |
+| 应用启动正常 | 启动 + Swagger 可访问 | 无异常 |
+```
+
+---
+
+## 3. $PackageInfo$.java 模板
 
 > 每个 controller 角色包中必须包含此文件。声明角色级基础权限，Controller 方法级 `@MscPermDeclare` 在此基础上做细粒度控制。
 
@@ -213,7 +265,7 @@ public class $PackageInfo$ {
 
 ---
 
-## 3. Controller Javadoc 模板
+## 4. Controller Javadoc 模板
 
 > 裁剪代码生成器产出的 Controller 后，为每个保留方法补充 Javadoc。
 
@@ -370,7 +422,7 @@ public ResponseData<Integer> disable(@RequestParam Long id) {
 
 ---
 
-## 4. Helper 模板
+## 5. Helper 模板
 
 > service 包下新建，纯静态工具类，不加 `@Component`，不使用构造器注入。
 > **创建前提**：三条件满足至少一项（逻辑复杂/功能性/多处调用），简单 CRUD 不建 Helper。
@@ -537,7 +589,7 @@ public static ResponseData<DataList<{Entity}>> list{Entity}Cached(AuthQueryParam
 
 ---
 
-## 5. VO 模板
+## 6. VO 模板
 
 > 仅在需要聚合多表数据时创建。VO 用于 Controller 响应，不用于接收请求参数。
 
@@ -592,7 +644,7 @@ public class {Business}VO {
 
 ---
 
-## 6. Helper 单元测试模板
+## 7. Helper 单元测试模板
 
 > 设计阶段（TDD Red）产出测试骨架，开发阶段实现 Mock 和断言逻辑。
 
@@ -642,8 +694,8 @@ class {Module}HelperTest {
     @Test
     @DisplayName("查询{资源}详情 - 正常返回实体")
     void testGet{Entity}_Found_ReturnEntity() {
-        // TODO: 开发阶段实现 MockedStatic DaoManager 和断言
-        fail("TDD Red: Helper 方法尚未实现");
+        // TODO: [Tn] 开发阶段实现 MockedStatic DaoManager 和断言
+        fail("TDD Red: [Tn] Helper 方法尚未实现");
     }
 
     /**
@@ -655,7 +707,7 @@ class {Module}HelperTest {
     @Test
     @DisplayName("查询{资源}详情 - ID不存在返回warn")
     void testGet{Entity}_NotFound_ReturnWarn() {
-        fail("TDD Red: Helper 方法尚未实现");
+        fail("TDD Red: [Tn] Helper 方法尚未实现");
     }
 }
 ```
@@ -710,7 +762,7 @@ class {Module}HelperTest {
     @Test
     @DisplayName("{业务操作} - 正常流程成功")
     void testProcess{Entity}_Normal_ReturnSuccess() {
-        fail("TDD Red: Helper 方法尚未实现");
+        fail("TDD Red: [Tn] Helper 方法尚未实现");
     }
 
     /**
@@ -722,7 +774,7 @@ class {Module}HelperTest {
     @Test
     @DisplayName("{业务操作} - 状态不允许返回错误")
     void testProcess{Entity}_InvalidState_ReturnError() {
-        fail("TDD Red: Helper 方法尚未实现");
+        fail("TDD Red: [Tn] Helper 方法尚未实现");
     }
 
     /**
@@ -734,7 +786,7 @@ class {Module}HelperTest {
     @Test
     @DisplayName("{业务操作} - 并发冲突返回锁失败")
     void testProcess{Entity}_Concurrent_LockFail() {
-        fail("TDD Red: Helper 方法尚未实现");
+        fail("TDD Red: [Tn] Helper 方法尚未实现");
     }
 
     // ==================== 缓存一致性测试 ====================
@@ -748,14 +800,14 @@ class {Module}HelperTest {
     @Test
     @DisplayName("缓存失效 - 修改后invalidate被调用")
     void testUpdate{Entity}_CacheInvalidated() {
-        fail("TDD Red: Helper 方法尚未实现");
+        fail("TDD Red: [Tn] Helper 方法尚未实现");
     }
 }
 ```
 
 ---
 
-## 7. Controller 单元测试模板
+## 8. Controller 单元测试模板
 
 > 设计阶段（TDD Red）产出测试骨架，验证 API 契约：HTTP 方法、路径、参数绑定、权限注解、响应格式、调用链路。
 > 测试类位置与源码目录结构对齐：`src/test/java/{包路径}/controller/{角色}/{模块}/{Module}ControllerTest.java`
@@ -805,7 +857,7 @@ class {Module}ControllerTest {
     @Test
     @DisplayName("列表查询 - 正常返回")
     void testList_Normal_ReturnSuccess() {
-        fail("TDD Red: Controller 测试尚未实现");
+        fail("TDD Red: [Tn] Controller 测试尚未实现");
     }
 
     // ==================== 详情查询测试 ====================
@@ -819,7 +871,7 @@ class {Module}ControllerTest {
     @Test
     @DisplayName("详情查询 - 正常返回")
     void testGet_Normal_ReturnSuccess() {
-        fail("TDD Red: Controller 测试尚未实现");
+        fail("TDD Red: [Tn] Controller 测试尚未实现");
     }
 
     // ==================== 新增测试 ====================
@@ -833,7 +885,7 @@ class {Module}ControllerTest {
     @Test
     @DisplayName("新增 - 正常返回")
     void testSave_Normal_ReturnSuccess() {
-        fail("TDD Red: Controller 测试尚未实现");
+        fail("TDD Red: [Tn] Controller 测试尚未实现");
     }
 
     // ==================== 修改测试 ====================
@@ -847,14 +899,14 @@ class {Module}ControllerTest {
     @Test
     @DisplayName("修改 - 正常返回")
     void testUpdate_Normal_ReturnSuccess() {
-        fail("TDD Red: Controller 测试尚未实现");
+        fail("TDD Red: [Tn] Controller 测试尚未实现");
     }
 }
 ```
 
 ---
 
-## 8. Helper 间调用模板
+## 9. Helper 间调用模板
 
 > Helper 是静态工具类，Helper 间直接通过类名调用静态方法，无需注入。
 
@@ -888,7 +940,7 @@ class OrderHelperTest {
     @Test
     @DisplayName("创建订单 - 正常流程")
     void testSaveOrder_Normal_ReturnSuccess() {
-        fail("TDD Red: Helper 方法尚未实现");
+        fail("TDD Red: [Tn] Helper 方法尚未实现");
     }
 }
 ```

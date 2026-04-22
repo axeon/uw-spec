@@ -17,8 +17,8 @@
 |---|--------|------|---------|
 | 1 | Red→Green | 从210骨架实现为Green, 非跳过重写 | Major |
 | 2 | 覆盖率 | 行覆盖≥80%, 分支覆盖≥70% | Major |
-| 3 | 测试质量 | @ExtendWith+@Mock+@InjectMocks, @DisplayName | Major |
-| 4 | 无fail()残留 | 无 fail("Not implemented") 等占位代码 | Critical |
+| 3 | 测试质量 | @ExtendWith+MockedStatic, @DisplayName | Major |
+| 4 | 无fail()残留 | 无 fail("TDD Red") 和 // TODO 残留 | Critical |
 | 5 | Mock合理性 | 仅Mock外部依赖, 不Mock被测逻辑 | Minor |
 
 ## UniWeb规范检查
@@ -30,7 +30,7 @@
 | 3 | 权限查询 | 使用AuthQueryParam | Major |
 | 4 | 缓存 | 使用FusionCache, 非Redis直接调用 | Major |
 | 5 | 禁用Lombok | 无@Data/@Getter/@Setter等注解 | Major |
-| 6 | 构造器注入 | 使用构造器注入, 非@Autowired字段注入 | Minor |
+| 6 | 依赖获取 | `DaoManager.getInstance()` 静态获取, 不使用构造器注入 | Minor |
 
 ## 代码质量检查
 

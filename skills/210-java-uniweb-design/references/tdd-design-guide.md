@@ -93,17 +93,17 @@ src/test/java/{包路径}/
 
 ## Mock 技术选型
 
-Helper 通过构造器注入 DaoManager，静态方法依赖使用 `MockedStatic`。
+Helper 使用纯 static 方法，所有依赖通过静态 API 获取，测试统一使用 `MockedStatic` 隔离。
 
-| 依赖 | Mock 方式 | 注入方式 | 说明 |
-|------|----------|---------|------|
-| DaoManager | `@Mock` + `@InjectMocks` | 构造器注入 | Helper 构造器参数，Mockito 自动注入 |
-| FusionCache | `MockedStatic<FusionCache>` | 静态方法 | try-with-resources 包裹，验证 get/put/invalidate |
-| GlobalCache | `@Mock GlobalCache` | 构造器注入（如用） | 实例方法 |
-| GlobalLocker | `MockedStatic<GlobalLocker>` | 静态方法 | try-with-resources 包裹，验证 tryLock/unlock |
-| AuthServiceHelper | `MockedStatic<AuthServiceHelper>` | 静态方法 | try-with-resources 包裹，模拟 getSaasId/getMchId |
+| 依赖 | Mock 方式 | 说明 |
+|------|----------|------|
+| DaoManager | `MockedStatic<DaoManager>` + `mock(DaoManager.class)` | mock `getInstance()` 返回 mocked 实例 |
+| FusionCache | `MockedStatic<FusionCache>` | try-with-resources 包裹，验证 get/put/invalidate |
+| GlobalCache | `MockedStatic<GlobalCache>` | try-with-resources 包裹 |
+| GlobalLocker | `MockedStatic<GlobalLocker>` | try-with-resources 包裹，验证 tryLock/unlock |
+| AuthServiceHelper | `MockedStatic<AuthServiceHelper>` | try-with-resources 包裹，模拟 getSaasId/getMchId |
 
-**MockedStatic 使用模式**（FusionCache/GlobalLocker/AuthServiceHelper）：
+**MockedStatic 使用模式**（所有依赖统一）：
 
 ```java
 @Test
@@ -135,10 +135,10 @@ void testGetXxx_CacheHit_ReturnEntity() {
 | 重构阶段（310） | 优化实现，测试保持全绿 | 全绿 |
 
 **设计阶段测试代码特征**：
-- 测试类使用 `@ExtendWith(MockitoExtension.class)` + `@Mock` + `@InjectMocks`
+- 测试类使用 `@ExtendWith(MockitoExtension.class)`，MockedStatic 在开发阶段补充
 - 方法签名完整（`@Test` + `@DisplayName` + 访问修饰符 + 参数）
 - Javadoc 包含测试意图、准备数据、预期结果
-- 方法体使用 `fail("TDD Red: Helper 方法尚未实现")` 标记为 Red 状态
+- 方法体使用 `fail("TDD Red: [Tn] Helper 方法尚未实现")` 标记为 Red 状态，Tn 为任务 ID
 - 不需要 `@BeforeEach` 的 Mock 初始化（MockitoExtension 自动处理）
 - MockedStatic 静态方法 Mock 在开发阶段实现时补充
 

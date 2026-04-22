@@ -81,63 +81,80 @@ version: "1.0.0"
 
 ## 210→310 衔接协议
 
-210 设计完成后，310 从 README.md 提取以下信息作为开发输入：
+210 设计完成后产出三样东西，310 消费关系如下：
 
-| 提取项 | README.md 章节 | 用途 |
-|--------|---------------|------|
-| 模块清单 | "模块总览" | 确定开发范围 |
-| 复杂度分类 | "模块总览" | 简单模块使用代码生成器产出，无需新建Helper |
-| 依赖图 | "模块依赖关系"（Mermaid graph） | 拓扑排序，确定并行/串行分组 |
-| 角色权限矩阵 | "角色权限映射" | Controller 权限注解依据 |
-| 缓存策略 | "全局缓存策略" | Helper 缓存实现依据 |
-| PRD映射 | "PRD功能点映射" | 按模块索引对应PRD需求 |
+| 210 产出物 | 310 消费方式 | 用途 |
+|-----------|------------|------|
+| TASKS.md | **直接读取** | 获取任务卡片（PRD/文件/方法/依赖路径） |
+| Helper 代码中的 `// TODO: [Tn]` | `grep "// TODO:" src/main/java/` | 定位待实现方法，确认边界 |
+| Test 代码中的 `fail("TDD Red: [Tn]")` | `grep "TDD Red" src/test/java/` | 定位待变绿测试 |
+
+### 任务卡片结构（210 产出，310 直接使用）
+
+每张卡片是一个 Sub Agent 的完整工作订单，包含所有需要的上下文路径：
+
+| 字段 | 说明 |
+|------|------|
+| PRD | 关联的产品需求文档路径 |
+| 数据库 | 关联的表结构文档位置 |
+| 待实现 | Helper.java 文件路径 |
+| 测试骨架 | HelperTest.java 文件路径 |
+| 技术栈 | 需要读取的技术栈文档列表 |
+| 待实现方法 | `// TODO: [Tn]` 标记的方法签名列表 |
+| 依赖任务 | 前置任务 ID（无则可并行） |
+
+### Sub Agent 执行流程
+
+```
+1. 读取 TASKS.md 任务卡片 → 加载卡片中列出的 PRD + 技术栈文档（4-6 个文件）
+2. grep "// TODO: [Tn]" → 确认本任务的待实现方法列表
+3. 实现 Helper 方法体 → 删除对应 // TODO 行
+4. 替换 fail("TDD Red: [Tn]") 为 Mock + assert → 测试变绿
+5. mvn test -pl {模块} → 全绿
+6. PLAN-REVIEW → 通过
+```
 
 ## 开发步骤
 
-### 1. 环境准备 + 模块分析
+### 1. 环境准备 + 任务解析
 
 **前置条件**：300-database-ddl-execution 已完成且 301-database-ddl-execution-review 评审通过（数据库表已就绪）。
 
-1. 读取 `backend/{项目名}-app/README.md` 提取模块清单、依赖图、复杂度分类
-2. 读取 [dev-standards.md](../210-java-uniweb-design/references/backend/uniweb/dev-standards.md) 了解编码规范
-3. 读取 `requirement/prds/*` 了解负责的Module需求
-4. **依赖拓扑分析**：解析 README.md 中 Mermaid 依赖图，输出开发分组
+1. 读取 `backend/{项目名}-app/TASKS.md` 提取并行分组表和任务卡片列表
+3. 读取 [dev-standards.md](../210-java-uniweb-design/references/backend/uniweb/dev-standards.md) 了解编码规范
+4. **依赖拓扑确认**：按分组表确定执行顺序，禁止循环依赖
 
-**拓扑分析规则**：
+**降级策略**：若 TASKS.md 不存在，回退为"顺序全量"模式（扫描所有 `// TODO:` 标记，逐个实现）。输出警告后继续执行。
 
-| 规则 | 说明 |
-|------|------|
-| 无依赖模块 | 可并行开发（同一组） |
-| 有依赖模块 | 被依赖方先完成，依赖方后开发 |
-| 禁止循环依赖 | 发现循环依赖报错，回 210 修复 |
-| 降级策略 | Mermaid 依赖图解析失败或缺失时，回退为"顺序全量"模式逐个开发 |
+### 2. 模块开发（按任务卡片执行）
 
-**降级判断**：若 README.md 中无"模块依赖关系"章节、Mermaid graph 为空、或解析后无法得到有效拓扑，输出警告"依赖图缺失/无法解析，回退顺序全量模式"，继续执行。
+每个 Sub Agent 拿到一张任务卡片，执行以下步骤：
 
-**拓扑分组示例**（依赖图: A→C, B→C, C→D）：
+#### 2.1 加载上下文
+
+**仅加载卡片中列出的文件**，不读取无关模块：
+
+| 读取项 | 来源 |
+|--------|------|
+| PRD | 卡片中的 PRD 路径 |
+| 数据库表结构 | 卡片中的数据库路径 |
+| 技术栈文档 | 卡片中列出的技术栈文档 |
+| Helper 代码 | 卡片中的待实现文件路径 |
+| 测试骨架 | 卡片中的测试文件路径 |
+
+#### 2.2 TODO 扫描确认
+
+验证卡片中的"待实现方法"与代码中 `// TODO: [Tn]` 标记一致：
+
+```bash
+grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 ```
-组1（并行）: [A, B]     ← 无依赖，可同时开发
-组2（串行）: [C]        ← 依赖A、B，等组1完成
-组3（串行）: [D]        ← 依赖C，等组2完成
-```
 
-**单模块开发范围**：一个Agent负责一个Module，Module包含多个Feature的API实现。
+若标记数量不匹配，报告异常并停止。
 
-### 2. Helper实现
+#### 2.3 Helper 实现
 
-> Helper 是业务逻辑的核心载体，位于 service 包下。
-
-**读取技术栈**：按需读取以下文档确认 API 用法。
-
-| 场景 | 读取文档 |
-|------|---------|
-| 数据访问 | [uw-dao.md](../210-java-uniweb-design/references/backend/uniweb/uw-dao.md) |
-| 缓存 | [uw-cache.md](../210-java-uniweb-design/references/backend/uniweb/uw-cache.md) |
-| 异步/队列 | [uw-task.md](../210-java-uniweb-design/references/backend/uniweb/uw-task.md) |
-| HTTP调用 | [uw-httpclient.md](../210-java-uniweb-design/references/backend/uniweb/uw-httpclient.md) |
-| AIP授权 | [aip-module.md](../210-java-uniweb-design/references/backend/saas/aip-module.md) |
-| AIS接口 | [ais-module.md](../210-java-uniweb-design/references/backend/saas/ais-module.md) |
-| 财务服务 | [saas-finance-client.md](../210-java-uniweb-design/references/backend/saas/saas-finance-client.md) |
+> Helper 是业务逻辑的核心载体，位于 service 包下，210 已创建签名和 Javadoc。
 
 | 开发规范 | 说明 |
 |---------|------|
@@ -150,26 +167,9 @@ version: "1.0.0"
 | 缓存 | 使用 `FusionCache`，Kryo 序列化用具体实现类（ArrayList/LinkedHashMap/HashSet） |
 | 禁用 Lombok | 全局禁用，getter/setter/构造器均手写 |
 
-### 3. Controller裁剪与权限声明
+**实现每个方法后**：删除对应的 `// TODO: [Tn]` 行。
 
-> Controller 由代码生成器产出，210 阶段已裁剪移动，本阶段补充业务调用。
-
-**读取技术栈**：按需读取权限相关文档。
-
-| 场景 | 读取文档 |
-|------|---------|
-| 权限注解 | [uw-auth-service.md](../210-java-uniweb-design/references/backend/uniweb/uw-auth-service.md) |
-| 响应格式 | [uw-common.md](../210-java-uniweb-design/references/backend/uniweb/uw-common.md) |
-
-| 开发规范 | 说明 |
-|---------|------|
-| 路径第一级 | 必须为用户角色（`/saas/`、`/mch/`、`/admin/`、`/root/`、`/ops/`、`/rpc/`） |
-| 返回值 | 统一使用 `ResponseData` 包装 |
-| 权限声明 | 每个方法添加 `@MscPermDeclare` |
-| $PackageInfo$.java | 每个角色包下的模块目录必须包含 $PackageInfo$.java |
-| 参数校验 | `@RequestBody` 参数加 `@Valid`，触发 DTO 校验注解 |
-
-### 4. TDD Green — 实现单元测试
+#### 2.4 TDD Green — 实现单元测试
 
 > 210 阶段已产出测试骨架（Red），本阶段实现 Helper 逻辑并让测试逐个变绿。
 
@@ -177,10 +177,10 @@ version: "1.0.0"
 
 | 步骤 | 操作 |
 |------|------|
-| 读取测试骨架 | 读取 210 产出的 `{Module}HelperTest.java`，了解测试意图 |
-| 实现 Helper 方法 | 按 Javadoc 实现步骤填充方法体 |
-| 补充 Mock 初始化 | 在测试类中补充 `@BeforeEach` 的 MockedStatic 设置（FusionCache/GlobalLocker/AuthServiceHelper） |
-| 替换 fail() 为断言 | 将 `fail("TDD Red")` 替换为具体的 Mock + assert 断言 |
+| 读取测试骨架 | 读取卡片中的测试文件，了解测试意图 |
+| 实现 Helper 方法 | 按 Javadoc 实现步骤填充方法体，删除 `// TODO` 行 |
+| 补充 Mock 初始化 | 在测试类中补充 `@BeforeEach` 的 MockedStatic 设置 |
+| 替换 fail() 为断言 | 将 `fail("TDD Red: [Tn]")` 替换为具体的 Mock + assert 断言 |
 | 逐个变绿 | 每实现一个 Helper 方法，对应测试从红变绿 |
 
 **Mock 模式**：
@@ -192,22 +192,33 @@ version: "1.0.0"
 | GlobalLocker | `mockStatic(GlobalLocker.class)` + try-with-resources |
 | AuthServiceHelper | `mockStatic(AuthServiceHelper.class)` + try-with-resources |
 
-### 5. Entity与DTO
+#### 2.5 模块验证
 
-| 类型 | 规范 | 操作 |
-|------|------|------|
-| Entity | 继承 `DataEntity`，使用 `@TableMeta` + `@ColumnMeta` 注解 | 保留不动（代码生成器产出） |
-| DTO | 代码生成器产出，QueryParam 系列类 | 仅裁剪，不新建 |
+| 检查项 | 命令 | 通过标准 |
+|--------|------|---------|
+| 无残留 TODO | `grep "// TODO: \[Tn\]" {Helper文件}` | 0 行 |
+| 无残留 TDD Red | `grep "TDD Red: \[Tn\]" {Test文件}` | 0 行 |
+| 模块测试通过 | `mvn test -pl {模块}` | 全绿 |
 
-### 6. 编译验证 + 测试验证
+#### 2.6 PLAN-REVIEW
 
-| 检查项 | 命令/方式 | 预期结果 |
-|--------|----------|---------|
-| 编译通过 | `mvn compile` | BUILD SUCCESS |
-| 测试编译通过 | `mvn test-compile` | BUILD SUCCESS |
-| 单元测试通过 | `mvn test` | 全绿（或覆盖率 ≥ 80%） |
-| Swagger可用 | 启动后访问 Swagger UI | 所有接口可展示 |
-| 无运行时错误 | 启动无 Bean 注入失败等错误 | 正常启动 |
+每个模块开发完成后独立进入 PLAN-REVIEW（调用 `311-java-uniweb-dev-review`），不等全部完成。
+
+### 3. 联调验证（所有模块完成后）
+
+> 所有模块开发完成 + review 通过后，执行全量联调验证。
+
+执行 TASKS.md "联调验证"章节中列出的检查项：
+
+| 检查项 | 命令 | 通过标准 |
+|--------|------|---------|
+| 无残留 TODO | `grep -r "// TODO:" src/main/java/` | 0 行 |
+| 无残留 TDD Red | `grep -r "TDD Red" src/test/java/` | 0 行 |
+| 全量编译 | `mvn compile` | BUILD SUCCESS |
+| 全量测试通过 | `mvn test` | 全绿 |
+| 应用启动正常 | 启动 + Swagger 可访问 | 无异常 |
+
+**失败处理**：任一项不通过，定位具体模块修复后重新验证。
 
 ## 并行开发约束
 

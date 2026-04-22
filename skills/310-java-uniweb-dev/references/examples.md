@@ -21,10 +21,12 @@ public class ProductHelper {
 
     private static final DaoManager daoManager = DaoManager.getInstance();
 
+    // TODO: [T1] implement getProduct with FusionCache
     public static ResponseData<Product> getProduct(Long id) {
         return ResponseData.success(null);
     }
 
+    // TODO: [T1] implement saveProduct
     public static ResponseData<Product> saveProduct(Product entity) {
         return ResponseData.success(null);
     }
@@ -40,19 +42,19 @@ class ProductHelperTest {
     @Test
     @DisplayName("查询商品详情 - 正常返回")
     void testGetProduct_Found_ReturnEntity() {
-        fail("TDD Red: Helper 方法尚未实现");
+        fail("TDD Red: [T1] getProduct 正常返回");
     }
 
     @Test
     @DisplayName("查询商品详情 - ID不存在返回warn")
     void testGetProduct_NotFound_ReturnWarn() {
-        fail("TDD Red: Helper 方法尚未实现");
+        fail("TDD Red: [T1] getProduct 不存在");
     }
 
     @Test
     @DisplayName("新增商品 - 正常创建")
     void testSaveProduct_Normal_ReturnCreated() {
-        fail("TDD Red: Helper 方法尚未实现");
+        fail("TDD Red: [T1] saveProduct 正常创建");
     }
 }
 ```

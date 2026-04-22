@@ -52,7 +52,7 @@
 | 方法签名 | 入参出参明确，方法体返回默认值 |
 | 缓存常量 | FusionCache 的 localCacheMaxNum、cacheExpireMillis 已定义 |
 | 缓存 API | 使用 FusionCache/GlobalCache/GlobalLocker 的正确方法名 |
-| 依赖注入 | 构造器注入，不使用 @Autowired |
+| 依赖获取 | `DaoManager.getInstance()` 静态获取，不使用构造器注入 |
 | 分布式序列 | 新增使用 daoManager.getSequenceId(Entity.class) |
 | 租户注入 | 使用 AuthServiceHelper.getSaasId()/getMchId() |
 | 差量更新 | DataEntity setter 自动记录变更，支持差量更新 |
@@ -100,11 +100,11 @@
 |--------|------|
 | 测试类存在 | 每个 Helper 有对应 `{Module}HelperTest.java` |
 | 测试类位置 | `src/test/java/{包}/service/{Module}HelperTest.java` |
-| Mockito 注解 | `@ExtendWith(MockitoExtension.class)` + `@Mock DaoManager` + `@InjectMocks Helper` |
+| Mockito 注解 | `@ExtendWith(MockitoExtension.class)` + `MockedStatic DaoManager/FusionCache` |
 | 测试方法数 | 每个 Helper 方法 ≥ 2 个测试方法（正常 + 边界/异常） |
 | @DisplayName | 每个测试方法有 `@DisplayName("...")` |
 | 测试方法 Javadoc | 包含测试意图、准备数据、预期结果 |
-| 方法体 | 使用 `fail("TDD Red: Helper 方法尚未实现")` 标记 Red |
+| 方法体 | 使用 `fail("TDD Red: [Tn] Helper 方法尚未实现")` 标记 Red，Tn 为任务 ID |
 | 命名规范 | `test{Method}_{Scenario}_{ExpectedResult}` |
-| Helper 依赖注入 | Helper 使用构造器注入 DaoManager（非 static final），确保 @Mock 可注入 |
+| Helper 依赖获取 | Helper 使用 `DaoManager.getInstance()` 静态获取，测试用 `MockedStatic` 隔离 |
 | README 测试策略 | README.md 包含测试策略章节（分层/覆盖率/Mock策略） |
