@@ -153,7 +153,7 @@ stateDiagram-v2
 
 | 被Mock组件 | Mock方式 | 说明 |
 |-----------|---------|------|
-| DaoManager | `@Mock` + `@InjectMocks` | 构造器注入，Mockito 自动注入 |
+| DaoManager | `MockedStatic` | 静态方法 `DaoManager.getInstance()` 隔离 |
 | FusionCache | `MockedStatic` | 静态方法隔离，验证 get/put/invalidate |
 | GlobalLocker | `MockedStatic` | 静态方法隔离，验证 tryLock/unlock |
 | AuthServiceHelper | `MockedStatic` | 静态方法隔离，模拟 getSaasId/getMchId |
@@ -175,23 +175,41 @@ stateDiagram-v2
 > 每个 controller 角色包中必须包含此文件。声明角色级基础权限，Controller 方法级 `@MscPermDeclare` 在此基础上做细粒度控制。
 
 ```java
-@MscPermDeclare(name = "{模块功能描述}", user = UserType.{SAAS/MCH/ADMIN})
-package {项目包路径}.controller.{角色};
+package {项目包路径}.controller.{角色}.{模块};
 
-import uw.auth.service.anno.MscPermDeclare;
-import uw.auth.service.vo.UserType;
+import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import uw.auth.service.annotation.MscPermDeclare;
+import uw.auth.service.constant.UserType;
+
+/**
+ * {模块功能描述} - 角色级权限声明
+ */
+@RestController
+public class $PackageInfo$ {
+
+    @MscPermDeclare(user = UserType.{SAAS/MCH/ADMIN})
+    @Operation(summary = "{模块功能描述}", description = "{模块功能描述}")
+    @GetMapping("/{角色}/{模块}")
+    public void info() {
+    }
+}
 ```
 
 角色路径对照：
 
-| 角色 | @RequestMapping | @MscPermDeclare user | controller 包名 |
-|------|----------------|---------------------|----------------|
-| SAAS运营商 | `/saas/{module}` | `UserType.SAAS` | `controller.saas` |
-| 商户 | `/mch/{module}` | `UserType.MCH` | `controller.mch` |
-| 平台管理员 | `/admin/{module}` | `UserType.ADMIN` | `controller.admin` |
-| ROOT | `/root/{module}` | `UserType.ROOT` | `controller.root` |
-| OPS | `/ops/{module}` | `UserType.OPS` | `controller.ops` |
-| RPC内部调用 | `/rpc/{module}` | `UserType.RPC` | `controller.rpc` |
+| 角色 | @RequestMapping | @MscPermDeclare user | @MscPermDeclare auth | controller 包名 | $PackageInfo$ |
+|------|----------------|---------------------|---------------------|----------------|-------------|
+| SAAS运营商 | `/saas/{module}` | `UserType.SAAS` | `AuthType.PERM` | `controller.saas` | 需要 |
+| 商户 | `/mch/{module}` | `UserType.MCH` | `AuthType.PERM` | `controller.mch` | 需要 |
+| 平台管理员 | `/admin/{module}` | `UserType.ADMIN` | `AuthType.PERM` | `controller.admin` | 需要 |
+| ROOT | `/root/{module}` | `UserType.ROOT` | `AuthType.PERM` | `controller.root` | 需要 |
+| OPS | `/ops/{module}` | `UserType.OPS` | `AuthType.PERM` | `controller.ops` | 需要 |
+| RPC内部调用 | `/rpc/{module}` | `UserType.RPC` | `AuthType.NONE` | `controller.rpc` | 需要 |
+| **GUEST(C端)** | `/guest/{module}` | `UserType.GUEST` | `AuthType.USER` | `controller.guest` | **不需要** |
+
+> **Guest 角色说明**：`AuthType.USER` 仅验证用户类型（已登录），不验证权限菜单。Guest 无后台菜单系统，不适用 `AuthType.PERM`。`$PackageInfo$` 仅用于标准角色（saas/mch/admin/root/ops/rpc），guest 不适用。
 
 ---
 
@@ -207,7 +225,8 @@ import uw.auth.service.vo.UserType;
  *
  * <p>设计思路：{说明该Controller在整体架构中的角色，负责哪些业务场景的接口暴露}</p>
  *
- * <p>依赖关系：{Module}Helper</p>
+ * <p>简单CRUD：直接调 DaoManager.getInstance()</p>
+ * <p>复杂逻辑：调用 {Module}Helper.xxx() 静态方法</p>
  *
  * <p>需求映射：README.md 中 {模块名} 模块，PRD功能点 {xxx}</p>
  *
@@ -220,11 +239,8 @@ import uw.auth.service.vo.UserType;
 @MscPermDeclare(name = "{模块功能}", user = UserType.{SAAS/MCH/ADMIN}, log = ActionLog.NONE)
 public class {ModuleName}Controller {
 
-    private final {Module}Helper {module}Helper;
-
-    public {ModuleName}Controller({Module}Helper {module}Helper) {
-        this.{module}Helper = {module}Helper;
-    }
+    // 简单CRUD直接调 DaoManager.getInstance()
+    // 复杂逻辑调 {Module}Helper.xxx() 静态方法，无需注入
 }
 ```
 
@@ -356,9 +372,14 @@ public ResponseData<Integer> disable(@RequestParam Long id) {
 
 ## 4. Helper 模板
 
-> service 包下新建，方法体返回默认值，Javadoc 包含完整设计意图。
-
-### 类级 Javadoc
+> service 包下新建，纯静态工具类，不加 `@Component`，不使用构造器注入。
+> **创建前提**：三条件满足至少一项（逻辑复杂/功能性/多处调用），简单 CRUD 不建 Helper。
+>
+> **Helper 两种类型**：
+> - **模块级 Helper**：按数据库表/模块识别，封装该模块的复杂业务（如 PostQuestionHelper）
+> - **横切 Helper**：按 PRD 中跨模块的公共业务规则识别，不绑定单表（如 SensitiveWordHelper）
+>
+> 横切 Helper 识别方法：通读 PRD，找出"在多个模块中出现相同描述"的业务规则。
 
 ```java
 package {项目包路径}.service;
@@ -366,6 +387,7 @@ package {项目包路径}.service;
 import {项目包路径}.entity.*;
 import uw.auth.service.AuthServiceHelper;
 import uw.cache.FusionCache;
+import uw.cache.CacheDataLoader;
 import uw.cache.GlobalCache;
 import uw.cache.GlobalLocker;
 import uw.common.dto.ResponseData;
@@ -373,18 +395,17 @@ import uw.dao.DaoManager;
 import uw.dao.DataList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 /**
- * {ModuleName}Helper - {模块}业务逻辑
+ * {ModuleName}Helper - {模块}复杂业务逻辑
  *
  * <p>设计思路：{说明该Helper负责的核心业务逻辑范围，处理哪些业务场景}</p>
  *
- * <p>依赖关系：</p>
+ * <p>创建理由：{说明为什么需要Helper，满足三条件中哪些项}</p>
  * <ul>
- *   <li>DaoManager - 数据持久化操作（uw-dao）</li>
- *   <li>AuthServiceHelper - 当前用户信息获取（uw-auth-service）</li>
- *   <li>FusionCache - 融合缓存（uw-cache）</li>
+ *   <li>逻辑复杂：{如状态机、多步流程等}</li>
+ *   <li>功能性：{如缓存、分布式锁等}</li>
+ *   <li>多处调用：{如N个Controller调用}</li>
  * </ul>
  *
  * <p>需求映射：README.md 中 {模块名} 模块</p>
@@ -392,12 +413,10 @@ import org.springframework.stereotype.Component;
  * @author {author}
  * @since 1.0.0
  */
-@Component
 public class {Module}Helper {
 
     private static final Logger log = LoggerFactory.getLogger({Module}Helper.class);
-
-    private final DaoManager daoManager;
+    private static final DaoManager daoManager = DaoManager.getInstance();
 
     // ==================== 缓存配置 ====================
 
@@ -406,16 +425,21 @@ public class {Module}Helper {
     // FusionCache配置：缓存过期时间（毫秒），30分钟
     private static final long CACHE_EXPIRE_MILLIS = 1800_000L;
 
-    /**
-     * 构造器注入依赖
-     *
-     * @param daoManager 数据访问管理器
-     */
-    public {Module}Helper(DaoManager daoManager) {
-        this.daoManager = daoManager;
+    // 设计阶段必须完成 FusionCache 初始化
+    static {
+        FusionCache.config(new FusionCache.Config(
+            {Entity}.class,
+            CACHE_MAX_NUM,
+            CACHE_EXPIRE_MILLIS
+        ), new CacheDataLoader<Long, {Entity}>() {
+            @Override
+            public {Entity} load(Long key) {
+                return daoManager.load({Entity}.class, key).getData();
+            }
+        });
     }
 
-    // ==================== CRUD 方法 ====================
+    // ==================== 业务方法 ====================
 
     // ... 方法签名见下方
 }
@@ -425,26 +449,7 @@ public class {Module}Helper {
 
 ```java
 /**
- * 分页查询{资源}
- *
- * <p>设计思路：构建AuthQueryParam查询条件，调用DaoManager分页查询</p>
- *
- * <p>实现要求：</p>
- * <ul>
- *   <li>keyword 通过 QueryParam 的 LIKE_QUERY_ENABLE(true) 启用模糊匹配</li>
- *   <li>AuthQueryParam 自动注入 saasId，按需 bindUserId()/bindMchId()</li>
- *   <li>调用 daoManager.list({Entity}.class, param)</li>
- * </ul>
- *
- * @param param 权限查询参数
- * @return 分页数据列表
- */
-public ResponseData<DataList<{Entity}>> list{Entity}(AuthQueryParam param) {
-    return daoManager.list({Entity}.class, param);
-}
-
-/**
- * 查询{资源}详情
+ * 查询{资源}详情（带缓存）
  *
  * <p>缓存策略：FusionCache，本地{CACHE_MAX_NUM}条，过期{CACHE_EXPIRE_MILLIS}ms</p>
  * <p>更新机制：修改/删除时调用 FusionCache.invalidate({Entity}.class, id) 失效</p>
@@ -460,61 +465,26 @@ public ResponseData<DataList<{Entity}>> list{Entity}(AuthQueryParam param) {
  * @param id 主键ID
  * @return {资源}实体
  */
-public ResponseData<{Entity}> get{Entity}(Long id) {
+public static ResponseData<{Entity}> get{Entity}(Long id) {
     return ResponseData.success(null);
 }
 
 /**
- * 新增{资源}
+ * {复杂业务操作}
  *
- * <p>设计思路：校验 → 填充默认值 → 获取序列ID → 持久化</p>
+ * <p>设计思路：{状态机流转/多步流程/复杂计算等}</p>
  *
  * <p>实现要求：</p>
  * <ul>
- *   <li>entity.setId(daoManager.getSequenceId({Entity}.class)) 获取分布式ID</li>
- *   <li>entity.setSaasId(AuthServiceHelper.getSaasId()) 注入租户ID</li>
- *   <li>entity.setMchId(AuthServiceHelper.getMchId()) 注入商户ID（如需）</li>
- *   <li>调用 daoManager.save(entity) 持久化</li>
- *   <li>新增数据无需处理缓存（尚未被缓存）</li>
+ *   <li>步骤1：{校验/查询前置数据}</li>
+ *   <li>步骤2：{核心业务逻辑}</li>
+ *   <li>步骤3：{缓存失效/通知等后置操作}</li>
  * </ul>
  *
- * @param entity {资源}实体
- * @return 创建后的实体
+ * @param {param1} {参数说明}
+ * @return 操作结果
  */
-public ResponseData<{Entity}> save{Entity}({Entity} entity) {
-    return ResponseData.success(null);
-}
-
-/**
- * 修改{资源}
- *
- * <p>缓存策略：修改成功后调用 FusionCache.invalidate({Entity}.class, id) 失效缓存</p>
- *
- * <p>实现要求：</p>
- * <ul>
- *   <li>先 daoManager.load({Entity}.class, id) 查原实体，不存在返回 warn</li>
- *   <li>校验状态是否允许修改（如有状态机约束）</li>
- *   <li>设置变更字段（DataEntity setter自动记录到DataUpdateInfo，支持差量更新）</li>
- *   <li>调用 daoManager.update(entity) 差量更新</li>
- *   <li>更新成功后 FusionCache.invalidate({Entity}.class, id)</li>
- * </ul>
- *
- * @param entity {资源}实体（含ID和待更新字段）
- * @return 修改后的实体
- */
-public ResponseData<{Entity}> update{Entity}({Entity} entity) {
-    return ResponseData.success(null);
-}
-
-/**
- * 删除{资源}
- *
- * <p>缓存策略：删除成功后调用 FusionCache.invalidate({Entity}.class, id) 失效缓存</p>
- *
- * @param id 主键ID
- * @return 影响行数
- */
-public ResponseData<Integer> delete{Entity}(Long id) {
+public static ResponseData<{Type}> complexMethod({Params}) {
     return ResponseData.success(null);
 }
 ```
@@ -538,7 +508,7 @@ public ResponseData<Integer> delete{Entity}(Long id) {
  * @param id {资源}ID
  * @return 操作结果
  */
-public ResponseData<Integer> process{Entity}(Long id) {
+public static ResponseData<Integer> process{Entity}(Long id) {
     return ResponseData.success(null);
 }
 ```
@@ -560,7 +530,7 @@ public ResponseData<Integer> process{Entity}(Long id) {
  *   <li>修改/删除时 GlobalCache.delete(cacheName, cacheKey) 失效</li>
  * </ul>
  */
-public ResponseData<DataList<{Entity}>> list{Entity}Cached(AuthQueryParam param) {
+public static ResponseData<DataList<{Entity}>> list{Entity}Cached(AuthQueryParam param) {
     return ResponseData.success(null);
 }
 ```
@@ -638,20 +608,20 @@ import uw.dao.DataList;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
- * {Module}HelperTest - {模块}业务逻辑测试
+ * {Module}HelperTest - {模块}复杂业务逻辑测试
  *
- * <p>测试范围：{Module}Helper 的所有公共方法</p>
+ * <p>测试范围：{Module}Helper 的所有公共静态方法</p>
  *
  * <p>测试策略：</p>
  * <ul>
- *   <li>Mock DaoManager 进行数据库操作隔离</li>
+ *   <li>MockedStatic DaoManager.getInstance() 隔离数据库</li>
  *   <li>每个方法覆盖正常 + 边界/异常两个场景</li>
  * </ul>
  *
@@ -660,39 +630,6 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @ExtendWith(MockitoExtension.class)
 class {Module}HelperTest {
-
-    @Mock
-    private DaoManager daoManager;
-
-    @InjectMocks
-    private {Module}Helper {module}Helper;
-
-    // ==================== listXxx 测试 ====================
-
-    /**
-     * 测试分页查询{资源} - 正常返回分页数据
-     *
-     * <p>准备数据：构造包含2条{资源}的AuthQueryParam</p>
-     * <p>预期结果：返回ResponseData，isSuccess()=true，数据列表size=2</p>
-     */
-    @Test
-    @DisplayName("分页查询{资源} - 正常返回分页数据")
-    void testList{Entity}_Normal_ReturnPagedData() {
-        // TODO: 开发阶段实现 Mock 和断言
-        fail("TDD Red: Helper 方法尚未实现");
-    }
-
-    /**
-     * 测试分页查询{资源} - 空结果
-     *
-     * <p>准备数据：构造无匹配条件的AuthQueryParam</p>
-     * <p>预期结果：返回ResponseData，isSuccess()=true，数据列表size=0</p>
-     */
-    @Test
-    @DisplayName("分页查询{资源} - 空结果返回空列表")
-    void testList{Entity}_NoMatch_ReturnEmptyList() {
-        fail("TDD Red: Helper 方法尚未实现");
-    }
 
     // ==================== getXxx 测试 ====================
 
@@ -705,6 +642,7 @@ class {Module}HelperTest {
     @Test
     @DisplayName("查询{资源}详情 - 正常返回实体")
     void testGet{Entity}_Found_ReturnEntity() {
+        // TODO: 开发阶段实现 MockedStatic DaoManager 和断言
         fail("TDD Red: Helper 方法尚未实现");
     }
 
@@ -717,48 +655,6 @@ class {Module}HelperTest {
     @Test
     @DisplayName("查询{资源}详情 - ID不存在返回warn")
     void testGet{Entity}_NotFound_ReturnWarn() {
-        fail("TDD Red: Helper 方法尚未实现");
-    }
-
-    // ==================== saveXxx 测试 ====================
-
-    @Test
-    @DisplayName("新增{资源} - 正常创建并返回实体")
-    void testSave{Entity}_Normal_ReturnCreatedEntity() {
-        fail("TDD Red: Helper 方法尚未实现");
-    }
-
-    @Test
-    @DisplayName("新增{资源} - 唯一性冲突返回错误")
-    void testSave{Entity}_DuplicateName_ReturnError() {
-        fail("TDD Red: Helper 方法尚未实现");
-    }
-
-    // ==================== updateXxx 测试 ====================
-
-    @Test
-    @DisplayName("修改{资源} - 正常更新并返回实体")
-    void testUpdate{Entity}_Normal_ReturnUpdatedEntity() {
-        fail("TDD Red: Helper 方法尚未实现");
-    }
-
-    @Test
-    @DisplayName("修改{资源} - ID不存在返回warn")
-    void testUpdate{Entity}_NotFound_ReturnWarn() {
-        fail("TDD Red: Helper 方法尚未实现");
-    }
-
-    // ==================== deleteXxx 测试 ====================
-
-    @Test
-    @DisplayName("删除{资源} - 正常删除")
-    void testDelete{Entity}_Normal_ReturnSuccess() {
-        fail("TDD Red: Helper 方法尚未实现");
-    }
-
-    @Test
-    @DisplayName("删除{资源} - ID不存在返回warn")
-    void testDelete{Entity}_NotFound_ReturnWarn() {
         fail("TDD Red: Helper 方法尚未实现");
     }
 }
@@ -777,8 +673,7 @@ import uw.dao.DaoManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -786,11 +681,11 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * {Module}HelperTest - {模块}复杂业务逻辑测试
  *
- * <p>测试范围：{Module}Helper 的所有公共方法，含缓存一致性、并发控制</p>
+ * <p>测试范围：{Module}Helper 的所有公共静态方法，含缓存一致性、并发控制</p>
  *
  * <p>测试策略：</p>
  * <ul>
- *   <li>Mock DaoManager 隔离数据库操作</li>
+ *   <li>MockedStatic DaoManager.getInstance() 隔离数据库操作</li>
  *   <li>MockedStatic FusionCache / GlobalLocker 隔离缓存和锁</li>
  *   <li>MockedStatic AuthServiceHelper 隔离用户上下文</li>
  *   <li>业务流程方法覆盖正常 + 每个分支 + 每个异常</li>
@@ -803,15 +698,6 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @ExtendWith(MockitoExtension.class)
 class {Module}HelperTest {
-
-    @Mock
-    private DaoManager daoManager;
-
-    @InjectMocks
-    private {Module}Helper {module}Helper;
-
-    // ==================== CRUD 测试（同简单模块） ====================
-    // ... list/get/save/update/delete 测试方法
 
     // ==================== 业务流程测试 ====================
 
@@ -869,28 +755,122 @@ class {Module}HelperTest {
 
 ---
 
-## 7. Helper 间依赖注入模板
+## 7. Controller 单元测试模板
 
-> 当 HelperA 依赖 HelperB 时的构造器注入示例。
+> 设计阶段（TDD Red）产出测试骨架，验证 API 契约：HTTP 方法、路径、参数绑定、权限注解、响应格式、调用链路。
+> 测试类位置与源码目录结构对齐：`src/test/java/{包路径}/controller/{角色}/{模块}/{Module}ControllerTest.java`
 
 ```java
-@Component
-public class OrderHelper {
+package {项目包路径}.controller.{角色}.{模块};
 
-    private final DaoManager daoManager;
-    private final ProductHelper productHelper;
+import {项目包路径}.entity.{Entity};
+import {项目包路径}.dto.{Entity}QueryParam;
+import uw.common.dto.ResponseData;
+import uw.dao.DataList;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-    public OrderHelper(DaoManager daoManager, ProductHelper productHelper) {
-        this.daoManager = daoManager;
-        this.productHelper = productHelper;
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * {Module}ControllerTest - {模块} API 契约测试
+ *
+ * <p>测试范围：{Module}Controller 的所有接口方法</p>
+ *
+ * <p>测试策略：</p>
+ * <ul>
+ *   <li>验证 HTTP 方法和路径映射（GET/POST）</li>
+ *   <li>验证 @MscPermDeclare 权限注解正确性</li>
+ *   <li>验证请求参数绑定（@RequestBody / @RequestParam）</li>
+ *   <li>验证响应格式符合 ResponseData 规范</li>
+ *   <li>验证调用链路：Controller → Helper 或 Controller → DaoManager</li>
+ * </ul>
+ *
+ * @author {author}
+ * @since 1.0.0
+ */
+@ExtendWith(MockitoExtension.class)
+class {Module}ControllerTest {
+
+    // ==================== 列表查询测试 ====================
+
+    /**
+     * 测试列表查询 - 正常返回
+     *
+     * <p>API: GET /{角色}/{模块}/list</p>
+     * <p>预期结果：返回 ResponseData<DataList<{Entity}>></p>
+     */
+    @Test
+    @DisplayName("列表查询 - 正常返回")
+    void testList_Normal_ReturnSuccess() {
+        fail("TDD Red: Controller 测试尚未实现");
     }
+
+    // ==================== 详情查询测试 ====================
+
+    /**
+     * 测试详情查询 - 正常返回
+     *
+     * <p>API: GET /{角色}/{模块}/get?id={id}</p>
+     * <p>预期结果：返回 ResponseData<{Entity}></p>
+     */
+    @Test
+    @DisplayName("详情查询 - 正常返回")
+    void testGet_Normal_ReturnSuccess() {
+        fail("TDD Red: Controller 测试尚未实现");
+    }
+
+    // ==================== 新增测试 ====================
+
+    /**
+     * 测试新增 - 正常返回
+     *
+     * <p>API: POST /{角色}/{模块}/save</p>
+     * <p>预期结果：返回 ResponseData<{Entity}>，调用链路：Controller → {Module}Helper.save{Entity}()</p>
+     */
+    @Test
+    @DisplayName("新增 - 正常返回")
+    void testSave_Normal_ReturnSuccess() {
+        fail("TDD Red: Controller 测试尚未实现");
+    }
+
+    // ==================== 修改测试 ====================
+
+    /**
+     * 测试修改 - 正常返回
+     *
+     * <p>API: POST /{角色}/{模块}/update</p>
+     * <p>预期结果：返回 ResponseData<{Entity}>，调用链路：Controller → {Module}Helper.update{Entity}()</p>
+     */
+    @Test
+    @DisplayName("修改 - 正常返回")
+    void testUpdate_Normal_ReturnSuccess() {
+        fail("TDD Red: Controller 测试尚未实现");
+    }
+}
+```
+
+---
+
+## 8. Helper 间调用模板
+
+> Helper 是静态工具类，Helper 间直接通过类名调用静态方法，无需注入。
+
+```java
+public class OrderHelper {
+    private static final DaoManager daoManager = DaoManager.getInstance();
 
     /**
      * 创建订单
      *
-     * <p>跨Helper调用：调用 productHelper.getXxx() 校验商品状态</p>
+     * <p>跨Helper调用：直接调用 ProductHelper.getXxx() 校验商品状态</p>
      */
-    public ResponseData<Order> saveOrder(Order order) {
+    public static ResponseData<Order> saveOrder(Order order) {
+        // 直接调用其他Helper的静态方法
+        ResponseData<Product> productResult = ProductHelper.getProduct(order.getProductId());
+        // ...
         return ResponseData.success(null);
     }
 }
@@ -902,13 +882,13 @@ public class OrderHelper {
 @ExtendWith(MockitoExtension.class)
 class OrderHelperTest {
 
-    @Mock
-    private DaoManager daoManager;
+    // Helper 是静态类，测试时需要 MockedStatic
+    // 开发阶段补充 MockedStatic<OrderHelper> 等
 
-    @Mock
-    private ProductHelper productHelper;
-
-    @InjectMocks
-    private OrderHelper orderHelper;
+    @Test
+    @DisplayName("创建订单 - 正常流程")
+    void testSaveOrder_Normal_ReturnSuccess() {
+        fail("TDD Red: Helper 方法尚未实现");
+    }
 }
 ```

@@ -4,14 +4,6 @@
 
 短链接生成与解析客户端，用于将长 URL 转换为短链接，支持密语保护和过期时间设置。
 
-**配置前缀**: `uw.tinyurl`
-
-```yaml
-uw:
-  tinyurl:
-    tinyurl-center-host: http://uw-tinyurl-center
-```
-
 #### TinyurlClientHelper API
 
 ```java

@@ -4,14 +4,6 @@
 
 基于 SSE（Server-Sent Events）的实时通知推送客户端，用于向指定用户或运营商推送 Web 通知。
 
-**配置前缀**: `uw.notify`
-
-```yaml
-uw:
-  notify:
-    notify-center-host: http://uw-notify-center
-```
-
 #### NotifyClientHelper API
 
 ```java

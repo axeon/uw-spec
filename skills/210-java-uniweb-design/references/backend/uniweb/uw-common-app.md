@@ -6,7 +6,7 @@
 
 | 功能 | 说明 |
 |---|---|
-| 自动化权限注入 | 基于 AuthServiceHelper + QueryParam，通过 saasId/mchId/groupId/userId 四字段 |
+| 自动化权限注入 | 基于 AuthServiceHelper + QueryParam，注入 saasId/mchId/groupId/userId 权限数据 |
 | 关键操作日志 | `SysCritLog`，日志级别 BASE/REQUEST/RESPONSE/ALL/CRIT |
 | 数据历史记录 | `SysDataHistoryHelper`，数据变更回滚支持 |
 | JSON配置管理 | `JsonConfigHelper` + `JsonConfigBox` + `JsonConfigParam` |

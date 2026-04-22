@@ -18,7 +18,7 @@ uw:
 
 ```java
 @MscPermDeclare(
-    user = UserType.ADMIN,        // 用户类型要求
+    user = UserType.ADMIN,        // 用户类型
     auth = AuthType.PERM,         // 授权类型
     log = ActionLog.ALL           // 日志级别
 )
@@ -180,6 +180,4 @@ long createAt              // Token 创建时间戳
 Set<Integer> permSet       // 权限ID集合
 Map<String, String> configMap  // 用户配置
 
-// 常用方法
-boolean isExpired()        // 判断 Token 是否过期
 ```

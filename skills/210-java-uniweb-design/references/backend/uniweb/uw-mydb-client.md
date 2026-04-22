@@ -4,14 +4,6 @@
 
 MyDB 数据库运维中心客户端，用于动态分配 SAAS 数据节点，实现分库分表的数据库路由。
 
-**配置前缀**: `uw.mydb`
-
-```yaml
-uw:
-  mydb:
-    mydb-center-host: http://uw-mydb-center
-```
-
 #### MydbClientHelper API
 
 ```java
@@ -66,9 +58,6 @@ public class DataNode {
 #### 使用示例
 
 ```java
-@Service
-public class SaasInitService {
-    
     /**
      * 为新租户分配数据库节点
      */
@@ -97,6 +86,5 @@ public class SaasInitService {
             "db_shard_01"     // 预设节点名
         );
     }
-}
 ```
 

@@ -12,6 +12,13 @@ version: "1.0.0"
 
 基于 UniWeb + SaaS 技术栈，采用**TDD 驱动 + 设计即代码**模式：设计文档融入代码 Javadoc，总体设计作为项目 README.md。设计阶段同步产出 Helper 单元测试骨架（TDD Red 阶段），确保每个 Helper 方法都有可执行的测试契约。设计完成后项目可编译通过、测试可运行（全红为预期）、Swagger 可用。
 
+**设计阶段 vs 开发阶段分工**：
+
+| 阶段 | Controller | Helper | 测试 |
+|------|-----------|--------|------|
+| **设计阶段（210）** | 方法体包含完整调用链路：`return XxxHelper.saveXxx(entity)` 或 `return DaoManager.getInstance().list(Xxx.class, param)` | 方法签名 + Javadoc，方法体返回 `ResponseData.success(null)` | 测试骨架（TDD Red） |
+| **开发阶段（310）** | 不改动（调用链路已确定） | 实现 Helper 方法内部逻辑 | 实现测试断言（TDD Green） |
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -53,16 +60,15 @@ version: "1.0.0"
 |--------|----------|------|
 | PRD | `requirement/prds/*` | 产品需求文档，功能模块及各终端详细需求 |
 | 数据库设计文档 | `database/database-design.md` | 表结构设计、实体关系、索引策略 |
-| 数据库DDL | `database/database-ddl.sql` | DDL建表语句，用于对照表名和字段 |
 | 项目目录 | `backend/{项目名}-app/` | 210阶段项目代码以及产出的entity/dto/controller |
 
 ## 前置条件
 
 | 前置技能 | 说明 |
 |---------|------|
-| [200-database-design](../200-database-design/SKILL.md) | 数据库设计已完成并通过评审 |
-| [210-java-uniweb-init](../210-java-uniweb-init/SKILL.md) | 项目已通过模板初始化 |
-| [210-java-uniweb-gencode](../210-java-uniweb-gencode/SKILL.md) | entity/dto/controller 全量curd功能已由代码生成器生成在admin角色下，需定制裁剪 |
+| 200-database-design | 数据库设计已完成并通过评审 |
+| 210-java-uniweb-init | 项目已通过模板初始化 |
+| 210-java-uniweb-gencode | entity/dto/controller 全量curd功能已由代码生成器生成在admin角色下，需定制裁剪 |
 
 **已生成代码**：代码生成器已产出 entity 实体类、dto 数据传输对象和标准 CRUD Controller，设计阶段在此基础上裁剪和补充。
 
@@ -72,8 +78,10 @@ version: "1.0.0"
 |------|------|
 | Controller 路径第一级 | 必须为用户角色（`/saas/`、`/mch/`、`/admin/`、`/root/`、`/ops/`、`/rpc/`） |
 | Controller 初始位置 | 代码生成器产出在 `controller/admin/{module}/`，按角色权限映射移动到目标角色目录 |
-| `$PackageInfo$.java` | 每个 controller 角色包下的 `{module}/` 目录必须包含 $PackageInfo$.java |
+| `$PackageInfo$.java` | 仅标准角色（saas/mch/admin/root/ops/rpc）的 controller 包下 `{module}/` 目录必须包含。**guest 角色不适用** |
 | Helper 命名 | service 包内组件统一命名为 `{Module}Helper` |
+| Helper 存在前提 | **三条件满足其一才创建**：(1)逻辑非常复杂（状态机/多步流程/计算），(2)功能性（缓存/分布式锁/事务），(3)多处调用（2个以上调用方）。简单CRUD直接在Controller调DaoManager，不建Helper |
+| Helper 方法风格 | **全部 static 方法**，可通过 `@Component`构造器注入Bean。DaoManager 通过 `DaoManager.getInstance()` 获取，FusionCache/GlobalCache/GlobalLocker 本身就是静态API |
 | Entity | 代码生成器产出，保留不修改 |
 | DTO | 代码生成器产出，仅裁剪不新建 |
 | 禁用 Lombok | 全局禁用，getter/setter/构造器均手写 |
@@ -92,16 +100,29 @@ version: "1.0.0"
 | 确认项 | 目的 | 启发式问题 |
 |--------|------|-----------|
 | 模块清单 + 复杂度分类 | 决定哪些用生成器代码、哪些需要 Helper | "根据PRD和数据库，识别到N个模块[列出]，是否有遗漏？" |
+| **横切关注点识别** | **识别跨模块的公共业务规则** | "PRD中哪些业务规则影响多个模块？（如敏感词检测、通知发送、权限校验、数据脱敏等）" |
 | 定制 API | 确定设计工作量 | "除标准CRUD+enable+disable外，各模块还有哪些接口？" |
 | 外部依赖 | 识别技术风险 | "需要对接哪些外部系统？saas-finance？第三方API？异步任务？" |
 | 测试策略 | 确定测试覆盖范围 | "哪些Helper方法需要Mock DaoManager/FusionCache？哪些需要并发测试？" |
+
+**横切关注点识别（重要）**：
+
+模块级 Helper 按"一个模块一个 Helper"识别，但**横切关注点 Helper 按"一个业务规则一个 Helper"识别**。横切关注点天然满足 Helper 三条件中的"多处调用"。
+
+| 横切关注点 | 影响的模块 | Helper 方法 | 说明 |
+|-----------|-----------|------------|------|
+| 敏感词检测 | PostQuestion, PostAnswer, PostArticle, CmsComment | `SensitiveWordHelper.checkSensitiveWord(text)` | 内容发布前检测，决定审核状态 |
+| 通知发送 | PostQuestion, PostAnswer, PostArticle, GuestUser | `MsgNotifyHelper.sendNotify(entity)` | 多种业务事件触发通知 |
+| 其他通用规则 | 按PRD分析 | `{Xxx}Helper.{method}()` | 按需识别 |
+
+**识别方法**：通读 PRD，找出"在多个模块中出现相同描述"的业务规则（如"敏感词检测"、"发送通知"、"权限校验"），每个都应抽象为独立 Helper。
 
 模块分类决策：
 
 | 分类 | 条件 | 代码策略 |
 |------|------|---------|
-| 简单模块 | 仅标准CRUD+enable+disable | 代码生成器产出，裁剪即可 |
-| 复杂模块 | 含业务流程、状态机、多表联动 | 新建 Helper 封装核心逻辑 |
+| 简单模块 | 仅标准CRUD+enable+disable，无复杂逻辑 | 代码生成器产出，Controller 直接调 `DaoManager.getInstance()`，**不建 Helper** |
+| 复杂模块 | 含业务流程、状态机、多表联动、缓存、锁 | 仅将复杂方法提取到 Helper（static），简单 CRUD 仍在 Controller |
 
 **确认完成标准**：模块清单无遗漏、每个模块复杂度已分类、定制 API 已列出、外部依赖已识别、测试策略已明确。
 ### Phase 1: 编写 README.md
@@ -151,16 +172,11 @@ version: "1.0.0"
 | 排序字段 | **不裁剪** ALLOWED_SORT_PROPERTY，保留无害，裁剪风险大于收益 |
 | 校验注解 | 按设计补充 `@NotNull`、`@Size` 等约束（开发阶段补充即可） |
 
-通用删除字段（所有 DTO 一律删除）：`stateGte`、`stateLte`、`modifyDateRange`（无业务场景）。
-
 **裁剪方法（重要）**：
 
-| 方法 | 可靠性 | 说明 |
-|------|--------|------|
-| Edit 工具逐块删除 | 最高 | 用 old_string 精确匹配完整代码块，每次删除后确认结构完整 |
-| Python 行号定位脚本 | 中等 | 从 `/**` 追踪到 `}` 结束，用花括号计数定位方法边界 |
-| Python re.sub 多行正则 | **禁止** | 正则只删签名不删方法体，必留孤儿代码导致编译失败 |
-| sed 批量删除 | **禁止** | 多行块边界匹配不可靠 |
+**Edit 工具逐块删除** 用 old_string 精确匹配完整代码块，每次删除后确认结构完整
+**禁用sed批量删除和Python re.sub 多行正则** **禁止** 正则只删签名不删方法体，必留孤儿代码导致编译失败
+**sed 批量删除** **禁止** 多行块边界匹配不可靠
 
 **裁剪后必须**：`mvn compile` 验证。文件损坏时用代码生成器重新生成 dto 再裁剪，不手动修补。
 
@@ -172,45 +188,126 @@ version: "1.0.0"
 |------|------|
 | 角色移动 | 根据 README.md 角色权限映射，将 `{module}/` 从 `admin/` 移动到目标角色目录（`saas/`、`mch/` 等），并修正 package 声明和 import |
 | 删除多余方法 | 如资源不允许删除，删除 delete() 方法 |
-| 补充权限注解 | 每个方法添加 `@MscPermDeclare` 权限声明 |
+| **修正权限注解** | **按角色修正 `@MscPermDeclare` 的 `user` 和 `auth` 参数**（见下方映射表），代码生成器全部产出为 `UserType.ADMIN + AuthType.PERM`，移动到其他角色后必须修正 |
+| **方法体调用** | **必须确定完整调用链路，方法体不能留空**。复杂逻辑：`return {Module}Helper.{method}(...)`，简单 CRUD：`return DaoManager.getInstance().{method}(...)` |
 | 补充 Javadoc | 每个方法添加完整设计说明（设计思路 + 实现步骤） |
-| 补充 $PackageInfo$.java | 每个 `{角色}/{模块}/` 目录下新建 $PackageInfo$.java，声明角色级权限 |
+| 补充 $PackageInfo$.java | 仅标准角色（saas/mch/admin/root/ops/rpc）的 `{角色}/{模块}/` 目录下新建 $PackageInfo$.java，声明角色级权限。**guest 角色不适用** |
+
+**@MscPermDeclare 按角色映射表**（参考 [uw-auth-service.md](references/backend/uniweb/uw-auth-service.md)）：
+
+| 角色 | user | auth | 说明 |
+|------|------|------|------|
+| SAAS | `UserType.SAAS` | `AuthType.PERM` | 需验证权限，注册为菜单 |
+| MCH | `UserType.MCH` | `AuthType.PERM` | 需验证权限，注册为菜单 |
+| ADMIN | `UserType.ADMIN` | `AuthType.PERM` | 需验证权限，注册为菜单 |
+| ROOT | `UserType.ROOT` | `AuthType.PERM` | 需验证权限，注册为菜单 |
+| OPS | `UserType.OPS` | `AuthType.PERM` | 需验证权限，注册为菜单 |
+| RPC | `UserType.RPC` | `AuthType.NONE` | 内部调用无需鉴权 |
+| **GUEST** | `UserType.GUEST` | `AuthType.USER` | **仅验证用户类型，不验证权限** |
+
+> **重要**：Guest 控制器使用 `AuthType.USER`（仅验证登录），不使用 `AuthType.PERM`（会注册为菜单权限，但 Guest 无后台菜单系统）。
+
+**Controller 方法体模板**：
+```java
+// 简单 CRUD - 直接调 DaoManager
+@GetMapping("/list")
+@MscPermDeclare(name = "列表", auth = AuthType.PERM, log = ActionLog.REQUEST)
+public ResponseData<DataList<Xxx>> list(AuthQueryParam param) {
+    return DaoManager.getInstance().list(Xxx.class, param);
+}
+
+// 复杂逻辑 - 调用 Helper 静态方法
+@PostMapping("/save")
+@MscPermDeclare(name = "新增", auth = AuthType.PERM, log = ActionLog.ALL)
+public ResponseData<Xxx> save(@RequestBody Xxx entity) {
+    return XxxHelper.saveXxx(entity);
+}
+```
 
 **角色移动示例**：
 ```bash
 # 将 product 模块从 admin 移动到 saas
 mv controller/admin/product/ controller/saas/product/
 # 修正包名: my.shop.controller.admin.product → my.shop.controller.saas.product
+# 修正权限注解: UserType.ADMIN → UserType.SAAS
 ```
 
 #### Step 3: 新建 Helper
 
-> service 包下新建 `{Module}Helper.java`，仅包含方法签名和完整 Javadoc，方法返回默认值。
+> service 包下新建 `{Module}Helper.java`，仅包含 static 方法签名和完整 Javadoc，方法返回默认值。
+
+**创建判断**：Helper 仅在以下条件满足**至少一项**时才创建：
+
+| 条件 | 说明 | 示例 |
+|------|------|------|
+| 逻辑复杂 | 状态机、多步流程、计算、复杂校验 | 内容审核（多状态流转）、回答采纳（锁+状态+积分） |
+| 功能性 | 缓存、分布式锁、事务等横切关注点 | 详情缓存（FusionCache）、并发操作（GlobalLocker） |
+| 多处调用 | 2个以上 Controller 或其他 Helper 调用 | 发送通知（多处触发）、用户信息查询（多处引用） |
+
+**不建 Helper 的场景**：简单 CRUD（list/get/save/update/delete/enable/disable）直接在 Controller 中调 `DaoManager.getInstance()` 即可。
+
+**Helper 两种类型**：
+
+| 类型 | 识别维度 | 示例 |
+|------|---------|------|
+| **模块级 Helper** | 按数据库表/模块识别，封装该模块的复杂业务 | PostQuestionHelper、PostAnswerHelper |
+| **横切 Helper** | 按 PRD 中跨模块的公共业务规则识别，不绑定单表 | SensitiveWordHelper（敏感词检测）、MsgNotifyHelper（通知发送） |
+
+> **横切 Helper 识别方法**：通读 PRD，找出"在多个模块中出现相同描述"的业务规则。例如 PRD 中 PostQuestion/PostAnswer/PostArticle/CmsComment 都提到"敏感词检测"，这就是一个横切关注点，需要独立 Helper。Phase 0 的"横切关注点识别"步骤会提前列出这些。
 
 | 内容 | 说明 |
 |------|------|
-| 类注解 | `@Component` |
-| 依赖注入 | 构造器注入 DaoManager、其他 Helper |
-| 方法签名 | 入参、出参明确定义，方法体返回默认值 |
-| 缓存常量 | FusionCache.Config 参数、缓存 Key 常量 |
+| 类注解 | 无（纯静态工具类，不加 `@Component`） |
+| 依赖获取 | `DaoManager.getInstance()` 静态获取，FusionCache/GlobalCache/GlobalLocker 本身是静态API |
+| 方法签名 | `public static`，入参、出参明确定义，方法体返回默认值 |
+| 缓存常量 | `private static final` FusionCache.Config 参数、缓存 Key 常量 |
+| **缓存初始化** | **设计阶段必须完成**：所有使用 FusionCache 的 Helper 必须在 `static {}` 块中调用 `FusionCache.config(new FusionCache.Config(...), new CacheDataLoader<>() {...})` 完成初始化，包括 Config 参数和 CacheDataLoader 数据加载器。缓存参数（localCacheMaxNum、cacheExpireMillis）在设计阶段就确定，开发阶段仅实现 CacheDataLoader.load() 内部的查询逻辑 |
 | Javadoc | 设计思路 + 实现步骤 + 缓存策略 + 事务策略 |
+
+**FusionCache 初始化模板**（设计阶段必须产出）：
+
+```java
+public class XxxHelper {
+    private static final DaoManager daoManager = DaoManager.getInstance();
+    private static final int CACHE_MAX_NUM = 500;
+    private static final long CACHE_EXPIRE_MILLIS = 1800_000L;
+
+    // 设计阶段必须完成此初始化块
+    static {
+        FusionCache.config(new FusionCache.Config(
+            XxxEntity.class,
+            CACHE_MAX_NUM,
+            CACHE_EXPIRE_MILLIS
+        ), new CacheDataLoader<Long, XxxEntity>() {
+            @Override
+            public XxxEntity load(Long key) {
+                return daoManager.load(XxxEntity.class, key).getData();
+            }
+        });
+    }
+}
+```
+
+> **重要**：FusionCache 的 Config（缓存容量、过期时间）和 CacheDataLoader（数据加载器签名）在设计阶段确定。GlobalCache 不需要 static 初始化（直接用 `GlobalCache.get(...)` 带行内 CacheDataLoader），但 FusionCache 必须在类加载时完成 config。
 
 #### Step 3.5: 编写测试骨架（TDD Red）
 
-> 每个 Helper 对应一个 `{Module}HelperTest.java`，这是 TDD 的 Red 阶段。测试方法有签名和断言结构，因 Helper 返回 null 故测试全红（预期行为）。
+> 每个 Helper 和 Controller 都对应一个测试类，这是 TDD 的 Red 阶段。测试方法有签名和断言结构，因方法体返回 null 故测试全红（预期行为）。
 
 **TDD 详细指南**：参见 [references/tdd-design-guide.md](references/tdd-design-guide.md)
+
+##### Helper 单元测试
 
 | 内容 | 说明 |
 |------|------|
 | 测试类位置 | `src/test/java/{包路径}/service/{Module}HelperTest.java` |
-| 测试类注解 | `@ExtendWith(MockitoExtension.class)` + `@Mock DaoManager` + `@InjectMocks Helper` |
+| 测试类注解 | `@ExtendWith(MockitoExtension.class)` + `@MockedStatic DaoManager` + `@MockedStatic FusionCache/GlobalLocker`（静态方法测试用 MockedStatic） |
 | 测试方法数 | 每个 Helper 方法 ≥ 2 个测试方法（正常 + 边界/异常） |
 | 命名规范 | `test{Method}_{Scenario}_{ExpectedResult}` |
 | 注解 | `@Test` + `@DisplayName("...")` |
 | Javadoc | 测试意图 + 准备数据 + 预期结果 |
 | 方法体 | `fail("TDD Red: Helper 方法尚未实现")` 标记 Red 状态 |
-| MockedStatic | FusionCache/GlobalLocker/AuthServiceHelper 的静态 Mock 在开发阶段补充 |
+| MockedStatic | DaoManager.getInstance()、FusionCache、GlobalLocker、AuthServiceHelper 的静态 Mock 在开发阶段补充 |
 
 **测试模板**：参见 [references/templates.md](references/templates.md) 第6节 Helper 单元测试模板
 
@@ -224,9 +321,33 @@ void testGet{Entity}_Found_ReturnEntity() { fail("TDD Red"); }
 void testGet{Entity}_NotFound_ReturnWarn() { fail("TDD Red"); }
 ```
 
+##### Controller 单元测试
+
+> Controller 测试验证 API 契约：HTTP 方法、路径、参数绑定、权限注解、响应格式、调用链路。
+
+| 内容 | 说明 |
+|------|------|
+| 测试类位置 | `src/test/java/{包路径}/controller/{角色}/{模块}/{Module}ControllerTest.java`（与源码目录结构对齐） |
+| 测试类注解 | `@ExtendWith(MockitoExtension.class)` |
+| 测试方法数 | 每个 Controller 方法 ≥ 1 个测试方法 |
+| 命名规范 | `test{Method}_{Scenario}_{ExpectedResult}` |
+| 注解 | `@Test` + `@DisplayName("...")` |
+| Javadoc | 测试意图 + API 调用方式 + 预期响应 |
+| 方法体 | `fail("TDD Red: Controller 测试尚未实现")` 标记 Red 状态 |
+
+**快速示例**：
+```java
+// {Module}ControllerTest.java - 每个Controller方法 ≥ 1个测试方法
+@Test @DisplayName("列表查询 - 正常返回")
+void testList_Normal_ReturnSuccess() { fail("TDD Red"); }
+
+@Test @DisplayName("新增 - 正常返回")
+void testSave_Normal_ReturnSuccess() { fail("TDD Red"); }
+```
+
 #### Step 4: 新建 VO（如需）
 
-> 仅在需要聚合多表数据时创建 VO 类。
+>在需要聚合多表数据或裁剪输出的时创建 VO 类。
 
 #### Step 5: 编译验证 + 测试验证
 
@@ -292,8 +413,11 @@ void testGet{Entity}_NotFound_ReturnWarn() { fail("TDD Red"); }
 - [ ] README.md 覆盖所有模块和全局策略（含测试策略章节）
 - [ ] 所有 Controller 方法有 Javadoc + @MscPermDeclare
 - [ ] 所有 Helper 方法有 Javadoc（设计思路 + 实现步骤 + 缓存策略）
+- [ ] 所有使用 FusionCache 的 Helper 有 `static { FusionCache.config(...) }` 初始化块
 - [ ] 所有 Helper 有对应测试类 `{Module}HelperTest.java`
 - [ ] 每个 Helper 方法有 ≥ 2 个测试方法（正常 + 边界/异常）
+- [ ] 所有 Controller 有对应测试类 `{Module}ControllerTest.java`
+- [ ] 每个 Controller 方法有 ≥ 1 个测试方法
 - [ ] 测试方法有 `@DisplayName` + Javadoc
 - [ ] DTO 搜索字段和排序字段已按业务需求裁剪
 - [ ] `mvn compile` 编译通过
@@ -301,43 +425,6 @@ void testGet{Entity}_NotFound_ReturnWarn() { fail("TDD Red"); }
 - [ ] `mvn test` 可运行（全红为预期）
 - [ ] Swagger UI 可展示所有接口
 - [ ] 前端可基于 Swagger 开始联调
-
-## 踩坑记录
-
-> 以下为实际设计过程中遇到的问题及正确做法，防止重复犯错。
-
-### DTO 裁剪
-
-| 踩坑 | 正确做法 |
-|------|---------|
-| Python `re.sub` 多行正则删 Java 代码块 — 只删签名不删方法体，留下孤儿 `return this;`、`}` 导致编译失败 | **禁止用正则删代码块**。用 Edit 工具逐块删，或用 Python 行号定位（从 `/**` 追踪到 `}` 结束 + 花括号计数定位方法边界） |
-| sed 批量删多行块 — 字段名出现在注释/注解/方法名等多上下文，边界匹配不可靠 | **禁止用 sed 处理结构化代码** |
-| DTO 文件被批量损坏后手动修补 — 漏改导致反复编译失败 | **直接用代码生成器重新生成 dto 再裁剪**：`bash scripts/gencode.sh {项目根目录} "" "dto" "{项目名}-app"` |
-| 尝试裁剪 ALLOWED_SORT_PROPERTY 中的排序项 — HashMap 语法易破坏 | **不裁剪排序字段**，保留无害，风险大于收益 |
-| 每个字段漏删 getter/setter/chain 中的某一部分 | 字段 = 注释 + @QueryMeta + @Schema + private 声明 + getter + setter + 链式调用，**必须 6 部分完整删除** |
-| 16 个文件批量操作后不编译，问题叠加 | **每批操作后立即 `mvn compile`** 验证 |
-
-### Controller 创建
-
-| 踩坑 | 正确做法 |
-|------|---------|
-| mch 控制器方法参数数量与 Helper 方法签名不匹配 — 编译通过但运行时参数缺失 | **创建控制器前先读 Helper 方法签名**，确保参数数量和类型完全对齐（如 `toggleVote(Long guestId, Long targetId, int targetType)` 对应控制器也要传 3 个参数） |
-| 自动生成了未使用的 import（如 `AuthType`） | 创建后检查并清理未使用的 import |
-
-### README.md 编写
-
-| 踩坑 | 正确做法 |
-|------|---------|
-| 插入新章节后章节编号重复（如两个 "## 5."） | **插入章节后全局更新所有后续章节编号**，包括 `##` 和 `###` 级别 |
-| 首次评审缺少 PRD 映射表、性能预算、状态机等章节被扣大分 | **首次编写即覆盖所有"必须"章节**：PRD 功能点映射、角色权限 R/W 矩阵、状态机、性能预算、缓存策略、测试策略 |
-
-### 代码生成器产出
-
-| 踩坑 | 正确做法 |
-|------|---------|
-| 生成代码 import 了 `tripmax.dto/entity` 而非实际包名 | gencode 后**全局搜索替换错误包名**：`find . -name "*.java" -exec sed -i '' 's/tripmax\.dto/zihu.dto/g' {} +` |
-| 生成 Controller import 了 `ChatSession`/`ChatSessionQueryParam` | gencode 后检查并**删除错误 import 行** |
-| Helper 中 `AuthQueryParam` import 指向了不存在的 `zihu.dto.AuthQueryParam` | 正确 import：`uw.common.app.dto.AuthQueryParam` |
 
 ## 参考
 

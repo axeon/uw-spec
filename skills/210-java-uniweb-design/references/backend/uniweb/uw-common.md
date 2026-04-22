@@ -1,7 +1,3 @@
-## 核心基础类库（uw-base）
-
-uw-base 是所有微服务的基础依赖，GroupId 为 `com.umtone`，Parent POM 版本通过 `${revision}` 管理。
-
 ### uw-common — 通用工具类库
 
 **Maven 坐标**: `com.umtone:uw-common`

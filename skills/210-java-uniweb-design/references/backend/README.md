@@ -11,16 +11,7 @@
 
 ## 层级关系
 
-```
-SaaS 应用层（saas-mall / saas-market / ...）
-        │
-        ▼
-SaaS 基础服务层（saas-base + saas-finance: AIP + AIS + 租户管理 + 商户管理 + 支付通道 + 余额管理 + 对账管理 + 汇率管理 + 消息通知 + 对象存储 + 配置管理 + ...）
-）
-        │
-        ▼
-UniWeb 基础框架层（uw-base: uw-common / uw-dao / uw-auth / uw-task / uw-cache / uw-oauth2 / ...）
-```
+SaaS 应用层 → SaaS 基础服务层（[saas/](saas/)：saas-base + saas-finance） → UniWeb 基础框架层（[uniweb/](uniweb/)：uw-base 类库集合）。各层详细组件见对应目录的 README.md。
 
 ## 使用建议
 

@@ -33,11 +33,6 @@ uw:
         password: secret
         min-conn: 1
         max-conn: 10
-    table-shard:
-      task_runner_log:
-        shard-type: date
-        shard-rule: day
-        auto-gen: true
 ```
 
 **核心类**：

@@ -6,12 +6,6 @@
 
 **配置前缀**: `uw.gateway`
 
-```yaml
-uw:
-  gateway:
-    gateway-center-host: http://uw-gateway-center
-```
-
 #### GatewayClientHelper API
 
 ```java
