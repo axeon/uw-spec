@@ -36,10 +36,10 @@ TEMPLATE_TYPE="${PROJECT_MODE:-uniweb}"
 
 case "$TEMPLATE_TYPE" in
     saas)
-        TEMPLATE_ZIP="${SKILL_DIR}/asserts/saas-web-template.zip"
+        TEMPLATE_ZIP="${SKILL_DIR}/assets/saas-web-template.zip"
         ;;
     uniweb)
-        TEMPLATE_ZIP="${SKILL_DIR}/asserts/uw-web-template.zip"
+        TEMPLATE_ZIP="${SKILL_DIR}/assets/uw-web-template.zip"
         ;;
     *)
         echo "ERROR: 未知项目模式: $TEMPLATE_TYPE (支持: saas, uniweb)"
