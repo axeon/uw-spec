@@ -202,6 +202,12 @@ bash scripts/gencode.sh /Users/user/project "http://192.168.88.21/my-shop-app/v3
 | 模块 | 代码生成器 zip 中已有的子目录 | `product/`、`order/`、`guest/` |
 | 文件 | 代码生成器产出 | `index.ts`、`index.vue`、`zh-CN.json` |
 
+## 下一步
+
+代码生成完成后，提示用户进入 **220-guest-uniapp-design** 进行移动端原型设计（设计即代码，裁剪页面 + 配置路由）。
+
+**流程位置**：`220-guest-uniapp-init` → `220-guest-uniapp-gencode` → **220-guest-uniapp-design** (+ 221 review) → `320-guest-uniapp-dev`
+
 ## 参考
 
 - [代码生成脚本](scripts/gencode.sh) - 支持 `--update` 增量更新模式

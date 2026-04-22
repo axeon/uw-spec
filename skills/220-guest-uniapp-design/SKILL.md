@@ -225,6 +225,12 @@ frontend/{项目名}-guest-uniapp/
 - [ ] 页面可正常访问展示
 - [ ] 后端可基于Swagger开始联调
 
+## 下一步
+
+设计（含 PLAN-REVIEW 循环）通过评审后，提示用户进入 **320-guest-uniapp-dev** 进行UniApp移动端业务开发。
+
+**流程位置**：`220-guest-uniapp-init` → `220-guest-uniapp-gencode` → `220-guest-uniapp-design` (+ 221 review) → **320-guest-uniapp-dev**
+
 ## 参考
 
 - [UniApp 开发规范](references/md-dev-standards.md) - Vue3+TS 多端开发规范

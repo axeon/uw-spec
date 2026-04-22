@@ -229,6 +229,12 @@ frontend/{项目名}-guest-web/
 - [ ] 页面可正常访问展示
 - [ ] 后端可基于Swagger开始联调
 
+## 下一步
+
+设计（含 PLAN-REVIEW 循环）通过评审后，提示用户进入 **320-guest-web-dev** 进行Web前端业务开发。
+
+**流程位置**：`220-guest-web-init` → `220-guest-web-gencode` → `220-guest-web-design` (+ 221 review) → **320-guest-web-dev**
+
 ## 参考
 
 - [Web 开发规范](references/web-dev-standards.md) - Vue3+TS+Vite+Element Plus 后台管理规范

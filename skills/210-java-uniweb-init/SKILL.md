@@ -129,6 +129,12 @@ bash scripts/init.sh /Users/user/project skip
         └── pom.xml
 ```
 
+## 下一步
+
+初始化完成后，提示用户进入 **210-java-uniweb-gencode** 进行代码生成（从数据库生成 entity/dto/controller）。
+
+**流程位置**：`210-java-uniweb-init` → **210-java-uniweb-gencode** → `210-java-uniweb-design` → `310-java-uniweb-dev`
+
 ## 参考
 
 - [初始化脚本](scripts/init.sh) - 自动化初始化脚本

@@ -131,6 +131,12 @@ bash scripts/init.sh /Users/user/project skip guest
 | mch | my-shop-mch-uniapp | frontend/my-shop-mch-uniapp/ |
 | guest | my-shop-guest-uniapp | frontend/my-shop-guest-uniapp/ |
 
+## 下一步
+
+初始化完成后，提示用户进入 **220-admin-uniapp-gencode** 进行移动端代码生成（从后端Swagger生成api/router/page/i18n）。
+
+**流程位置**：`220-admin-uniapp-init` → **220-admin-uniapp-gencode** → `220-admin-uniapp-design` (+ 221 review) → `320-admin-uniapp-dev`
+
 ## 参考
 
 - [初始化脚本](scripts/init.sh) - 自动化初始化脚本

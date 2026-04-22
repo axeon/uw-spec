@@ -131,6 +131,12 @@ bash scripts/init.sh /Users/user/project skip mch
 | mch | my-shop-mch-web | frontend/my-shop-mch-web/ |
 | guest | my-shop-guest-web | frontend/my-shop-guest-web/ |
 
+## 下一步
+
+初始化完成后，提示用户进入 **220-guest-web-gencode** 进行前端代码生成（从后端Swagger生成api/router/page/i18n）。
+
+**流程位置**：`220-guest-web-init` → **220-guest-web-gencode** → `220-guest-web-design` (+ 221 review) → `320-guest-web-dev`
+
 ## 参考
 
 - [初始化脚本](scripts/init.sh) - 自动化初始化脚本

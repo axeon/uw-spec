@@ -201,6 +201,12 @@ controller/
 
 **脚本处理**：保留 zip 中的 module 子目录，注入 `admin` 角色层，替换包名为 `{项目包名}.controller.admin.{模块}`。
 
+## 下一步
+
+代码生成完成后，提示用户进入 **210-java-uniweb-design** 进行后端技术设计（TDD驱动，设计即代码）。
+
+**流程位置**：`210-java-uniweb-init` → `210-java-uniweb-gencode` → **210-java-uniweb-design** → `310-java-uniweb-dev`
+
 ## 参考
 
 - [代码生成脚本](scripts/gencode.sh) - 支持 `--update` 增量更新模式
