@@ -12,6 +12,10 @@ version: "1.0.0"
 
 将项目过程中的所有需求相关资料进行整理、汇总和归档，形成完整、规范的需求文档交付物。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -93,11 +97,11 @@ version: "1.0.0"
 
 ## 输出要求
 
-**输出位置**: `requirement/`
+**输出位置**: `PROJECT_ROOT/requirement/`
 
 **目录结构**:
 ```
-requirement/
+PROJECT_ROOT/requirement/
 ├── prds/                          # PRD产品文档
 │   ├── README.md                  # PRD主文档
 │   ├── CHANGELOG.md               # PRD变更历史

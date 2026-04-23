@@ -11,6 +11,10 @@ version: "1.0.0"
 ## 描述
 对Web端原型进行全面评审，确保设计质量，按前端类型（管理端、游客端、商户端等）分别进行专项评审。评审对象为 README.md 页面设计文档 + 原型页面代码质量。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 | 触发条件 | 示例 |
 |---------|------|
@@ -29,14 +33,14 @@ version: "1.0.0"
 ## 输入
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 前端原型项目 | `frontend/{项目名}-admin-web/` | 220设计阶段产出的可运行原型 |
-| README.md | `frontend/{项目名}-admin-web/README.md` | 页面清单与路由设计文档 |
-| 需求文档 | `requirement/prds/*` | 功能需求参考 |
+| 前端原型项目 | `PROJECT_ROOT/frontend/{项目名}-admin-web/` | 220设计阶段产出的可运行原型 |
+| README.md | `PROJECT_ROOT/frontend/{项目名}-admin-web/README.md` | 页面清单与路由设计文档 |
+| 需求文档 | `PROJECT_ROOT/requirement/prds/*` | 功能需求参考 |
 
 ## 输出
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| Web端原型评审报告 | `frontend/{项目名}-admin-web/reviews/REVIEW-DESIGN-YYMMDDHHMM.md` | 评审结论和问题清单 |
+| Web端原型评审报告 | `PROJECT_ROOT/frontend/{项目名}-admin-web/reviews/REVIEW-DESIGN-YYMMDDHHMM.md` | 评审结论和问题清单 |
 
 ## 流转关系
 ```
@@ -119,12 +123,12 @@ version: "1.0.0"
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
 **维度**: 需求符合度/用户体验/视觉设计/技术可行性/一致性
-**评审对象**: frontend/{项目名}-admin-web/
+**评审对象**: PROJECT_ROOT/frontend/{项目名}-admin-web/
 **参与人员**: @prototype-reviewer @product-manager @system-architect @js-developer
 **流转方向**: 通过 -> 进入 320-admin-web-dev 前端开发；不通过 -> 返回 220-admin-web-design 修改
 
 ## 输出要求
-**报告位置**: `frontend/{项目名}-admin-web/reviews/REVIEW-DESIGN-YYMMDDHHMM.md`
+**报告位置**: `PROJECT_ROOT/frontend/{项目名}-admin-web/reviews/REVIEW-DESIGN-YYMMDDHHMM.md`
 
 **必须包含**:
 - 评审信息（日期、人员、对象、前端类型）

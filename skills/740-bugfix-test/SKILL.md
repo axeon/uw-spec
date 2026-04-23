@@ -12,6 +12,10 @@ version: "1.0.0"
 
 基于710阶段的修复方案，生成并执行回归测试，验证Bug已修复且未引入新问题。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -32,22 +36,22 @@ version: "1.0.0"
 
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 修复方案 | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md` | 710阶段输出 |
-| Bug分析报告 | `issue/bugs/BUGFIX-{YYMMDD}-{简述}.md` | 700阶段输出 |
-| 后端Swagger | `backend/{项目名}-app/` | API接口定义（API测试参考） |
+| 修复方案 | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md` | 710阶段输出 |
+| Bug分析报告 | `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-{简述}.md` | 700阶段输出 |
+| 后端Swagger | `PROJECT_ROOT/backend/{项目名}-app/` | API接口定义（API测试参考） |
 | 前端代码 | `{项目名}-{role}-{platform}/src/` | 页面组件、表单字段（E2E测试参考） |
-| 现有测试 | `test/scripts/` | 现有测试基线 |
+| 现有测试 | `PROJECT_ROOT/test/scripts/` | 现有测试基线 |
 
 ## 输出
 
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 回归测试脚本（API） | `test/scripts/api/regression-{bug}.spec.ts` | 回归API测试代码 |
-| 回归测试脚本（E2E） | `test/scripts/e2e/{项目名}/regression-{bug}.spec.ts` | 回归E2E测试代码 |
-| 测试报告 | `test/reports/` | 测试执行报告 |
-| 测试文档 | `test/issues/BUGFIX-DESIGN-{YYMMDD}-{简述}-test.md` | 测试记录 |
-| 评审报告 | `test/reviews/` | AI评审报告 |
-| 变更记录 | `test/scripts/CHANGELOG.md` | 测试变更历史 |
+| 回归测试脚本（API） | `PROJECT_ROOT/test/scripts/api/regression-{bug}.spec.ts` | 回归API测试代码 |
+| 回归测试脚本（E2E） | `PROJECT_ROOT/test/scripts/e2e/{项目名}/regression-{bug}.spec.ts` | 回归E2E测试代码 |
+| 测试报告 | `PROJECT_ROOT/test/reports/` | 测试执行报告 |
+| 测试文档 | `PROJECT_ROOT/test/issues/BUGFIX-DESIGN-{YYMMDD}-{简述}-test.md` | 测试记录 |
+| 评审报告 | `PROJECT_ROOT/test/reviews/` | AI评审报告 |
+| 变更记录 | `PROJECT_ROOT/test/scripts/CHANGELOG.md` | 测试变更历史 |
 
 ## 710→740 衔接协议
 
@@ -55,8 +59,8 @@ version: "1.0.0"
 
 | 提取项 | 来源文件 | 用途 |
 |--------|---------|------|
-| 修复方案 | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 测试策略、回归范围 |
-| Bug分析报告 | `issue/bugs/BUGFIX-{YYMMDD}-*.md` | Bug复现步骤、预期行为 |
+| 修复方案 | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 测试策略、回归范围 |
+| Bug分析报告 | `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-*.md` | Bug复现步骤、预期行为 |
 
 **并行约束**：740 与 720/730/731 天然独立可并行。E2E 测试依赖前端页面可访问。
 
@@ -125,7 +129,7 @@ version: "1.0.0"
 
 ### 5. 生成测试文档
 
-**文件位置**: `test/issues/BUGFIX-DESIGN-{YYMMDD}-{简述}-test.md`
+**文件位置**: `PROJECT_ROOT/test/issues/BUGFIX-DESIGN-{YYMMDD}-{简述}-test.md`
 
 **文档内容**:
 ```markdown
@@ -169,11 +173,11 @@ version: "1.0.0"
 
 ## 输出要求
 
-**回归测试**: `test/scripts/api/regression-*.spec.ts` + `test/scripts/e2e/{项目名}/regression-*.spec.ts`
+**回归测试**: `PROJECT_ROOT/test/scripts/api/regression-*.spec.ts` + `PROJECT_ROOT/test/scripts/e2e/{项目名}/regression-*.spec.ts`
 
-**测试文档**: `test/issues/BUGFIX-DESIGN-{YYMMDD}-{简述}-test.md`
+**测试文档**: `PROJECT_ROOT/test/issues/BUGFIX-DESIGN-{YYMMDD}-{简述}-test.md`
 
-**测试报告**: `test/reports/report-YYMMDDHHMM.md`
+**测试报告**: `PROJECT_ROOT/test/reports/report-YYMMDDHHMM.md`
 
 ## 流转关系
 

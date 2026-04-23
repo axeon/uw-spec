@@ -12,6 +12,10 @@ version: "1.0.0"
 
 在Bug修复验收通过后，自动更新5xx阶段的交付文档，记录Bug修复情况，更新相关文档。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -32,9 +36,9 @@ version: "1.0.0"
 
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 修复验收报告 | `issue/reviews/REVIEW-BUGFIX-{YYMMDDHHMM}.md` | 750阶段输出 |
-| Bug分析报告 | `issue/bugs/BUGFIX-{YYMMDD}-{简述}.md` | 700阶段输出 |
-| 修复方案 | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md` | 710阶段输出 |
+| 修复验收报告 | `PROJECT_ROOT/issue/reviews/REVIEW-BUGFIX-{YYMMDDHHMM}.md` | 750阶段输出 |
+| Bug分析报告 | `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-{简述}.md` | 700阶段输出 |
+| 修复方案 | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md` | 710阶段输出 |
 | 现有5xx文档 | `manual/` | 现有交付文档 |
 
 ## 输出
@@ -43,7 +47,7 @@ version: "1.0.0"
 |--------|------|------|
 | 运维文档更新 | `manual/ops-manual/` | 运维更新记录 |
 | 用户手册更新 | `manual/user-manual/` | 手册更新记录 |
-| 需求文档更新 | `requirement/` | 需求更新记录 |
+| 需求文档更新 | `PROJECT_ROOT/requirement/` | 需求更新记录 |
 | 更新后主文档 | `manual/xxx/README.md` | 合并后的主文档 |
 | 变更记录 | `manual/xxx/CHANGELOG.md` | 文档变更历史 |
 
@@ -114,7 +118,7 @@ version: "1.0.0"
 
 **生成更新记录**:
 
-**文件位置**: `requirement/`
+**文件位置**: `PROJECT_ROOT/requirement/`
 
 ### 4. 文档合并
 
@@ -124,7 +128,7 @@ version: "1.0.0"
 |---------|---------|------|
 | 运维更新 | `manual/ops-manual/*.md` | 追加章节 |
 | 手册更新 | `manual/user-manual/*.md` | 追加章节 |
-| 需求更新 | `requirement/*.md` | 追加章节 |
+| 需求更新 | `PROJECT_ROOT/requirement/*.md` | 追加章节 |
 
 **CHANGELOG更新**:
 

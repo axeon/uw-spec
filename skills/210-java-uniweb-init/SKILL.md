@@ -12,6 +12,10 @@ version: "1.0.0"
 
 从 `assets/` 目录下的模板 zip 解压创建后端API项目，全文替换模板关键字为实际项目名，生成可用的项目脚手架。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -27,10 +31,6 @@ version: "1.0.0"
 | 主导 | 项目初始化 | `java-developer` |
 | 协作 | 架构确认 | `system-architect` |
 
-## 前置检查
-
-检查 `project-info.md` 是否存在且 5 个参数完整，不通过则引导用户执行 0-init。
-详见 [项目信息前置检查](../0-init/references/project-init-check.md)。
 
 ## 模板选择
 
@@ -39,7 +39,7 @@ version: "1.0.0"
 | `saas-app-template.zip` | SaaS多租户项目 | 基于 saas-base 框架，含租户/商户管理、AIP/AIS |
 | `uw-app-template.zip` | UniWeb基础项目 | 基于 uw-base 框架，通用API应用 |
 
-**选择时机**：在 `0-init` 阶段通过 `project-info.md` 的 `project-mode` 字段（`uniweb`/`saas`）确定，本脚本自动读取。
+**选择时机**：在 `0-init` 阶段通过 `PROJECT_ROOT/project-info.md` 的 `project-mode` 字段（`uniweb`/`saas`）确定，本脚本自动读取。
 
 ## 初始化流程
 
@@ -47,15 +47,15 @@ version: "1.0.0"
 
 ### 步骤1: 展示后端项目目录
 
-**目标目录**：直接使用当前项目根目录（包含 `project-info.md` 的目录）。
+**目标目录**：直接使用当前项目根目录（包含 `PROJECT_ROOT/project-info.md` 的目录）。
 
 检查并展示后端目录状态：
 
 ```bash
-ls -la backend/ 2>/dev/null || echo "backend/ 目录不存在，将自动创建"
+ls -la PROJECT_ROOT/backend/ 2>/dev/null || echo "PROJECT_ROOT/backend/ 目录不存在，将自动创建"
 ```
 
-**后端项目将初始化在**：`backend/{project-name}-app/`
+**后端项目将初始化在**：`PROJECT_ROOT/backend/{project-name}-app/`
 
 ### 步骤2: 询问用户参数
 
@@ -73,7 +73,7 @@ ls -la backend/ 2>/dev/null || echo "backend/ 目录不存在，将自动创建"
 即将执行 Java 后端项目初始化：
 - 项目名: {project-name}
 - 项目模式: {project-mode}（uniweb/saas）
-- 输出目录: backend/{project-name}-app/
+- 输出目录: PROJECT_ROOT/backend/{project-name}-app/
 - 覆盖模式: {用户选择的模式}
 
 确认执行吗？
@@ -92,7 +92,7 @@ bash scripts/init.sh [目标目录] [模式]
 
 | 参数 | 说明 | 是否必填 | 默认值 |
 |------|------|----------|--------|
-| 目标目录 | 项目根目录（包含 `project-info.md`） | 是 | 当前目录 |
+| 目标目录 | 项目根目录（包含 `PROJECT_ROOT/project-info.md`） | 是 | 当前目录 |
 | 模式 | `force`(强制覆盖), `skip`(跳过已存在文件) | 否 | force |
 
 **执行示例**：
@@ -115,7 +115,7 @@ bash scripts/init.sh /Users/user/project skip
 
 ## 输出要求
 
-**输出位置**: `backend/{项目名}-app/` 目录
+**输出位置**: `PROJECT_ROOT/backend/{项目名}-app/` 目录
 
 **包含内容**: 从模板解压并替换后的完整项目结构
 
@@ -123,7 +123,7 @@ bash scripts/init.sh /Users/user/project skip
 ```
 项目根目录/
 ├── project-info.md
-└── backend/
+└── PROJECT_ROOT/backend/
     └── {项目名}-app/
         ├── src/
         └── pom.xml

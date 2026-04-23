@@ -19,6 +19,10 @@ version: "1.0.0"
 | **设计阶段（210）** | 方法体包含完整调用链路：`return XxxHelper.saveXxx(entity)` 或 `return DaoManager.getInstance().list(Xxx.class, param)` | 方法签名 + Javadoc，方法体返回 `ResponseData.success(null)` | 测试骨架（TDD Red） |
 | **开发阶段（310）** | 不改动（调用链路已确定） | 实现 Helper 方法内部逻辑 | 实现测试断言（TDD Green） |
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -58,9 +62,9 @@ version: "1.0.0"
 
 | 输入项 | 来源路径 | 说明 |
 |--------|----------|------|
-| PRD | `requirement/prds/*` | 产品需求文档，功能模块及各终端详细需求 |
-| 数据库设计文档 | `database/database-design.md` | 表结构设计、实体关系、索引策略 |
-| 项目目录 | `backend/{项目名}-app/` | 210阶段项目代码以及产出的entity/dto/controller |
+| PRD | `PROJECT_ROOT/requirement/prds/*` | 产品需求文档，功能模块及各终端详细需求 |
+| 数据库设计文档 | `PROJECT_ROOT/database/database-design.md` | 表结构设计、实体关系、索引策略 |
+| 项目目录 | `PROJECT_ROOT/backend/{项目名}-app/` | 210阶段项目代码以及产出的entity/dto/controller |
 
 ## 前置条件
 
@@ -173,10 +177,10 @@ version: "1.0.0"
 
 | 字段 | 说明 | 示例 |
 |------|------|------|
-| PRD | 关联的 PRD 文件路径 | `requirement/prds/product.md` |
-| 数据库 | 关联的数据库表（含文档位置） | `database/database-design.md` § Product 表 |
+| PRD | 关联的 PRD 文件路径 | `PROJECT_ROOT/requirement/prds/product.md` |
+| 数据库 | 关联的数据库表（含文档位置） | `PROJECT_ROOT/database/database-design.md` § Product 表 |
 | 待实现 | Helper.java 文件的完整路径 | `src/main/java/.../service/ProductHelper.java` |
-| 测试骨架 | HelperTest.java 文件的完整路径 | `src/test/java/.../service/ProductHelperTest.java` |
+| 测试骨架 | HelperTest.java 文件的完整路径 | `src/PROJECT_ROOT/test/java/.../service/ProductHelperTest.java` |
 | 技术栈 | 该模块需要读取的技术栈文档 | `uw-dao.md`、`uw-cache.md` |
 | 待实现方法 | 所有带 `// TODO: [Tn]` 标记的方法签名 | `getProduct()`、`saveProduct()` |
 | 依赖任务 | 前置任务 ID | 无 / T1 |
@@ -348,7 +352,7 @@ public class XxxHelper {
 
 | 内容 | 说明 |
 |------|------|
-| 测试类位置 | `src/test/java/{包路径}/service/{Module}HelperTest.java` |
+| 测试类位置 | `src/$PROJECT_ROOT/test/java/{包路径}/service/{Module}HelperTest.java` |
 | 测试类注解 | `@ExtendWith(MockitoExtension.class)` + `@MockedStatic DaoManager` + `@MockedStatic FusionCache/GlobalLocker`（静态方法测试用 MockedStatic） |
 | 测试方法数 | 每个 Helper 方法 ≥ 2 个测试方法（正常 + 边界/异常） |
 | 命名规范 | `test{Method}_{Scenario}_{ExpectedResult}` |
@@ -375,7 +379,7 @@ void testGet{Entity}_NotFound_ReturnWarn() { fail("TDD Red: [Tn]"); }
 
 | 内容 | 说明 |
 |------|------|
-| 测试类位置 | `src/test/java/{包路径}/controller/{角色}/{模块}/{Module}ControllerTest.java`（与源码目录结构对齐） |
+| 测试类位置 | `src/PROJECT_ROOT/test/java/{包路径}/controller/{角色}/{模块}/{Module}ControllerTest.java`（与源码目录结构对齐） |
 | 测试类注解 | `@ExtendWith(MockitoExtension.class)` |
 | 测试方法数 | 每个 Controller 方法 ≥ 1 个测试方法 |
 | 命名规范 | `test{Method}_{Scenario}_{ExpectedResult}` |
@@ -450,7 +454,7 @@ void testSave_Normal_ReturnSuccess() { fail("TDD Red"); }
 │   ├── entity/                       # 保留不动
 │   ├── dto/                          # 裁剪后
 │   └── vo/                           # 新建（如需）
-├── src/test/java/{包路径}/
+├── src/$PROJECT_ROOT/test/java/{包路径}/
 │   └── service/                      # TDD Red 阶段测试骨架
 │       ├── {ModuleA}HelperTest.java
 │       └── {ModuleB}HelperTest.java

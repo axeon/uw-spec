@@ -11,6 +11,10 @@ version: "1.0.0"
 ## 描述
 对功能开发阶段（620）产出的Java后端代码进行评审, 验证代码实现与技术方案的一致性、TDD实践、uw-base规范遵循和代码质量。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 | 触发条件 | 示例 |
 |---------|------|
@@ -30,16 +34,16 @@ version: "1.0.0"
 ## 输入
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 功能代码 | `backend/{项目名}-app/src/` | 功能开发产出的代码 |
-| 测试代码 | `backend/{项目名}-app/src/test/` | 单元测试 |
-| 覆盖率报告 | `backend/{项目名}-app/target/site/jacoco/` | 测试覆盖率数据 |
-| 技术方案 | `backend/{项目名}-app/issues/FEATURE-DESIGN-*-tech-design.md` | 610阶段技术方案 |
-| 功能需求 | `issue/features/FEATURE-{YYMMDD}-{简述}.md` | 600阶段需求文档 |
+| 功能代码 | `PROJECT_ROOT/backend/{项目名}-app/src/` | 功能开发产出的代码 |
+| 测试代码 | `PROJECT_ROOT/backend/{项目名}-app/src/PROJECT_ROOT/test/` | 单元测试 |
+| 覆盖率报告 | `PROJECT_ROOT/backend/{项目名}-app/target/site/jacoco/` | 测试覆盖率数据 |
+| 技术方案 | `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-*-tech-design.md` | 610阶段技术方案 |
+| 功能需求 | `PROJECT_ROOT/issue/features/FEATURE-{YYMMDD}-{简述}.md` | 600阶段需求文档 |
 
 ## 输出
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 功能后端评审报告 | `issue/reviews/REVIEW-CODE-{YYMMDDHHMM}.md` | 评审结论和问题清单 |
+| 功能后端评审报告 | `PROJECT_ROOT/issue/reviews/REVIEW-CODE-{YYMMDDHHMM}.md` | 评审结论和问题清单 |
 
 ## 流转关系
 ```
@@ -90,14 +94,14 @@ version: "1.0.0"
 按维度检查, 记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。
 
 **维度**: 方案一致性/TDD/uw-base/代码质量/安全性/影响范围
-**评审对象**: backend/{项目名}-app/src/（仅功能变更部分）
+**评审对象**: PROJECT_ROOT/backend/{项目名}-app/src/（仅功能变更部分）
 **参与人员**: @java-lead @system-architect
 **流转方向**: 通过 -> 合并代码; 不通过 -> 返回620修改
 
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
 ## 输出要求
-**报告位置**: `issue/reviews/REVIEW-CODE-{YYMMDDHHMM}.md`
+**报告位置**: `PROJECT_ROOT/issue/reviews/REVIEW-CODE-{YYMMDDHHMM}.md`
 
 **必须包含**:
 - 评审信息（日期、人员、对象、功能编号）

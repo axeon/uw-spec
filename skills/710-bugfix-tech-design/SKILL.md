@@ -12,6 +12,10 @@ version: "1.0.0"
 
 基于Bug分析报告，设计修复方案，评估变更影响，确保修复方案可行且风险可控。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -32,7 +36,7 @@ version: "1.0.0"
 
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| Bug分析报告 | `issue/bugs/BUGFIX-{YYMMDD}-{简述}.md` | 700阶段输出 |
+| Bug分析报告 | `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-{简述}.md` | 700阶段输出 |
 | 相关代码 | 代码仓库 | 需要修改的代码 |
 | 现有架构 | 各端README.md | 现有技术架构 |
 
@@ -40,8 +44,8 @@ version: "1.0.0"
 
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 修复方案文档 | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md` | 修复方案 |
-| DDL文件（如有） | `database/migrations/BUGFIX-{YYMMDD}-{简述}.sql` | 数据库变更 |
+| 修复方案文档 | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md` | 修复方案 |
+| DDL文件（如有） | `PROJECT_ROOT/database/migrations/BUGFIX-{YYMMDD}-{简述}.sql` | 数据库变更 |
 
 ## 执行流程
 
@@ -172,18 +176,18 @@ version: "1.0.0"
 
 | 下游技能 | 提取文件 | 用途 |
 |---------|---------|------|
-| 720-bugfix-java-uniweb | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` + DDL文件（如有） | 修复方案 + 数据库变更 |
-| 730-bugfix-admin-web / 730-bugfix-guest-web | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 修复方案（前端部分） |
-| 730-bugfix-admin-uniapp / 730-bugfix-guest-uniapp | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 修复方案（移动端部分） |
-| 740-bugfix-test | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` + `issue/bugs/BUGFIX-{YYMMDD}-*.md` | 修复方案 + Bug分析（回归测试） |
+| 720-bugfix-java-uniweb | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` + DDL文件（如有） | 修复方案 + 数据库变更 |
+| 730-bugfix-admin-web / 730-bugfix-guest-web | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 修复方案（前端部分） |
+| 730-bugfix-admin-uniapp / 730-bugfix-guest-uniapp | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 修复方案（移动端部分） |
+| 740-bugfix-test | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` + `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-*.md` | 修复方案 + Bug分析（回归测试） |
 
 **并行约束**：四端天然独立，可同时由不同Agent修复。DDL需先执行，后端修复依赖DDL。
 
 ## 输出要求
 
-**修复方案**: `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md`
+**修复方案**: `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md`
 
-**DDL文件（如有）**: `database/migrations/BUGFIX-{YYMMDD}-{简述}.sql`
+**DDL文件（如有）**: `PROJECT_ROOT/database/migrations/BUGFIX-{YYMMDD}-{简述}.sql`
 
 ## 流转关系
 

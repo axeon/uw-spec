@@ -12,6 +12,10 @@ version: "1.0.0"
 
 对 300-database-ddl-execution 阶段的执行结果进行全面评审，验证数据库实际 Schema 与设计文档一致，确保后端开发环境可用。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -32,16 +36,16 @@ version: "1.0.0"
 
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 执行报告 | `database/DDL-EXECUTION-REPORT-*.md` | 300阶段产出 |
-| DDL文件 | `database/database-ddl.sql` | 执行的DDL |
-| 设计文档 | `database/database-design.md` | 设计参照 |
+| 执行报告 | `PROJECT_ROOT/database/DDL-EXECUTION-REPORT-*.md` | 300阶段产出 |
+| DDL文件 | `PROJECT_ROOT/database/database-ddl.sql` | 执行的DDL |
+| 设计文档 | `PROJECT_ROOT/database/database-design.md` | 设计参照 |
 | 实际数据库 | 目标数据库 | 通过SQL查询验证 |
 
 ## 输出
 
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| DDL执行评审报告 | `database/reviews/REVIEW-DDL-EXECUTION-YYMMDDHHMM.md` | 评审结论 |
+| DDL执行评审报告 | `PROJECT_ROOT/database/reviews/REVIEW-DDL-EXECUTION-YYMMDDHHMM.md` | 评审结论 |
 
 ## 流转关系
 
@@ -96,13 +100,13 @@ version: "1.0.0"
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
 **维度**: 表完整性/字段一致性/索引正确性/通用字段/初始数据
-**评审对象**: `database/` + 实际数据库
+**评审对象**: `PROJECT_ROOT/database/` + 实际数据库
 **参与人员**: @system-architect @java-developer
 **流转方向**: 通过 → 进入实施阶段；不通过 → 返回DDL执行修复
 
 ## 输出要求
 
-**报告位置**: `database/reviews/REVIEW-DDL-EXECUTION-YYMMDDHHMM.md`
+**报告位置**: `PROJECT_ROOT/database/reviews/REVIEW-DDL-EXECUTION-YYMMDDHHMM.md`
 
 **必须包含**:
 - 评审信息（日期、人员、数据库地址）

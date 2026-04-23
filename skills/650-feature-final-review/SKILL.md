@@ -12,6 +12,10 @@ version: "1.0.0"
 
 在所有开发阶段（620/630/631/640）完成后，执行全面的验收测试，生成验收报告，并由人工进行最终的上线决策。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -34,21 +38,21 @@ version: "1.0.0"
 
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 功能需求 | `issue/features/FEATURE-{YYMMDD}-{简述}.md` | 600阶段输出 |
-| Java后端代码 | `backend/{项目名}-app/src/` | 620阶段输出 |
-| Web前端代码 | `frontend/{项目名}-{用户角色}-{终端类型}/src/` | 630阶段输出 |
-| 移动端代码 | `frontend/{项目名}-{用户角色}-{终端类型}/src/` | 631阶段输出 |
-| 测试脚本 | `test/scripts/` | 640阶段输出 |
+| 功能需求 | `PROJECT_ROOT/issue/features/FEATURE-{YYMMDD}-{简述}.md` | 600阶段输出 |
+| Java后端代码 | `PROJECT_ROOT/backend/{项目名}-app/src/` | 620阶段输出 |
+| Web前端代码 | `PROJECT_ROOT/frontend/{项目名}-{用户角色}-{终端类型}/src/` | 630阶段输出 |
+| 移动端代码 | `PROJECT_ROOT/frontend/{项目名}-{用户角色}-{终端类型}/src/` | 631阶段输出 |
+| 测试脚本 | `PROJECT_ROOT/test/scripts/` | 640阶段输出 |
 | 开发文档 | 各端issues/ | 各阶段开发文档 |
 
 ## 输出
 
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 验收报告 | `issue/reviews/REVIEW-FEATURE-{YYMMDDHHMM}.md` | 最终验收报告 |
-| 测试报告 | `test/reports/summary/final-YYMMDDHHMM.md` | 测试执行报告 |
-| 扫描报告 | `issue/` | 安全扫描报告 |
-| 风险评估 | `issue/reviews/` | 风险评估报告 |
+| 验收报告 | `PROJECT_ROOT/issue/reviews/REVIEW-FEATURE-{YYMMDDHHMM}.md` | 最终验收报告 |
+| 测试报告 | `PROJECT_ROOT/test/reports/summary/final-YYMMDDHHMM.md` | 测试执行报告 |
+| 扫描报告 | `PROJECT_ROOT/issue/` | 安全扫描报告 |
+| 风险评估 | `PROJECT_ROOT/issue/reviews/` | 风险评估报告 |
 
 ## 执行流程
 
@@ -105,7 +109,7 @@ npx playwright test --grep "FEATURE-{简述}"
 
 ### 5. 生成验收报告
 
-**文件位置**: `issue/reviews/REVIEW-FEATURE-{YYMMDDHHMM}.md`
+**文件位置**: `PROJECT_ROOT/issue/reviews/REVIEW-FEATURE-{YYMMDDHHMM}.md`
 
 **报告内容**:
 ```markdown
@@ -179,11 +183,11 @@ npx playwright test --grep "FEATURE-{简述}"
 
 ## 输出要求
 
-**验收报告**: `issue/reviews/REVIEW-FEATURE-{YYMMDDHHMM}.md`
+**验收报告**: `PROJECT_ROOT/issue/reviews/REVIEW-FEATURE-{YYMMDDHHMM}.md`
 
-**测试报告**: `test/reports/summary/final-YYMMDDHHMM.md`
+**测试报告**: `PROJECT_ROOT/test/reports/summary/final-YYMMDDHHMM.md`
 
-**安全报告**: `issue/`
+**安全报告**: `PROJECT_ROOT/issue/`
 
 ## 流转关系
 

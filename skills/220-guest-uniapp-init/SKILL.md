@@ -12,6 +12,10 @@ version: "1.0.0"
 
 从 `assets/` 目录下的模板 zip 解压创建移动端 UniApp 项目，全文替换模板关键字为实际项目名，生成可用的项目脚手架。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -27,10 +31,6 @@ version: "1.0.0"
 | 主导 | 项目初始化 | `js-developer` |
 | 协作 | 架构确认 | `system-architect` |
 
-## 前置检查
-
-检查 `project-info.md` 是否存在且 5 个参数完整，不通过则引导用户执行 0-init。
-详见 [项目信息前置检查](../0-init/references/project-init-check.md)。
 
 ## 模板选择
 
@@ -39,7 +39,7 @@ version: "1.0.0"
 | `saas-uniapp-template.zip` | SaaS多租户项目 | 基于 saas-base 框架，含租户/商户管理 |
 | `uw-uniapp-template.zip` | UniWeb基础项目 | 基于 uw-base 框架，通用移动应用 |
 
-**选择时机**：在 `0-init` 阶段通过 `project-info.md` 的 `project-mode` 字段（`uniweb`/`saas`）确定，本脚本自动读取。
+**选择时机**：在 `0-init` 阶段通过 `PROJECT_ROOT/project-info.md` 的 `project-mode` 字段（`uniweb`/`saas`）确定，本脚本自动读取。
 
 ## 初始化流程
 
@@ -63,7 +63,7 @@ version: "1.0.0"
 - 项目名: {project-name}
 - 前端项目名: {project-name}-{角色}-uniapp
 - 角色: {用户选择的角色}
-- 输出目录: frontend/{project-name}-{角色}-uniapp/
+- 输出目录: $PROJECT_ROOT/frontend/{project-name}-{角色}-uniapp/
 
 确认执行吗？
 ```
@@ -105,7 +105,7 @@ bash scripts/init.sh /Users/user/project skip guest
 
 ## 输出要求
 
-**输出位置**: `frontend/{项目名}-{角色}-uniapp/` 目录
+**输出位置**: `PROJECT_ROOT/frontend/{项目名}-{角色}-uniapp/` 目录
 
 **包含内容**: 从模板解压并替换后的完整项目结构
 
@@ -113,7 +113,7 @@ bash scripts/init.sh /Users/user/project skip guest
 ```
 项目根目录/
 ├── project-info.md
-└── frontend/
+└── $PROJECT_ROOT/frontend/
     └── {项目名}-{角色}-uniapp/
         ├── src/
         ├── package.json
@@ -124,12 +124,12 @@ bash scripts/init.sh /Users/user/project skip guest
 **命名示例**（假设项目名为 `my-shop`）：
 | 角色 | 前端项目名 | 目录 |
 |------|-----------|------|
-| root | my-shop-root-uniapp | frontend/my-shop-root-uniapp/ |
-| ops | my-shop-ops-uniapp | frontend/my-shop-ops-uniapp/ |
-| admin | my-shop-admin-uniapp | frontend/my-shop-admin-uniapp/ |
-| saas | my-shop-saas-uniapp | frontend/my-shop-saas-uniapp/ |
-| mch | my-shop-mch-uniapp | frontend/my-shop-mch-uniapp/ |
-| guest | my-shop-guest-uniapp | frontend/my-shop-guest-uniapp/ |
+| root | my-shop-root-uniapp | PROJECT_ROOT/frontend/my-shop-root-uniapp/ |
+| ops | my-shop-ops-uniapp | PROJECT_ROOT/frontend/my-shop-ops-uniapp/ |
+| admin | my-shop-admin-uniapp | PROJECT_ROOT/frontend/my-shop-admin-uniapp/ |
+| saas | my-shop-saas-uniapp | PROJECT_ROOT/frontend/my-shop-saas-uniapp/ |
+| mch | my-shop-mch-uniapp | PROJECT_ROOT/frontend/my-shop-mch-uniapp/ |
+| guest | my-shop-guest-uniapp | PROJECT_ROOT/frontend/my-shop-guest-uniapp/ |
 
 ## 下一步
 

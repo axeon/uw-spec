@@ -12,6 +12,10 @@ version: "1.0.0"
 
 基于710阶段的修复方案，使用AI驱动的方式修复Java后端代码，自动完成修复、评审、测试的完整闭环。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -33,19 +37,19 @@ version: "1.0.0"
 
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 修复方案 | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md` | 710阶段输出 |
-| Bug分析报告 | `issue/bugs/BUGFIX-{YYMMDD}-{简述}.md` | 700阶段输出 |
-| 现有代码 | `backend/{项目名}-app/src/` | 现有代码基线 |
+| 修复方案 | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md` | 710阶段输出 |
+| Bug分析报告 | `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-{简述}.md` | 700阶段输出 |
+| 现有代码 | `PROJECT_ROOT/backend/{项目名}-app/src/` | 现有代码基线 |
 
 ## 输出
 
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 修复代码 | `backend/{项目名}-app/src/` | 修复后的代码 |
-| 回归测试 | `backend/{项目名}-app/src/test/` | 回归测试代码 |
-| 修复文档 | `backend/{项目名}-app/issues/BUGFIX-DESIGN-{YYMMDD}-{简述}-java-uniweb.md` | 修复记录 |
-| 评审报告 | `backend/{项目名}-app/reviews/` | AI评审报告 |
-| 变更记录 | `backend/{项目名}-app/CHANGELOG.md` | 代码变更历史 |
+| 修复代码 | `PROJECT_ROOT/backend/{项目名}-app/src/` | 修复后的代码 |
+| 回归测试 | `PROJECT_ROOT/backend/{项目名}-app/src/PROJECT_ROOT/test/` | 回归测试代码 |
+| 修复文档 | `PROJECT_ROOT/backend/{项目名}-app/issues/BUGFIX-DESIGN-{YYMMDD}-{简述}-java-uniweb.md` | 修复记录 |
+| 评审报告 | `PROJECT_ROOT/backend/{项目名}-app/reviews/` | AI评审报告 |
+| 变更记录 | `PROJECT_ROOT/backend/{项目名}-app/CHANGELOG.md` | 代码变更历史 |
 
 ## 710→720 衔接协议
 
@@ -53,9 +57,9 @@ version: "1.0.0"
 
 | 提取项 | 来源文件 | 用途 |
 |--------|---------|------|
-| 修复方案 | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 修复思路、修改范围、影响评估 |
-| Bug分析报告 | `issue/bugs/BUGFIX-{YYMMDD}-*.md` | Bug复现步骤、根因分析 |
-| DDL文件（如有） | `database/migrations/BUGFIX-*.sql` | 数据库变更，需先执行 |
+| 修复方案 | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 修复思路、修改范围、影响评估 |
+| Bug分析报告 | `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-*.md` | Bug复现步骤、根因分析 |
+| DDL文件（如有） | `PROJECT_ROOT/database/migrations/BUGFIX-*.sql` | 数据库变更，需先执行 |
 
 **并行约束**：720 与 730/731/740 天然独立可并行。DDL需先执行完毕后才能开始 720。
 
@@ -122,7 +126,7 @@ Java后端修复完成后，必须进入 PLAN-REVIEW 循环，确保修复质量
 
 ### 5. 生成修复文档
 
-**文件位置**: `backend/{项目名}-app/issues/BUGFIX-DESIGN-{YYMMDD}-{简述}-java-uniweb.md`
+**文件位置**: `PROJECT_ROOT/backend/{项目名}-app/issues/BUGFIX-DESIGN-{YYMMDD}-{简述}-java-uniweb.md`
 
 **文档内容**:
 ```markdown
@@ -161,11 +165,11 @@ Java后端修复完成后，必须进入 PLAN-REVIEW 循环，确保修复质量
 
 ## 输出要求
 
-**修复代码**: `backend/{项目名}-app/src/`
+**修复代码**: `PROJECT_ROOT/backend/{项目名}-app/src/`
 
-**修复文档**: `backend/{项目名}-app/issues/BUGFIX-DESIGN-{YYMMDD}-{简述}-java-uniweb.md`
+**修复文档**: `PROJECT_ROOT/backend/{项目名}-app/issues/BUGFIX-DESIGN-{YYMMDD}-{简述}-java-uniweb.md`
 
-**评审报告**: `backend/{项目名}-app/reviews/REVIEW-CODE-{YYMMDDHHMM}.md`
+**评审报告**: `PROJECT_ROOT/backend/{项目名}-app/reviews/REVIEW-CODE-{YYMMDDHHMM}.md`
 
 ## 流转关系
 

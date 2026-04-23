@@ -12,6 +12,10 @@ version: "1.0.0"
 
 执行 330-test-case-dev 阶段产出的四类自动化测试脚本（API/E2E/压测/安全），收集测试结果，管理缺陷，生成测试报告。本阶段**不编写测试脚本**，仅执行和报告。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -35,16 +39,16 @@ version: "1.0.0"
 
 | 输入项 | 来源路径 | 说明 |
 |--------|----------|------|
-| 测试脚本 | `test/scripts/` | 330阶段产出的四类自动化脚本 |
+| 测试脚本 | `PROJECT_ROOT/test/scripts/` | 330阶段产出的四类自动化脚本 |
 | API服务地址 | `API_BASE_URL` 环境变量 | 后端服务运行地址（如 `http://localhost:8080`） |
 | Web前端地址 | `WEB_BASE_URL` 环境变量 | 前端服务运行地址（如 `http://localhost:5173`） |
-| 测试设计文档 | `test/design/` | 250阶段产出的测试设计（覆盖率基准） |
+| 测试设计文档 | `PROJECT_ROOT/test/design/` | 250阶段产出的测试设计（覆盖率基准） |
 
 ## 测试前提
 
 | 前提 | 验证方式 |
 |------|---------|
-| 330阶段脚本已完成 | `test/scripts/` 目录存在且通过评审 |
+| 330阶段脚本已完成 | `PROJECT_ROOT/test/scripts/` 目录存在且通过评审 |
 | 后端服务启动 | `curl {API_BASE_URL}/health` 返回200 |
 | 前端服务启动 | `curl {WEB_BASE_URL}` 返回200 |
 | JMeter已安装 | `jmeter --version` 可执行 |
@@ -64,37 +68,37 @@ version: "1.0.0"
 
 ### 1. 安全测试
 ```bash
-cd test/scripts
+cd PROJECT_ROOT/test/scripts
 bash bin/run-security.sh
 ```
 
 ### 2. API测试
 ```bash
-cd test/scripts
+cd $PROJECT_ROOT/test/scripts
 bash bin/run-api.sh
 ```
 
 ### 3. E2E单终端测试
 ```bash
-cd test/scripts
+cd PROJECT_ROOT/test/scripts
 bash bin/run-e2e.sh {项目名}
 ```
 
 ### 4. E2E跨终端测试
 ```bash
-cd test/scripts
+cd $PROJECT_ROOT/test/scripts
 npx playwright test e2e/cross-case/ --project=e2e
 ```
 
 ### 5. 压力测试
 ```bash
-cd test/scripts
+cd PROJECT_ROOT/test/scripts
 bash bin/run-load.sh {scenario}
 ```
 
 ### 全部执行
 ```bash
-cd test/scripts
+cd $PROJECT_ROOT/test/scripts
 bash bin/run-all.sh
 ```
 
@@ -113,7 +117,7 @@ bash bin/run-all.sh
 ## 报告输出
 
 ```
-test/reports/
+$PROJECT_ROOT/test/reports/
 ├── api/
 │   └── report-YYMMDDHHMM.html
 ├── e2e/

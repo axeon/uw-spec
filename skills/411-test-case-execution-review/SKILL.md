@@ -11,6 +11,10 @@ version: "1.0.0"
 ## 描述
 对四类测试执行结果（API/E2E/压测/安全）进行全面审计，验证报告真实性、缺陷管理规范性、SLA达标情况、安全漏洞修复状态。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 | 触发条件 | 示例 |
 |---------|------|
@@ -29,16 +33,16 @@ version: "1.0.0"
 ## 输入
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| API测试报告 | `test/reports/api/report-YYMMDDHHMM.html` | API测试结果 |
-| E2E测试报告 | `test/reports/e2e/report-YYMMDDHHMM.html` | E2E测试结果 |
-| 压测报告 | `test/reports/load/report-YYMMDDHHMM.html` | 压测结果 |
-| 安全报告 | `test/reports/security/` | ZAP/Trivy扫描结果 |
-| 缺陷记录 | `test/reports/summary/summary-YYMMDDHHMM.md` | 缺陷汇总 |
+| API测试报告 | `PROJECT_ROOT/test/reports/api/report-YYMMDDHHMM.html` | API测试结果 |
+| E2E测试报告 | `PROJECT_ROOT/test/reports/e2e/report-YYMMDDHHMM.html` | E2E测试结果 |
+| 压测报告 | `PROJECT_ROOT/test/reports/load/report-YYMMDDHHMM.html` | 压测结果 |
+| 安全报告 | `PROJECT_ROOT/test/reports/security/` | ZAP/Trivy扫描结果 |
+| 缺陷记录 | `PROJECT_ROOT/test/reports/summary/summary-YYMMDDHHMM.md` | 缺陷汇总 |
 
 ## 输出
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 测试执行评审报告 | `test/reviews/REVIEW-EXECUTION-YYMMDDHHMM.md` | 评审结论和问题清单 |
+| 测试执行评审报告 | `PROJECT_ROOT/test/reviews/REVIEW-EXECUTION-YYMMDDHHMM.md` | 评审结论和问题清单 |
 
 ## 流转关系
 ```
@@ -122,12 +126,12 @@ version: "1.0.0"
 
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
-**评审对象**: `test/reports/`
+**评审对象**: `PROJECT_ROOT/test/reports/`
 **参与人员**: @project-manager @test-engineer @system-architect
 **流转方向**: 通过 → 发布阶段；不通过 → 返回 410 重新测试
 
 ## 输出要求
-**报告位置**: `test/reviews/REVIEW-EXECUTION-YYMMDDHHMM.md`
+**报告位置**: `PROJECT_ROOT/test/reviews/REVIEW-EXECUTION-YYMMDDHHMM.md`
 
 **必须包含**:
 - 评审信息（日期、人员、对象）

@@ -11,6 +11,10 @@ version: "1.0.0"
 ## 描述
 对PRD、用户故事地图、业务流程图等需求文档进行全面评审，确保文档完整、准确、可追溯。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 | 触发条件 | 示例 |
 |---------|------|
@@ -29,14 +33,14 @@ version: "1.0.0"
 ## 输入
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 需求文档 | `requirement/` | 6项需求文档 |
-| 原始需求 | `requirement/` | 原始需求文档 |
+| 需求文档 | `PROJECT_ROOT/requirement/` | 6项需求文档 |
+| 原始需求 | `PROJECT_ROOT/requirement/` | 原始需求文档 |
 | 实现代码 | 代码仓库 | 需求实现验证 |
 
 ## 输出
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 需求文档评审报告 | `requirement/reviews/REVIEW-PRD-YYMMDDHHMM.md` | 评审结论和问题清单 |
+| 需求文档评审报告 | `PROJECT_ROOT/requirement/reviews/REVIEW-PRD-YYMMDDHHMM.md` | 评审结论和问题清单 |
 
 ## 流转关系
 ```
@@ -95,12 +99,12 @@ version: "1.0.0"
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
 **维度**: 完整性/准确性/可追溯性/可测试性
-**评审对象**: requirement/
+**评审对象**: PROJECT_ROOT/requirement/
 **参与人员**: @project-manager @product-manager @test-engineer
 **流转方向**: 通过 -> 进入收尾阶段完成；不通过 -> 返回需求文档修改
 
 ## 输出要求
-**报告位置**: `requirement/reviews/REVIEW-PRD-YYMMDDHHMM.md`
+**报告位置**: `PROJECT_ROOT/requirement/reviews/REVIEW-PRD-YYMMDDHHMM.md`
 
 **必须包含**:
 - 评审信息（日期、人员、对象）

@@ -11,6 +11,10 @@ version: "1.0.0"
 ## 描述
 对710阶段产出的Bug修复方案进行全面评审, 确保修复方案正确、彻底、风险可控, 且不引入新问题。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 | 触发条件 | 示例 |
 |---------|------|
@@ -29,15 +33,15 @@ version: "1.0.0"
 ## 输入
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| Bug分析报告 | `issue/bugs/BUGFIX-{YYMMDD}-{简述}.md` | 700阶段输出 |
-| 修复方案文档 | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md` | 710阶段输出 |
-| DDL文件（如有） | `database/migrations/BUGFIX-{YYMMDD}-{简述}.sql` | 710阶段输出 |
+| Bug分析报告 | `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-{简述}.md` | 700阶段输出 |
+| 修复方案文档 | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md` | 710阶段输出 |
+| DDL文件（如有） | `PROJECT_ROOT/database/migrations/BUGFIX-{YYMMDD}-{简述}.sql` | 710阶段输出 |
 | 相关代码 | 代码仓库 | 需要修改的代码 |
 
 ## 输出
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 修复方案评审报告 | `issue/reviews/REVIEW-BUGFIX-DESIGN-{YYMMDDHHMM}.md` | 评审结论和问题清单 |
+| 修复方案评审报告 | `PROJECT_ROOT/issue/reviews/REVIEW-BUGFIX-DESIGN-{YYMMDDHHMM}.md` | 评审结论和问题清单 |
 
 ## 流转关系
 ```
@@ -90,14 +94,14 @@ version: "1.0.0"
 按维度检查, 记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。
 
 **维度**: 根因理解/修复正确性/彻底性/数据库变更/接口变更/影响范围/回滚方案
-**评审对象**: issue/bugs/BUGFIX-DESIGN-*
+**评审对象**: PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-*
 **参与人员**: @system-architect @java-developer @test-engineer
 **流转方向**: 通过 -> 进入Bug修复; 不通过 -> 返回710修改
 
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
 ## 输出要求
-**报告位置**: `issue/reviews/REVIEW-BUGFIX-DESIGN-{YYMMDDHHMM}.md`
+**报告位置**: `PROJECT_ROOT/issue/reviews/REVIEW-BUGFIX-DESIGN-{YYMMDDHHMM}.md`
 
 **必须包含**:
 - 评审信息（日期、人员、对象、Bug编号）

@@ -12,6 +12,10 @@ version: "1.0.0"
 
 基于 UniWeb + SaaS 技术栈（uw-base / saas-base / saas-finance）实现后端业务逻辑。210 设计阶段已产出 Controller 骨架和 Helper 签名，本阶段在此基础上填充实现代码。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -37,14 +41,14 @@ version: "1.0.0"
 
 | 输入项 | 来源路径 | 说明 |
 |--------|----------|------|
-| PRD | `requirement/prds/*` | 产品需求文档，功能模块及验收标准 |
-| 数据库设计文档 | `database/database-design.md` | 表结构、实体关系 |
-| 后端设计文档 | `backend/{项目名}-app/README.md` | 模块划分、接口设计、角色权限映射、缓存策略 |
-| Controller代码 | `backend/{项目名}-app/src/main/java/{包路径}/controller/` | 210阶段裁剪后的Controller |
-| Helper代码 | `backend/{项目名}-app/src/main/java/{包路径}/service/` | 210阶段新建的Helper方法签名 |
-| DTO代码 | `backend/{项目名}-app/src/main/java/{包路径}/dto/` | 210阶段裁剪后的DTO |
-| 测试骨架代码 | `backend/{项目名}-app/src/test/java/{包路径}/service/` | 210阶段产出的 Helper 单元测试骨架（TDD Red） |
-| 测试用例设计 | `test/design/` | 测试场景和用例覆盖（API/E2E/压测/安全） |
+| PRD | `PROJECT_ROOT/requirement/prds/*` | 产品需求文档，功能模块及验收标准 |
+| 数据库设计文档 | `PROJECT_ROOT/database/database-design.md` | 表结构、实体关系 |
+| 后端设计文档 | `PROJECT_ROOT/backend/{项目名}-app/README.md` | 模块划分、接口设计、角色权限映射、缓存策略 |
+| Controller代码 | `PROJECT_ROOT/backend/{项目名}-app/src/main/java/{包路径}/controller/` | 210阶段裁剪后的Controller |
+| Helper代码 | `PROJECT_ROOT/backend/{项目名}-app/src/main/java/{包路径}/service/` | 210阶段新建的Helper方法签名 |
+| DTO代码 | `PROJECT_ROOT/backend/{项目名}-app/src/main/java/{包路径}/dto/` | 210阶段裁剪后的DTO |
+| 测试骨架代码 | `PROJECT_ROOT/backend/{项目名}-app/src/PROJECT_ROOT/test/java/{包路径}/service/` | 210阶段产出的 Helper 单元测试骨架（TDD Red） |
+| 测试用例设计 | `PROJECT_ROOT/test/design/` | 测试场景和用例覆盖（API/E2E/压测/安全） |
 
 ## 技术栈
 
@@ -120,7 +124,7 @@ version: "1.0.0"
 
 **前置条件**：300-database-ddl-execution 已完成且 301-database-ddl-execution-review 评审通过（数据库表已就绪）。
 
-1. 读取 `backend/{项目名}-app/TASKS.md` 提取并行分组表和任务卡片列表
+1. 读取 `PROJECT_ROOT/backend/{项目名}-app/TASKS.md` 提取并行分组表和任务卡片列表
 3. 读取 [dev-standards.md](../210-java-uniweb-design/references/backend/uniweb/dev-standards.md) 了解编码规范
 4. **依赖拓扑确认**：按分组表确定执行顺序，禁止循环依赖
 
@@ -213,7 +217,7 @@ grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 | 检查项 | 命令 | 通过标准 |
 |--------|------|---------|
 | 无残留 TODO | `grep -r "// TODO:" src/main/java/` | 0 行 |
-| 无残留 TDD Red | `grep -r "TDD Red" src/test/java/` | 0 行 |
+| 无残留 TDD Red | `grep -r "TDD Red" src/$PROJECT_ROOT/test/java/` | 0 行 |
 | 全量编译 | `mvn compile` | BUILD SUCCESS |
 | 全量测试通过 | `mvn test` | 全绿 |
 | 应用启动正常 | 启动 + Swagger 可访问 | 无异常 |
@@ -232,8 +236,8 @@ grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 
 ## 输出要求
 
-- **代码位置**: `backend/{项目名}-app/src/main/java/{包路径}/`
-- **测试位置**: `backend/{项目名}-app/src/test/java/{包路径}/service/`
+- **代码位置**: `PROJECT_ROOT/backend/{项目名}-app/src/main/java/{包路径}/`
+- **测试位置**: `PROJECT_ROOT/backend/{项目名}-app/src/$PROJECT_ROOT/test/java/{包路径}/service/`
 - **包含内容**: Helper实现代码、Controller业务调用、单元测试全绿、编译验证通过
 
 ## 参考

@@ -12,6 +12,10 @@ version: "1.0.0"
 
 对Bug进行深入分析，定位根因，评估影响范围，为后续修复方案设计提供依据。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -42,7 +46,7 @@ version: "1.0.0"
 
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| Bug分析报告 | `issue/bugs/BUGFIX-{YYMMDD}-{简述}.md` | Bug分析文档 |
+| Bug分析报告 | `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-{简述}.md` | Bug分析文档 |
 
 ## 执行流程
 
@@ -145,7 +149,7 @@ version: "1.0.0"
 
 ## 输出要求
 
-**Bug分析报告**: `issue/bugs/BUGFIX-{YYMMDD}-{简述}.md`
+**Bug分析报告**: `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-{简述}.md`
 
 ## 流转关系
 

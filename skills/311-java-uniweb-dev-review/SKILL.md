@@ -11,6 +11,10 @@ version: "1.0.0"
 ## 描述
 对Java后端代码进行全面评审，验证TDD实践、uw-base架构规范、多租户实现和代码质量。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 | 触发条件 | 示例 |
 |---------|------|
@@ -31,16 +35,16 @@ version: "1.0.0"
 ## 输入
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| Java后端代码 | `backend/{项目名}-app/src/` | 开发完成的代码 |
-| 测试代码 | `backend/{项目名}-app/src/test/` | 单元测试和集成测试 |
-| 覆盖率报告 | `backend/{项目名}-app/target/site/jacoco/` | 测试覆盖率数据 |
-| 架构设计 | `backend/{项目名}-app/README.md` | 210阶段产出的总体设计文档 |
-| 开发任务 | `backend/{项目名}-app/TASKS.md` | 210阶段产出的任务卡片和联调验证清单 |
+| Java后端代码 | `PROJECT_ROOT/backend/{项目名}-app/src/` | 开发完成的代码 |
+| 测试代码 | `PROJECT_ROOT/backend/{项目名}-app/src/PROJECT_ROOT/test/` | 单元测试和集成测试 |
+| 覆盖率报告 | `PROJECT_ROOT/backend/{项目名}-app/target/site/jacoco/` | 测试覆盖率数据 |
+| 架构设计 | `PROJECT_ROOT/backend/{项目名}-app/README.md` | 210阶段产出的总体设计文档 |
+| 开发任务 | `PROJECT_ROOT/backend/{项目名}-app/TASKS.md` | 210阶段产出的任务卡片和联调验证清单 |
 
 ## 输出
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| Java开发评审报告 | `backend/{项目名}-app/reviews/REVIEW-CODE-YYMMDDHHMM.md` | 评审结论和问题清单 |
+| Java开发评审报告 | `PROJECT_ROOT/backend/{项目名}-app/reviews/REVIEW-CODE-YYMMDDHHMM.md` | 评审结论和问题清单 |
 
 ## 流转关系
 ```
@@ -98,12 +102,12 @@ version: "1.0.0"
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
 **维度**: TDD/uw-base/代码质量/安全性
-**评审对象**: backend/{项目名}-app/
+**评审对象**: PROJECT_ROOT/backend/{项目名}-app/
 **参与人员**: @java-lead @system-architect @java-developer
 **流转方向**: 通过 -> 进入下一阶段评审；不通过 -> 返回开发修改
 
 ## 输出要求
-**报告位置**: `backend/{项目名}-app/reviews/REVIEW-CODE-YYMMDDHHMM.md`
+**报告位置**: `PROJECT_ROOT/backend/{项目名}-app/reviews/REVIEW-CODE-YYMMDDHHMM.md`
 
 **必须包含**:
 - 评审信息（日期、人员、对象）

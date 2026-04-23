@@ -11,6 +11,10 @@ version: "1.0.0"
 ## 描述
 对需求规划阶段产出的需求文档进行全面评审，确保需求的完整性、可行性、一致性和可测试性。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 | 触发条件 | 示例 |
 |---------|------|
@@ -29,12 +33,12 @@ version: "1.0.0"
 ## 输入
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 需求文档 | `requirement/prds/` | PRD、用户故事、验收标准 |
+| 需求文档 | `PROJECT_ROOT/requirement/prds/` | PRD、用户故事、验收标准 |
 
 ## 输出
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 需求评审报告 | `requirement/reviews/REVIEW-PRD-YYMMDDHHMM.md` | 时间戳24小时制 |
+| 需求评审报告 | `PROJECT_ROOT/requirement/reviews/REVIEW-PRD-YYMMDDHHMM.md` | 时间戳24小时制 |
 
 ## 流转关系
 ```
@@ -83,24 +87,24 @@ version: "1.0.0"
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
 **维度**: 完整性/可行性/一致性/可测试性
-**评审对象**: requirement/
+**评审对象**: PROJECT_ROOT/requirement/
 **参与人员**: @project-manager @product-manager @system-architect @test-engineer
 **流转方向**: 通过 -> 进入设计阶段；不通过 -> 返回需求规划修改
 
 ## 输出要求
-**报告位置**: `requirement/reviews/REVIEW-PRD-YYMMDDHHMM.md`
+**报告位置**: `PROJECT_ROOT/requirement/reviews/REVIEW-PRD-YYMMDDHHMM.md`
 
 **命名规则**: 时间戳使用当前系统时间，24小时制，例如 `REVIEW-PRD-2604021430.md`
 
 **按终端分别评审**:
 | 终端 | 评审目录 |
 |------|---------|
-| 主文件 | `requirement/prds/README.md` |
-| guest | `requirement/prds/guest-*` |
-| admin | `requirement/prds/admin-*` |
-| saas | `requirement/prds/saas-*` |
-| mch | `requirement/prds/mch-*` |
-| root | `requirement/prds/root-*` |
+| 主文件 | `PROJECT_ROOT/requirement/prds/README.md` |
+| guest | `PROJECT_ROOT/requirement/prds/guest-*` |
+| admin | `PROJECT_ROOT/requirement/prds/admin-*` |
+| saas | `PROJECT_ROOT/requirement/prds/saas-*` |
+| mch | `PROJECT_ROOT/requirement/prds/mch-*` |
+| root | `PROJECT_ROOT/requirement/prds/root-*` |
 
 **必须包含**:
 - 评审信息（日期、人员、对象）

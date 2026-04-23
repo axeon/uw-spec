@@ -12,14 +12,18 @@ version: "1.0.0"
 
 帮助独立开发者、创业者在投入开发前快速验证产品想法的可行性，输出直接、犀利的判断结论。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 触发检查
 
-**检查 `project-info.md` 是否存在**。
+**检查 `PROJECT_ROOT/project-info.md` 是否存在**。
 
 | 条件 | 操作 |
 |------|------|
-| `project-info.md` 存在 | 读取文件内容，基于 `project-desc` 和「项目概述」进行五维分析 |
-| `project-info.md` 不存在 | **跳转执行 0-init**，初始化完成后自动回到 100 继续分析 |
+| `PROJECT_ROOT/project-info.md` 存在 | 读取文件内容，基于 `project-desc` 和「项目概述」进行五维分析 |
+| `PROJECT_ROOT/project-info.md` 不存在 | **跳转执行 0-init**，初始化完成后自动回到 100 继续分析 |
 
 **跳转 0-init 时的信息传递**：
 告知 0-init 当前是从 100 跳转而来，0-init 完成初始化后应自动触发回到 100。
@@ -100,7 +104,7 @@ version: "1.0.0"
 
 **语言要求**: 所有输出文档必须使用中文编写
 
-**报告位置**: `requirement/idea-check/IDEA-{YYMMDD}-{一句话汇总信息}.md`
+**报告位置**: `PROJECT_ROOT/requirement/idea-check/IDEA-{YYMMDD}-{一句话汇总信息}.md`
 
 **包含内容**:
 - 直接结论

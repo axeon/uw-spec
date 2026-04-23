@@ -11,6 +11,10 @@ version: "1.0.0"
 ## 描述
 对数据库设计文档进行全面评审，验证数据库设计的合理性、完整性、性能和可维护性。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 | 触发条件 | 示例 |
 |---------|------|
@@ -29,13 +33,13 @@ version: "1.0.0"
 ## 输入
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 数据库设计文档 | `database/database-design.md` | 表结构、索引、关联关系 |
-| 需求文档 | `requirement/prds/*` | 数据需求参考 |
+| 数据库设计文档 | `PROJECT_ROOT/database/database-design.md` | 表结构、索引、关联关系 |
+| 需求文档 | `PROJECT_ROOT/requirement/prds/*` | 数据需求参考 |
 
 ## 输出
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 数据库设计评审报告 | `database/reviews/REVIEW-DB-YYMMDDHHMM.md` | 按时间戳命名，24小时制 |
+| 数据库设计评审报告 | `PROJECT_ROOT/database/reviews/REVIEW-DB-YYMMDDHHMM.md` | 按时间戳命名，24小时制 |
 
 ## 流转关系
 ```
@@ -87,12 +91,12 @@ version: "1.0.0"
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
 **维度**: 表结构/索引/关联关系/性能/安全
-**评审对象**: database/
+**评审对象**: PROJECT_ROOT/database/
 **参与人员**: @system-architect @java-developer @test-engineer
 **流转方向**: 通过 -> 进入下一阶段评审；不通过 -> 返回数据库设计修改
 
 ## 输出要求
-**报告位置**: `database/reviews/REVIEW-DB-YYMMDDHHMM.md`
+**报告位置**: `PROJECT_ROOT/database/reviews/REVIEW-DB-YYMMDDHHMM.md`
 
 **命名规则**: 时间戳使用当前系统时间，24小时制，例如 `REVIEW-DB-2604021430.md`
 

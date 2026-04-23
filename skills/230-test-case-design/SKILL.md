@@ -12,6 +12,10 @@ version: "1.0.0"
 
 根据 PRD、后端接口设计和前端原型，编写四类测试用例设计文档（API测试、E2E测试、压力测试、安全测试）。输出文档**主要供人类阅读和评审**，同时必须包含足够的技术细节，以指导后期 330-test-case-dev 阶段编写自动化测试脚本。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -36,10 +40,10 @@ version: "1.0.0"
 
 | 输入项 | 来源路径 | 说明 |
 |--------|----------|------|
-| PRD | `requirement/prds/*` | 产品需求文档，功能模块及验收标准 |
-| 数据库设计文档 | `database/database-design.md` | 表结构、字段定义、实体关系 |
-| 后端设计文档 | `backend/{项目名}-app/README.md` | 接口设计、模块划分、角色权限映射 |
-| 后端Swagger | `backend/{项目名}-app/` 启动后 | OpenAPI Spec（接口路径、参数类型、枚举值、必填标记） |
+| PRD | `PROJECT_ROOT/requirement/prds/*` | 产品需求文档，功能模块及验收标准 |
+| 数据库设计文档 | `PROJECT_ROOT/database/database-design.md` | 表结构、字段定义、实体关系 |
+| 后端设计文档 | `PROJECT_ROOT/backend/{项目名}-app/README.md` | 接口设计、模块划分、角色权限映射 |
+| 后端Swagger | `PROJECT_ROOT/backend/{项目名}-app/` 启动后 | OpenAPI Spec（接口路径、参数类型、枚举值、必填标记） |
 | 原型页面 | `{项目名}-{role}-{platform}/src/` | 页面组件结构、表单字段、操作流程 |
 
 ## 设计原则
@@ -132,10 +136,10 @@ version: "1.0.0"
 
 | 测试类型 | 设计产出 | 产出路径 |
 |---------|---------|---------|
-| API测试 | 接口测试用例（请求参数、响应断言、数据驱动） | `test/design/api/README.md` |
-| E2E测试 | 页面操作用例（操作步骤、元素定位、断言规则） | `test/design/e2e/README.md` |
-| 压力测试 | 压测场景（线程组配置、SLA指标、参数化数据） | `test/design/load/README.md` |
-| 安全测试 | 安全场景（检查项、扫描策略、业务安全用例） | `test/design/security/README.md` |
+| API测试 | 接口测试用例（请求参数、响应断言、数据驱动） | `PROJECT_ROOT/test/design/api/README.md` |
+| E2E测试 | 页面操作用例（操作步骤、元素定位、断言规则） | `PROJECT_ROOT/test/design/e2e/README.md` |
+| 压力测试 | 压测场景（线程组配置、SLA指标、参数化数据） | `PROJECT_ROOT/test/design/load/README.md` |
+| 安全测试 | 安全场景（检查项、扫描策略、业务安全用例） | `PROJECT_ROOT/test/design/security/README.md` |
 
 > 各类测试用例模板详见 [测试用例模板](references/templates.md)
 
@@ -193,7 +197,7 @@ version: "1.0.0"
 
 **产出目录**:
 ```
-test/design/
+PROJECT_ROOT/test/design/
 ├── README.md                         # 四类测试设计总览
 ├── api/README.md                     # API测试用例设计
 ├── e2e/README.md                     # E2E测试用例设计

@@ -40,12 +40,12 @@ AskUserQuestion({
 
 用户回答后，将描述内容作为 `project-desc` 进入第二层检查。
 
-**第二层：检查 `project-info.md` 是否存在**
+**第二层：检查 `PROJECT_ROOT/project-info.md` 是否存在**
 
 | 条件 | 操作 |
 |------|------|
-| `project-info.md` 存在 | 展示项目信息，询问用户从哪个阶段开始 |
-| `project-info.md` 不存在 | 进入「项目信息初始化」流程，使用用户输入的描述填充第3步 |
+| `PROJECT_ROOT/project-info.md` 存在 | 展示项目信息，询问用户从哪个阶段开始 |
+| `PROJECT_ROOT/project-info.md` 不存在 | 进入「项目信息初始化」流程，使用用户输入的描述填充第3步 |
 
 **存储规则**：
 - **≤300字**：直接存入 YAML 头部的 `project-desc`
@@ -58,6 +58,10 @@ AskUserQuestion({
 |------|-------------|
 | 100-rapid-idea-check | 自动回到 100 执行五维分析 |
 | 110-requirement-planning | 自动回到 110 执行 Phase 1 需求访谈 |
+
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](references/project-env-check.md)。**未找到** → 使用当前工作目录作为 `PROJECT_ROOT`（新项目场景）。
 
 ## 八阶段模型
 
@@ -127,7 +131,7 @@ AskUserQuestion({
 
    | 步骤 | 操作 |
    |------|------|
-   | 1 | 检查 `project-info.md` 是否存在 |
+   | 1 | 检查 `PROJECT_ROOT/project-info.md` 是否存在 |
    | 2 | **如不存在**：使用 `AskUserQuestion` 逐个询问以下4项 |
    | 3 | **如已存在**：展示现有信息，询问是否继续使用 |
 
@@ -149,7 +153,7 @@ AskUserQuestion({
    - 每个问题提供参考选项，同时支持用户自由录入
 
    **创建项目信息文件**：
-   - 5个问题全部回答后，创建 `project-info.md`
+   - 5个问题全部回答后，创建 `PROJECT_ROOT/project-info.md`
    - 使用YAML头部格式保存所有信息
    - 告知用户项目信息已保存
 

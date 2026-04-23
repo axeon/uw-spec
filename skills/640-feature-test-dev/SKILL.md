@@ -12,6 +12,10 @@ version: "1.0.0"
 
 基于610阶段的技术方案，使用AI驱动的方式生成自动化测试脚本（Playwright），包括API测试、E2E测试，自动完成实现、评审、修复、执行的完整闭环。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -33,23 +37,23 @@ version: "1.0.0"
 
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 技术方案 | `backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | 610阶段输出 |
-| 功能需求 | `issue/features/FEATURE-{YYMMDD}-{简述}.md` | 600阶段输出 |
-| 后端Swagger | `backend/{项目名}-app/` | API接口定义 |
+| 技术方案 | `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | 610阶段输出 |
+| 功能需求 | `PROJECT_ROOT/issue/features/FEATURE-{YYMMDD}-{简述}.md` | 600阶段输出 |
+| 后端Swagger | `PROJECT_ROOT/backend/{项目名}-app/` | API接口定义 |
 | 前端代码 | `{项目名}-{role}-{platform}/src/` | 页面组件、表单字段（E2E测试参考） |
-| 现有测试 | `test/scripts/` | 现有测试基线 |
+| 现有测试 | `PROJECT_ROOT/test/scripts/` | 现有测试基线 |
 
 ## 输出
 
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| API测试脚本 | `test/scripts/api/` | Playwright API测试 |
-| E2E测试脚本 | `test/scripts/e2e/` | Playwright E2E测试 |
-| 测试数据 | `test/scripts/data/` | 测试数据文件 |
-| 测试文档 | `test/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-test.md` | 测试记录 |
-| 评审报告 | `test/reviews/` | AI评审报告 |
-| 测试报告 | `test/reports/` | 测试执行报告 |
-| 变更记录 | `test/scripts/CHANGELOG.md` | 测试变更历史 |
+| API测试脚本 | `PROJECT_ROOT/test/scripts/api/` | Playwright API测试 |
+| E2E测试脚本 | `PROJECT_ROOT/test/scripts/e2e/` | Playwright E2E测试 |
+| 测试数据 | `PROJECT_ROOT/test/scripts/data/` | 测试数据文件 |
+| 测试文档 | `PROJECT_ROOT/test/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-test.md` | 测试记录 |
+| 评审报告 | `PROJECT_ROOT/test/reviews/` | AI评审报告 |
+| 测试报告 | `PROJECT_ROOT/test/reports/` | 测试执行报告 |
+| 变更记录 | `PROJECT_ROOT/test/scripts/CHANGELOG.md` | 测试变更历史 |
 
 ## 610→640 衔接协议
 
@@ -57,8 +61,8 @@ version: "1.0.0"
 
 | 提取项 | 来源文件 | 用途 |
 |--------|---------|------|
-| 测试方案 | `test/issues/FEATURE-DESIGN-*-test-design.md` | 测试范围、场景、策略 |
-| 功能需求 | `issue/features/FEATURE-{YYMMDD}-*.md` | 验收标准 |
+| 测试方案 | `PROJECT_ROOT/test/issues/FEATURE-DESIGN-*-test-design.md` | 测试范围、场景、策略 |
+| 功能需求 | `PROJECT_ROOT/issue/features/FEATURE-{YYMMDD}-*.md` | 验收标准 |
 
 **并行约束**：640 与 620/630/631 天然独立可并行。640 的 E2E 测试依赖前端页面可访问。
 
@@ -72,10 +76,10 @@ version: "1.0.0"
 
 | 测试类型 | 生成位置 | 说明 |
 |---------|---------|------|
-| API测试 | `test/scripts/api/{feature}.spec.ts` | 接口自动化测试 |
-| E2E测试 | `test/scripts/e2e/{feature}.spec.ts` | 端到端测试 |
-| 测试数据 | `test/scripts/data/{feature}.json` | 测试数据 |
-| 测试工具 | `test/scripts/utils/` | 测试工具函数 |
+| API测试 | `PROJECT_ROOT/test/scripts/api/{feature}.spec.ts` | 接口自动化测试 |
+| E2E测试 | `PROJECT_ROOT/test/scripts/e2e/{feature}.spec.ts` | 端到端测试 |
+| 测试数据 | `PROJECT_ROOT/test/scripts/data/{feature}.json` | 测试数据 |
+| 测试工具 | `PROJECT_ROOT/test/scripts/utils/` | 测试工具函数 |
 
 **测试覆盖**:
 
@@ -138,7 +142,7 @@ version: "1.0.0"
 
 ### 5. 生成测试文档
 
-**文件位置**: `test/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-test.md`
+**文件位置**: `PROJECT_ROOT/test/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-test.md`
 
 **文档内容**:
 ```markdown
@@ -189,13 +193,13 @@ version: "1.0.0"
 
 ## 输出要求
 
-**测试脚本**: `test/scripts/api/` + `test/scripts/e2e/`
+**测试脚本**: `PROJECT_ROOT/test/scripts/api/` + `PROJECT_ROOT/test/scripts/e2e/`
 
-**测试文档**: `test/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-test.md`
+**测试文档**: `PROJECT_ROOT/test/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-test.md`
 
-**评审报告**: `test/reviews/REVIEW-CODE-{YYMMDDHHMM}.md`
+**评审报告**: `PROJECT_ROOT/test/reviews/REVIEW-CODE-{YYMMDDHHMM}.md`
 
-**测试报告**: `test/reports/report-YYMMDDHHMM.md`
+**测试报告**: `PROJECT_ROOT/test/reports/report-YYMMDDHHMM.md`
 
 ## 流转关系
 

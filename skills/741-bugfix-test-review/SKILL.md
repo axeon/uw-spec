@@ -11,6 +11,10 @@ version: "1.0.0"
 ## 描述
 对Bug修复阶段（740）产出的回归测试脚本进行评审, 验证回归测试覆盖Bug场景、回归范围合理性和代码质量。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 | 触发条件 | 示例 |
 |---------|------|
@@ -26,14 +30,14 @@ version: "1.0.0"
 ## 输入
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 回归测试代码 | `test/` | 回归测试脚本 |
-| 修复方案 | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 710阶段方案 |
-| Bug报告 | `issue/bugs/BUG-{YYMMDD}-*.md` | 700阶段分析 |
+| 回归测试代码 | `PROJECT_ROOT/test/` | 回归测试脚本 |
+| 修复方案 | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 710阶段方案 |
+| Bug报告 | `PROJECT_ROOT/issue/bugs/BUG-{YYMMDD}-*.md` | 700阶段分析 |
 
 ## 输出
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 评审报告 | `issue/reviews/REVIEW-BUGFIX-TEST-{YYMMDDHHMM}.md` | 评审结论 |
+| 评审报告 | `PROJECT_ROOT/issue/reviews/REVIEW-BUGFIX-TEST-{YYMMDDHHMM}.md` | 评审结论 |
 
 ## 流转关系
 ```
@@ -76,4 +80,4 @@ version: "1.0.0"
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
 ## 输出要求
-**报告位置**: `issue/reviews/REVIEW-BUGFIX-TEST-{YYMMDDHHMM}.md`
+**报告位置**: `PROJECT_ROOT/issue/reviews/REVIEW-BUGFIX-TEST-{YYMMDDHHMM}.md`

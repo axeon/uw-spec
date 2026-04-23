@@ -12,6 +12,10 @@ version: "1.0.0"
 
 在功能验收通过后，自动更新5xx阶段的交付文档，包括运维文档、用户手册、需求文档，确保文档与功能实现保持一致。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -33,9 +37,9 @@ version: "1.0.0"
 
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 验收报告 | `issue/reviews/REVIEW-FEATURE-{YYMMDDHHMM}.md` | 650阶段输出 |
-| 功能需求 | `issue/features/FEATURE-{YYMMDD}-{简述}.md` | 600阶段输出 |
-| 技术方案 | `backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | 610阶段输出 |
+| 验收报告 | `PROJECT_ROOT/issue/reviews/REVIEW-FEATURE-{YYMMDDHHMM}.md` | 650阶段输出 |
+| 功能需求 | `PROJECT_ROOT/issue/features/FEATURE-{YYMMDD}-{简述}.md` | 600阶段输出 |
+| 技术方案 | `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | 610阶段输出 |
 | 现有5xx文档 | `manual/` | 现有交付文档 |
 
 ## 输出
@@ -119,7 +123,7 @@ version: "1.0.0"
 
 **生成更新记录**:
 
-**文件位置**: `requirement/prds/`
+**文件位置**: `PROJECT_ROOT/requirement/prds/`
 
 ### 4. 文档合并
 

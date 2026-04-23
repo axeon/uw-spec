@@ -12,6 +12,10 @@ version: "1.0.0"
 
 基于 220-admin-uniapp-design 产出的可运行原型页面，完善业务逻辑实现。220 设计阶段已完成页面结构、路由配置、字段绑定，本阶段专注于对接真实后端 API、完善交互逻辑、平台适配、实现业务组件。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -43,11 +47,11 @@ version: "1.0.0"
 
 | 输入项 | 来源路径 | 说明 |
 |--------|----------|------|
-| PRD | `requirement/prds/*` | 产品需求文档，功能验收标准 |
-| 原型README | `frontend/{项目名}-admin-uniapp/README.md` | 220设计阶段产出的页面清单和路由设计 |
-| 原型页面 | `frontend/{项目名}-admin-uniapp/src/pages/` | 220设计阶段裁剪后的页面代码 |
-| 后端Swagger | `backend/{项目名}-app/` 启动后 | API接口定义 |
-| API/types | `frontend/{项目名}-admin-uniapp/src/api/`, `src/types/` | 230-gencode生成的代码 |
+| PRD | `PROJECT_ROOT/requirement/prds/*` | 产品需求文档，功能验收标准 |
+| 原型README | `PROJECT_ROOT/frontend/{项目名}-admin-uniapp/README.md` | 220设计阶段产出的页面清单和路由设计 |
+| 原型页面 | `PROJECT_ROOT/frontend/{项目名}-admin-uniapp/src/pages/` | 220设计阶段裁剪后的页面代码 |
+| 后端Swagger | `PROJECT_ROOT/backend/{项目名}-app/` 启动后 | API接口定义 |
+| API/types | `PROJECT_ROOT/frontend/{项目名}-admin-uniapp/src/api/`, `src/types/` | 230-gencode生成的代码 |
 
 ## 前置条件
 
@@ -126,7 +130,7 @@ version: "1.0.0"
 
 **启动开发环境**：
 ```bash
-cd frontend/{项目名}-admin-uniapp
+cd PROJECT_ROOT/frontend/{项目名}-admin-uniapp
 npm install
 # 微信小程序
 npm run dev:mp-weixin
@@ -202,7 +206,7 @@ npm run dev:h5
 
 ## 输出要求
 
-**代码位置**: `frontend/{项目名}-admin-uniapp/`
+**代码位置**: `PROJECT_ROOT/frontend/{项目名}-admin-uniapp/`
 
 **包含内容**:
 - 完善后的页面组件（对接真实API）

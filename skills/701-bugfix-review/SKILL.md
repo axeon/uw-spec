@@ -11,6 +11,10 @@ version: "1.0.0"
 ## 描述
 对Bug修复的代码进行评审，确保修复方案正确、修复彻底、测试覆盖充分，且不会引入新的问题。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 | 触发条件 | 示例 |
 |---------|------|
@@ -38,7 +42,7 @@ version: "1.0.0"
 ## 输出
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| Bug修复评审报告 | `issue/reviews/REVIEW-BUGFIX-{YYMMDDHHMM}.md` | 评审结论和问题清单 |
+| Bug修复评审报告 | `PROJECT_ROOT/issue/reviews/REVIEW-BUGFIX-{YYMMDDHHMM}.md` | 评审结论和问题清单 |
 
 ## 流转关系
 ```
@@ -93,7 +97,7 @@ version: "1.0.0"
 **流转方向**: 通过 -> 合并代码并部署上线；不通过 -> 返回重新修复
 
 ## 输出要求
-**报告位置**: `issue/reviews/REVIEW-BUGFIX-{YYMMDDHHMM}.md`
+**报告位置**: `PROJECT_ROOT/issue/reviews/REVIEW-BUGFIX-{YYMMDDHHMM}.md`
 
 **必须包含**:
 - 评审信息（日期、人员、对象、Bug编号）

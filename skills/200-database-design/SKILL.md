@@ -12,6 +12,10 @@ version: "1.0.0"
 
 将业务需求转化为数据模型，设计合理的数据库表结构、字段定义、索引策略和数据关系。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -24,7 +28,7 @@ version: "1.0.0"
 
 | 输入项 | 来源路径 | 说明 |
 |--------|----------|------|
-| PRD | `requirement/prds/*` | 产品需求文档，包含项目背景、性能要求、用户角色、功能模块及各终端详细需求 |
+| PRD | `PROJECT_ROOT/requirement/prds/*` | 产品需求文档，包含项目背景、性能要求、用户角色、功能模块及各终端详细需求 |
 
 ### 前置条件
 - [ ] 模块 PRD 已完成评审并定稿
@@ -39,10 +43,6 @@ version: "1.0.0"
 | 协作 | ORM映射确认 | `java-developer` |
 | 协作 | 业务数据需求 | `product-manager` |
 
-## 前置检查
-
-检查 `project-info.md` 是否存在且 5 个参数完整，不通过则引导用户执行 0-init。
-详见 [项目信息前置检查](../0-init/references/project-init-check.md)。
 
 ## 设计流程
 
@@ -95,12 +95,12 @@ version: "1.0.0"
 ### 2. 概念逻辑模型
 - [数据库设计文档模板](references/database-design-template.md) - 设计文档编写模板
 - [数据库设计指南](references/database-design-guide.md) - 命名规范、设计流程、非功能设计
-- 编写 `database/database-design.md`
+- 编写 `PROJECT_ROOT/database/database-design.md`
 
 ### 3. 库表DDL设计
 - [数据库DDL模板](references/database-ddl-template.md) - 建库建表语句模板
 - [数据库设计指南 - 索引设计](references/database-design-guide.md) - 命名规范、设计流程、索引设计最佳实践
-- 编写 `database/database-ddl.sql`
+- 编写 `PROJECT_ROOT/database/database-ddl.sql`
 
 ## PLAN-REVIEW 循环（必须执行）
 
@@ -125,11 +125,11 @@ version: "1.0.0"
 
 ## 输出要求
 
-**输出位置**: `database/`
+**输出位置**: `PROJECT_ROOT/database/`
 
 **目录结构**:
 ```
-database/
+PROJECT_ROOT/database/
 ├── database-design.md              # 设计文档（E-R图、实体定义、覆盖度验证）
 ├── database-ddl.sql                # 建表语句
 ├── migrations/                     # DDL变更文件

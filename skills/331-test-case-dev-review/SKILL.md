@@ -11,6 +11,10 @@ version: "1.0.0"
 ## 描述
 对四类测试脚本（API/E2E/压测/安全）进行全面评审，验证脚本质量、覆盖完整性、可维护性。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 | 触发条件 | 示例 |
 |---------|------|
@@ -28,17 +32,17 @@ version: "1.0.0"
 ## 输入
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| API测试脚本 | `test/scripts/api/` | Playwright request API 脚本 |
-| E2E测试脚本 | `test/scripts/e2e/` | Playwright browser 脚本 |
-| JMeter脚本 | `test/scripts/load/` | .jmx 压测脚本 |
-| 安全测试脚本 | `test/scripts/security/` | ZAP/Trivy/Playwright 脚本 |
-| 执行脚本 | `test/scripts/bin/` | Bash 执行脚本 |
-| 测试设计 | `test/design/` | 设计文档参考 |
+| API测试脚本 | `PROJECT_ROOT/test/scripts/api/` | Playwright request API 脚本 |
+| E2E测试脚本 | `PROJECT_ROOT/test/scripts/e2e/` | Playwright browser 脚本 |
+| JMeter脚本 | `PROJECT_ROOT/test/scripts/load/` | .jmx 压测脚本 |
+| 安全测试脚本 | `PROJECT_ROOT/test/scripts/security/` | ZAP/Trivy/Playwright 脚本 |
+| 执行脚本 | `PROJECT_ROOT/test/scripts/bin/` | Bash 执行脚本 |
+| 测试设计 | `PROJECT_ROOT/test/design/` | 设计文档参考 |
 
 ## 输出
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 测试脚本评审报告 | `test/reviews/REVIEW-CODE-YYMMDDHHMM.md` | 评审结论和问题清单 |
+| 测试脚本评审报告 | `PROJECT_ROOT/test/reviews/REVIEW-CODE-YYMMDDHHMM.md` | 评审结论和问题清单 |
 
 ## 流转关系
 ```
@@ -120,12 +124,12 @@ version: "1.0.0"
 ### 2. 执行评审
 按维度检查，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。
 
-**评审对象**: `test/scripts/`
+**评审对象**: `PROJECT_ROOT/test/scripts/`
 **参与人员**: @test-lead @java-developer @js-developer
 **流转方向**: 通过 → 410-test-case-execution；不通过 → 返回 330-test-case-dev
 
 ## 输出要求
-**报告位置**: `test/reviews/REVIEW-CODE-YYMMDDHHMM.md`
+**报告位置**: `PROJECT_ROOT/test/reviews/REVIEW-CODE-YYMMDDHHMM.md`
 
 **必须包含**:
 - 评审信息（日期、人员、对象）

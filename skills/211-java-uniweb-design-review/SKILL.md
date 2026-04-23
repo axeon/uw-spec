@@ -12,6 +12,10 @@ version: "1.0.0"
 
 对基于 UniWeb + SaaS 技术栈的后端设计进行全面评审。评审对象为 README.md 总体设计文档 + 代码质量（Controller/Helper/DTO 的 Javadoc 和签名）+ 测试骨架质量（TDD Red 阶段）。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -37,15 +41,15 @@ version: "1.0.0"
 | Helper 代码 | `src/main/java/{包}/service/` | 方法签名 + Javadoc + 缓存定义 |
 | DTO 代码 | `src/main/java/{包}/dto/` | 裁剪后的 QueryParam |
 | VO 代码 | `src/main/java/{包}/vo/` | 聚合数据（如有） |
-| 测试骨架代码 | `src/test/java/{包}/service/` | Helper 单元测试骨架（TDD Red） |
-| PRD 文档 | `requirement/` | 功能需求参考 |
-| 数据库设计 | `database/` | 数据模型参考 |
+| 测试骨架代码 | `src/PROJECT_ROOT/test/java/{包}/service/` | Helper 单元测试骨架（TDD Red） |
+| PRD 文档 | `PROJECT_ROOT/requirement/` | 功能需求参考 |
+| 数据库设计 | `PROJECT_ROOT/database/` | 数据模型参考 |
 
 ## 输出
 
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 评审报告 | `backend/{项目名}-app/reviews/REVIEW-DESIGN-YYMMDDHHMM.md` | 评审结论和问题清单 |
+| 评审报告 | `PROJECT_ROOT/backend/{项目名}-app/reviews/REVIEW-DESIGN-YYMMDDHHMM.md` | 评审结论和问题清单 |
 
 ## 流转关系
 
@@ -113,7 +117,7 @@ version: "1.0.0"
 
 ## 输出要求
 
-**报告位置**：`backend/{项目名}-app/reviews/REVIEW-DESIGN-YYMMDDHHMM.md`
+**报告位置**：`PROJECT_ROOT/backend/{项目名}-app/reviews/REVIEW-DESIGN-YYMMDDHHMM.md`
 
 **必须包含**：
 - 评审信息（日期、人员、对象）

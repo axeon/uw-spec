@@ -12,6 +12,10 @@ version: "1.0.0"
 
 基于 Vue3 + ElementPlus 技术栈，采用**设计即代码**模式：原型页面直接在前端项目中开发，设计文档作为项目 README.md。原型完成后项目可运行展示，页面代码可直接用于后续开发阶段。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -43,10 +47,10 @@ version: "1.0.0"
 
 | 输入项 | 来源路径 | 说明 |
 |--------|----------|------|
-| PRD | `requirement/prds/*` | 产品需求文档，功能模块及页面需求 |
-| 数据库设计 | `database/database-design.md` | 表结构、字段名（字段一致性参考） |
-| 后端Swagger | `backend/{项目名}-app/` 启动后 | API接口定义 |
-| 前端项目 | `frontend/{项目名}-admin-web/` | 230-init初始化 + 230-gencode生成的代码 |
+| PRD | `PROJECT_ROOT/requirement/prds/*` | 产品需求文档，功能模块及页面需求 |
+| 数据库设计 | `PROJECT_ROOT/database/database-design.md` | 表结构、字段名（字段一致性参考） |
+| 后端Swagger | `PROJECT_ROOT/backend/{项目名}-app/` 启动后 | API接口定义 |
+| 前端项目 | `PROJECT_ROOT/frontend/{项目名}-admin-web/` | 230-init初始化 + 230-gencode生成的代码 |
 
 ## 前置条件
 
@@ -203,7 +207,7 @@ mv src/pages/product/ src/pages/admin/product/
 ```
 ## 产出结构
 ```
-frontend/{项目名}-admin-web/
+PROJECT_ROOT/frontend/{项目名}-admin-web/
 ├── README.md                         # 页面清单与路由设计（Phase 1 产出）
 ├── src/
 │   ├── pages/                        # 按角色组织的页面（Phase 2 产出）

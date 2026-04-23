@@ -11,6 +11,10 @@ version: "1.0.0"
 ## 描述
 对功能添加的代码实现进行评审，确保新增功能符合编码规范、满足需求要求、不影响现有功能，并具备良好的可维护性。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 | 触发条件 | 示例 |
 |---------|------|
@@ -32,13 +36,13 @@ version: "1.0.0"
 |--------|------|------|
 | 功能代码 | 功能分支 | 新增功能代码 |
 | 测试代码 | 功能分支测试目录 | 单元测试和集成测试 |
-| 功能设计 | `issue/features/` | 功能设计文档 |
+| 功能设计 | `PROJECT_ROOT/issue/features/` | 功能设计文档 |
 | 需求文档 | 相关需求 | 功能需求参考 |
 
 ## 输出
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 功能添加评审报告 | `issue/reviews/REVIEW-FEATURE-{YYMMDDHHMM}.md` | 评审结论和问题清单 |
+| 功能添加评审报告 | `PROJECT_ROOT/issue/reviews/REVIEW-FEATURE-{YYMMDDHHMM}.md` | 评审结论和问题清单 |
 
 ## 流转关系
 ```
@@ -94,7 +98,7 @@ version: "1.0.0"
 **流转方向**: 通过 -> 合并代码并部署上线；不通过 -> 返回功能开发修改
 
 ## 输出要求
-**报告位置**: `issue/reviews/REVIEW-FEATURE-{YYMMDDHHMM}.md`
+**报告位置**: `PROJECT_ROOT/issue/reviews/REVIEW-FEATURE-{YYMMDDHHMM}.md`
 
 **必须包含**:
 - 评审信息（日期、人员、对象、功能编号）

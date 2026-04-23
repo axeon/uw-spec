@@ -11,6 +11,10 @@ version: "1.0.0"
 ## 描述
 对功能开发阶段（631）产出的Guest UniApp移动端代码进行评审, 验证代码实现与技术方案一致性、TDD实践、UniApp规范和跨平台兼容。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 | 触发条件 | 示例 |
 |---------|------|
@@ -27,15 +31,15 @@ version: "1.0.0"
 ## 输入
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 功能代码 | `frontend/{项目名}-guest-uniapp/src/` | 功能开发产出 |
-| 测试代码 | `frontend/{项目名}-guest-uniapp/src/**/*.spec.ts` | 单元测试 |
-| 技术方案 | `frontend/{项目名}-guest-uniapp/issues/FEATURE-DESIGN-*-tech-design.md` | 610阶段方案 |
-| 功能需求 | `issue/features/FEATURE-{YYMMDD}-{简述}.md` | 600阶段需求 |
+| 功能代码 | `PROJECT_ROOT/frontend/{项目名}-guest-uniapp/src/` | 功能开发产出 |
+| 测试代码 | `PROJECT_ROOT/frontend/{项目名}-guest-uniapp/src/**/*.spec.ts` | 单元测试 |
+| 技术方案 | `PROJECT_ROOT/frontend/{项目名}-guest-uniapp/issues/FEATURE-DESIGN-*-tech-design.md` | 610阶段方案 |
+| 功能需求 | `PROJECT_ROOT/issue/features/FEATURE-{YYMMDD}-{简述}.md` | 600阶段需求 |
 
 ## 输出
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 评审报告 | `issue/reviews/REVIEW-CODE-{YYMMDDHHMM}.md` | 评审结论 |
+| 评审报告 | `PROJECT_ROOT/issue/reviews/REVIEW-CODE-{YYMMDDHHMM}.md` | 评审结论 |
 
 ## 流转关系
 ```
@@ -83,4 +87,4 @@ version: "1.0.0"
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
 ## 输出要求
-**报告位置**: `issue/reviews/REVIEW-CODE-{YYMMDDHHMM}.md`
+**报告位置**: `PROJECT_ROOT/issue/reviews/REVIEW-CODE-{YYMMDDHHMM}.md`

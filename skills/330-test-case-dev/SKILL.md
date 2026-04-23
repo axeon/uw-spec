@@ -12,6 +12,10 @@ version: "1.0.0"
 
 根据 230-test-case-design 阶段产出的四类测试设计文档（API/E2E/压测/安全），编写对应的自动化测试脚本。API 和 E2E 使用 Playwright 统一技术栈，压测使用 JMeter，安全测试使用 ZAP + Trivy + Playwright。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -37,28 +41,28 @@ version: "1.0.0"
 
 | 输入项 | 来源路径 | 说明 |
 |--------|----------|------|
-| API测试设计 | `test/design/api/README.md` | API接口测试用例 |
-| E2E测试设计 | `test/design/e2e/README.md` | E2E界面测试用例 |
-| 压测设计 | `test/design/load/README.md` | 压测场景与SLA指标 |
-| 安全测试设计 | `test/design/security/README.md` | 安全测试场景 |
-| Controller代码 | `backend/{项目名}-app/src/main/java/{包路径}/controller/` | 接口路径、请求/响应格式 |
+| API测试设计 | `PROJECT_ROOT/test/design/api/README.md` | API接口测试用例 |
+| E2E测试设计 | `PROJECT_ROOT/test/design/e2e/README.md` | E2E界面测试用例 |
+| 压测设计 | `PROJECT_ROOT/test/design/load/README.md` | 压测场景与SLA指标 |
+| 安全测试设计 | `PROJECT_ROOT/test/design/security/README.md` | 安全测试场景 |
+| Controller代码 | `PROJECT_ROOT/backend/{项目名}-app/src/main/java/{包路径}/controller/` | 接口路径、请求/响应格式 |
 | 前端代码 | `{项目名}-{role}-{platform}/src/` | 页面组件、表单字段 |
 
 ## 技术栈
 
 | 测试类型 | 工具 | 脚本格式 | 产出目录 |
 |---------|------|---------|---------|
-| API测试 | Playwright request API | `.spec.ts` | `test/scripts/api/` |
-| E2E测试 | Playwright browser | `.spec.ts` | `test/scripts/e2e/{项目名}/` |
-| 跨终端E2E | Playwright multi-context | `.spec.ts` | `test/scripts/e2e/cross-case/` |
-| 压力测试 | JMeter | `.jmx` | `test/scripts/load/` |
-| 安全测试 | ZAP + Trivy + Playwright | `.sh` / `.spec.ts` | `test/scripts/security/` |
-| 执行脚本 | Bash | `.sh` | `test/scripts/bin/` |
+| API测试 | Playwright request API | `.spec.ts` | `PROJECT_ROOT/test/scripts/api/` |
+| E2E测试 | Playwright browser | `.spec.ts` | `PROJECT_ROOT/test/scripts/e2e/{项目名}/` |
+| 跨终端E2E | Playwright multi-context | `.spec.ts` | `PROJECT_ROOT/test/scripts/e2e/cross-case/` |
+| 压力测试 | JMeter | `.jmx` | `PROJECT_ROOT/test/scripts/load/` |
+| 安全测试 | ZAP + Trivy + Playwright | `.sh` / `.spec.ts` | `PROJECT_ROOT/test/scripts/security/` |
+| 执行脚本 | Bash | `.sh` | `PROJECT_ROOT/test/scripts/bin/` |
 
 ## 目录结构
 
 ```
-test/scripts/
+$PROJECT_ROOT/test/scripts/
 ├── playwright.config.ts          # Playwright配置（api + e2e 双项目）
 ├── package.json                  # 依赖管理
 ├── README.md                     # 脚本使用说明
@@ -107,14 +111,14 @@ test/scripts/
 
 ## 230→330 衔接协议
 
-230 设计完成后，330 从 test/design/ 提取以下信息：
+230 设计完成后，330 从 PROJECT_ROOT/test/design/ 提取以下信息：
 
 | 提取项 | 来源文件 | 用途 |
 |--------|---------|------|
-| API测试用例 | `test/design/api/README.md` | API测试脚本输入 |
-| E2E测试用例 | `test/design/e2e/README.md` | E2E测试脚本输入 |
-| 压测场景 | `test/design/load/README.md` | JMeter脚本输入 |
-| 安全测试场景 | `test/design/security/README.md` | 安全扫描脚本输入 |
+| API测试用例 | `PROJECT_ROOT/test/design/api/README.md` | API测试脚本输入 |
+| E2E测试用例 | `PROJECT_ROOT/test/design/e2e/README.md` | E2E测试脚本输入 |
+| 压测场景 | `PROJECT_ROOT/test/design/load/README.md` | JMeter脚本输入 |
+| 安全测试场景 | `PROJECT_ROOT/test/design/security/README.md` | 安全扫描脚本输入 |
 
 ## 并行开发约束
 
@@ -129,14 +133,14 @@ test/scripts/
 ## 开发流程
 
 ### 1. 前提检查
-- 读取 `test/design/` 下四类测试设计文档
+- 读取 `PROJECT_ROOT/test/design/` 下四类测试设计文档
 - 确认API接口可正常访问
 - 读取 Controller 代码确认接口路径和参数
 
 ### 2. 环境准备
 
 ```bash
-cd test/scripts
+cd PROJECT_ROOT/test/scripts
 npm init -y
 npm install @playwright/test @faker-js/faker
 npx playwright install

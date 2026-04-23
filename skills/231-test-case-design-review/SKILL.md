@@ -11,6 +11,10 @@ version: "1.0.0"
 ## 描述
 对四类测试设计文档（API/E2E/压测/安全）进行全面评审，验证测试覆盖率、可自动化性、技术细节完整性。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 | 触发条件 | 示例 |
 |---------|------|
@@ -29,17 +33,17 @@ version: "1.0.0"
 ## 输入
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| API测试设计 | `test/design/api/README.md` | API接口测试用例 |
-| E2E测试设计 | `test/design/e2e/README.md` | E2E界面测试用例 |
-| 压测设计 | `test/design/load/README.md` | 压测场景与SLA指标 |
-| 安全测试设计 | `test/design/security/README.md` | 安全测试场景 |
-| PRD | `requirement/prds/*` | 需求覆盖参考 |
-| 后端设计文档 | `backend/{项目名}-app/README.md` | 接口设计参考 |
+| API测试设计 | `PROJECT_ROOT/test/design/api/README.md` | API接口测试用例 |
+| E2E测试设计 | `PROJECT_ROOT/test/design/e2e/README.md` | E2E界面测试用例 |
+| 压测设计 | `PROJECT_ROOT/test/design/load/README.md` | 压测场景与SLA指标 |
+| 安全测试设计 | `PROJECT_ROOT/test/design/security/README.md` | 安全测试场景 |
+| PRD | `PROJECT_ROOT/requirement/prds/*` | 需求覆盖参考 |
+| 后端设计文档 | `PROJECT_ROOT/backend/{项目名}-app/README.md` | 接口设计参考 |
 
 ## 输出
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 测试设计评审报告 | `test/reviews/REVIEW-DESIGN-YYMMDDHHMM.md` | 评审结论和问题清单 |
+| 测试设计评审报告 | `PROJECT_ROOT/test/reviews/REVIEW-DESIGN-YYMMDDHHMM.md` | 评审结论和问题清单 |
 
 ## 流转关系
 ```
@@ -117,12 +121,12 @@ version: "1.0.0"
 ### 2. 执行评审
 按维度检查，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。
 
-**评审对象**: `test/design/`
+**评审对象**: `PROJECT_ROOT/test/design/`
 **参与人员**: @test-lead @system-architect @java-developer @js-developer
 **流转方向**: 通过 → 330-test-case-dev；不通过 → 返回 230-test-case-design
 
 ## 输出要求
-**报告位置**: `test/reviews/REVIEW-DESIGN-YYMMDDHHMM.md`
+**报告位置**: `PROJECT_ROOT/test/reviews/REVIEW-DESIGN-YYMMDDHHMM.md`
 
 **必须包含**:
 - 评审信息（日期、人员、对象）

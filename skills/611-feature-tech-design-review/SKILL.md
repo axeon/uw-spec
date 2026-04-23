@@ -11,6 +11,10 @@ version: "1.0.0"
 ## 描述
 对610阶段产出的功能技术方案进行全面评审, 确保数据库设计、后端接口、前端页面、测试策略的合理性和一致性, 以及与现有架构的兼容性。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 | 触发条件 | 示例 |
 |---------|------|
@@ -30,15 +34,15 @@ version: "1.0.0"
 ## 输入
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 功能需求文档 | `issue/features/FEATURE-{YYMMDD}-{简述}.md` | 600阶段输出 |
+| 功能需求文档 | `PROJECT_ROOT/issue/features/FEATURE-{YYMMDD}-{简述}.md` | 600阶段输出 |
 | 技术方案文档 | 各端 `issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | 610阶段输出 |
-| DDL文件 | `database/migrations/FEATURE-{YYMMDD}-{简述}.sql` | 610阶段输出 |
+| DDL文件 | `PROJECT_ROOT/database/migrations/FEATURE-{YYMMDD}-{简述}.sql` | 610阶段输出 |
 | 现有架构文档 | 各端 README.md | 现有架构参考 |
 
 ## 输出
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 技术方案评审报告 | `issue/reviews/REVIEW-DESIGN-{YYMMDDHHMM}.md` | 评审结论和问题清单 |
+| 技术方案评审报告 | `PROJECT_ROOT/issue/reviews/REVIEW-DESIGN-{YYMMDDHHMM}.md` | 评审结论和问题清单 |
 
 ## 流转关系
 ```
@@ -90,14 +94,14 @@ version: "1.0.0"
 按维度检查, 记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。
 
 **维度**: 数据库/后端/前端/测试/兼容性/PRD覆盖度
-**评审对象**: issue/features/ + 各端 issues/
+**评审对象**: PROJECT_ROOT/issue/features/ + 各端 issues/
 **参与人员**: @system-architect @java-developer @js-developer @test-engineer
 **流转方向**: 通过 -> 进入功能开发; 不通过 -> 返回610修改
 
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
 ## 输出要求
-**报告位置**: `issue/reviews/REVIEW-DESIGN-{YYMMDDHHMM}.md`
+**报告位置**: `PROJECT_ROOT/issue/reviews/REVIEW-DESIGN-{YYMMDDHHMM}.md`
 
 **必须包含**:
 - 评审信息（日期、人员、对象、功能编号）

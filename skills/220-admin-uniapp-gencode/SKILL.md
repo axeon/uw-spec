@@ -12,6 +12,10 @@ version: "1.0.0"
 
 从 uw-code-center 自动生成 UniApp 移动端代码（TypeScript 接口定义、API 调用模块），自动整合到前端项目中。支持库表变动后的增量更新。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -26,10 +30,6 @@ version: "1.0.0"
 |------|------|--------|
 | 主导 | 代码生成 | `js-developer` |
 
-## 前置检查
-
-检查 `project-info.md` 是否存在且 5 个参数完整，不通过则引导用户执行 0-init。
-详见 [项目信息前置检查](../0-init/references/project-init-check.md)。
 
 ## 初始化流程
 
@@ -37,12 +37,12 @@ version: "1.0.0"
 
 ### 步骤1: 扫描可用移动端项目
 
-**目标目录**：直接使用当前项目根目录（包含 `project-info.md` 的目录）。
+**目标目录**：直接使用当前项目根目录（包含 `PROJECT_ROOT/project-info.md` 的目录）。
 
-从 `project-info.md` 读取 `project-name`，扫描所有 Admin 系 UniApp 移动端项目：
+从 `PROJECT_ROOT/project-info.md` 读取 `project-name`，扫描所有 Admin 系 UniApp 移动端项目：
 
 ```bash
-PN=$(grep 'project-name' project-info.md | head -1 | awk '{print $2}'); ls -1d frontend/${PN}-admin-uniapp/ frontend/${PN}-saas-uniapp/ frontend/${PN}-mch-uniapp/ frontend/${PN}-root-uniapp/ frontend/${PN}-ops-uniapp/ 2>/dev/null
+PN=$(grep 'project-name' project-info.md | head -1 | awk '{print $2}'); ls -1d PROJECT_ROOT/frontend/${PN}-admin-uniapp/ PROJECT_ROOT/frontend/${PN}-saas-uniapp/ PROJECT_ROOT/frontend/${PN}-mch-uniapp/ PROJECT_ROOT/frontend/${PN}-root-uniapp/ PROJECT_ROOT/frontend/${PN}-ops-uniapp/ 2>/dev/null
 ```
 
 **情况处理**：
@@ -96,7 +96,7 @@ bash scripts/gencode.sh [目标目录] [Swagger地址] [生成类型] [前端项
 
 | 参数 | 说明 | 是否必填 | 默认值 |
 |------|------|----------|--------|
-| 目标目录 | 项目根目录（包含 `project-info.md`） | 是 | 当前目录 |
+| 目标目录 | 项目根目录（包含 `PROJECT_ROOT/project-info.md`） | 是 | 当前目录 |
 | Swagger地址 | Swagger API 文档地址 | **是** | - |
 | 生成类型 | `api,router,page,i18n` 的组合 | 否 | `api,router,page,i18n` |
 | 前端项目名 | 指定具体的移动端项目目录名 | 否 | 自动查找 |
@@ -163,7 +163,7 @@ bash scripts/gencode.sh /Users/user/project "http://192.168.88.21/my-shop-app/v3
 ```
 项目根目录/
 ├── project-info.md
-└── frontend/
+└── PROJECT_ROOT/frontend/
     └── {项目名}-{角色}-uniapp/           # 例如: my-shop-guest-uniapp
         ├── .gencode-backup/              # 增量更新时自动创建
         │   └── {时间戳}/
@@ -191,7 +191,7 @@ bash scripts/gencode.sh /Users/user/project "http://192.168.88.21/my-shop-app/v3
 ```
 
 **目录查找规则**：
-脚本从 `project-info.md` 读取 `project-name`，查找 `frontend/{project-name}-(root|ops|admin|saas|mch)-uniapp` 目录（如 `my-shop-admin-uniapp`、`my-shop-saas-uniapp`），找到的第一个匹配目录即为目标前端项目。
+脚本从 `project-info.md` 读取 `project-name`，查找 `PROJECT_ROOT/frontend/{project-name}-(root|ops|admin|saas|mch)-uniapp` 目录（如 `my-shop-admin-uniapp`、`my-shop-saas-uniapp`），找到的第一个匹配目录即为目标前端项目。
 
 ### 模块目录规则
 

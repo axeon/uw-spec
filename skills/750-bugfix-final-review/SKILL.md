@@ -12,6 +12,10 @@ version: "1.0.0"
 
 在所有Bug修复阶段（720/730/731/740）完成后，执行全面的回归测试，验证Bug已修复且未引入新问题，由人工进行最终的修复确认。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -32,17 +36,17 @@ version: "1.0.0"
 
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| Bug分析报告 | `issue/bugs/BUGFIX-{YYMMDD}-{简述}.md` | 700阶段输出 |
-| 修复方案 | `issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md` | 710阶段输出 |
+| Bug分析报告 | `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-{简述}.md` | 700阶段输出 |
+| 修复方案 | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md` | 710阶段输出 |
 | 修复代码 | 各端src/ | 720/730/731阶段输出 |
-| 回归测试 | `test/scripts/` | 740阶段输出 |
+| 回归测试 | `PROJECT_ROOT/test/scripts/` | 740阶段输出 |
 
 ## 输出
 
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 修复验收报告 | `issue/reviews/REVIEW-BUGFIX-{YYMMDDHHMM}.md` | 最终验收报告 |
-| 测试报告 | `test/reports/summary/final-YYMMDDHHMM.md` | 测试执行报告 |
+| 修复验收报告 | `PROJECT_ROOT/issue/reviews/REVIEW-BUGFIX-{YYMMDDHHMM}.md` | 最终验收报告 |
+| 测试报告 | `PROJECT_ROOT/test/reports/summary/final-YYMMDDHHMM.md` | 测试执行报告 |
 
 ## 执行流程
 
@@ -74,7 +78,7 @@ version: "1.0.0"
 
 ### 3. 生成修复验收报告
 
-**文件位置**: `issue/reviews/REVIEW-BUGFIX-{YYMMDDHHMM}.md`
+**文件位置**: `PROJECT_ROOT/issue/reviews/REVIEW-BUGFIX-{YYMMDDHHMM}.md`
 
 **报告内容**:
 ```markdown
@@ -137,9 +141,9 @@ version: "1.0.0"
 
 ## 输出要求
 
-**修复验收报告**: `issue/reviews/REVIEW-BUGFIX-{YYMMDDHHMM}.md`
+**修复验收报告**: `PROJECT_ROOT/issue/reviews/REVIEW-BUGFIX-{YYMMDDHHMM}.md`
 
-**测试报告**: `test/reports/summary/final-YYMMDDHHMM.md`
+**测试报告**: `PROJECT_ROOT/test/reports/summary/final-YYMMDDHHMM.md`
 
 ## 流转关系
 

@@ -12,6 +12,10 @@ version: "1.0.0"
 
 对功能需求进行深入分析和澄清，确保需求理解准确、边界清晰、验收标准明确，为后续技术设计和开发提供坚实基础。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -34,16 +38,16 @@ version: "1.0.0"
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
 | 功能需求描述 | 用户输入 | 功能名称和基本描述 |
-| 现有PRD | `requirement/prds/README.md` | 现有产品需求文档 |
-| 相关功能 | `issue/features/` | 已完成功能参考 |
+| 现有PRD | `PROJECT_ROOT/requirement/prds/README.md` | 现有产品需求文档 |
+| 相关功能 | `PROJECT_ROOT/issue/features/` | 已完成功能参考 |
 
 ## 输出
 
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 功能需求文档 | `issue/features/FEATURE-{YYMMDD}-{简述}.md` | 本功能需求文档 |
-| 更新PRD | `requirement/prds/README.md` | 合并后的主PRD |
-| 变更记录 | `requirement/prds/CHANGELOG.md` | 需求变更历史 |
+| 功能需求文档 | `PROJECT_ROOT/issue/features/FEATURE-{YYMMDD}-{简述}.md` | 本功能需求文档 |
+| 更新PRD | `PROJECT_ROOT/requirement/prds/README.md` | 合并后的主PRD |
+| 变更记录 | `PROJECT_ROOT/requirement/prds/CHANGELOG.md` | 需求变更历史 |
 
 ## 执行流程
 
@@ -127,7 +131,7 @@ version: "1.0.0"
 ### 5. 文档合并
 
 **合并到PRD**:
-1. 读取现有 `requirement/prds/README.md`
+1. 读取现有 `PROJECT_ROOT/requirement/prds/README.md`
 2. 在功能清单中增加本功能
 3. 更新相关章节
 
@@ -152,11 +156,11 @@ version: "1.0.0"
 
 ## 输出要求
 
-**功能需求文档位置**: `issue/features/FEATURE-{YYMMDD}-{简述}.md`
+**功能需求文档位置**: `PROJECT_ROOT/issue/features/FEATURE-{YYMMDD}-{简述}.md`
 
-**PRD更新位置**: `requirement/prds/README.md`
+**PRD更新位置**: `PROJECT_ROOT/requirement/prds/README.md`
 
-**CHANGELOG位置**: `requirement/prds/CHANGELOG.md`
+**CHANGELOG位置**: `PROJECT_ROOT/requirement/prds/CHANGELOG.md`
 
 ## 流转关系
 

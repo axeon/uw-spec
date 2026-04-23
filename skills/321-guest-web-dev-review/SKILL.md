@@ -11,6 +11,10 @@ version: "1.0.0"
 ## 描述
 对Vue3前端代码进行全面评审，验证TDD实践、组件设计规范、状态管理、代码质量和安全性。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 | 触发条件 | 示例 |
 |---------|------|
@@ -31,15 +35,15 @@ version: "1.0.0"
 ## 输入
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| Web前端代码 | `frontend/{项目名}-guest-web/src/` | 开发完成的代码 |
-| 测试代码 | `frontend/{项目名}-guest-web/src/**/*.spec.ts` | 单元测试（与源文件同目录） |
-| 覆盖率报告 | `frontend/{项目名}-guest-web/coverage/` | 测试覆盖率数据 |
-| 前端设计 | `frontend/{项目名}-guest-web/README.md` | 220设计阶段产出的设计规范 |
+| Web前端代码 | `PROJECT_ROOT/frontend/{项目名}-guest-web/src/` | 开发完成的代码 |
+| 测试代码 | `PROJECT_ROOT/frontend/{项目名}-guest-web/src/**/*.spec.ts` | 单元测试（与源文件同目录） |
+| 覆盖率报告 | `PROJECT_ROOT/frontend/{项目名}-guest-web/coverage/` | 测试覆盖率数据 |
+| 前端设计 | `PROJECT_ROOT/frontend/{项目名}-guest-web/README.md` | 220设计阶段产出的设计规范 |
 
 ## 输出
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| Web前端开发评审报告 | `frontend/{项目名}-guest-web/reviews/REVIEW-CODE-YYMMDDHHMM.md` | 评审结论和问题清单 |
+| Web前端开发评审报告 | `PROJECT_ROOT/frontend/{项目名}-guest-web/reviews/REVIEW-CODE-YYMMDDHHMM.md` | 评审结论和问题清单 |
 
 ## 流转关系
 ```
@@ -101,12 +105,12 @@ version: "1.0.0"
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
 **维度**: TDD/Vue3/状态管理/代码质量/性能/安全性
-**评审对象**: frontend/{项目名}-guest-web/
+**评审对象**: PROJECT_ROOT/frontend/{项目名}-guest-web/
 **参与人员**: @js-lead @system-architect @js-developer
 **流转方向**: 通过 -> 进入下一阶段评审；不通过 -> 返回开发修改
 
 ## 输出要求
-**报告位置**: `frontend/{项目名}-guest-web/reviews/REVIEW-CODE-YYMMDDHHMM.md`
+**报告位置**: `PROJECT_ROOT/frontend/{项目名}-guest-web/reviews/REVIEW-CODE-YYMMDDHHMM.md`
 
 **必须包含**:
 - 评审信息（日期、人员、对象）

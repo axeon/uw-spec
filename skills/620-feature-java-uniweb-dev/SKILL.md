@@ -12,6 +12,10 @@ version: "1.0.0"
 
 基于610阶段的技术方案，使用AI驱动的方式生成Java后端代码，自动完成实现、评审、修复、测试的完整闭环。
 
+## 项目环境检测
+
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+
 ## 使用场景
 
 | 触发条件 | 示例 |
@@ -33,20 +37,20 @@ version: "1.0.0"
 
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 技术方案 | `backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | 610阶段输出 |
-| 现有代码 | `backend/{项目名}-app/src/` | 现有代码基线 |
-| 技术规范 | `backend/{项目名}-app/README.md` | 编码规范 |
+| 技术方案 | `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | 610阶段输出 |
+| 现有代码 | `PROJECT_ROOT/backend/{项目名}-app/src/` | 现有代码基线 |
+| 技术规范 | `PROJECT_ROOT/backend/{项目名}-app/README.md` | 编码规范 |
 
 ## 输出
 
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 功能代码 | `backend/{项目名}-app/src/` | Java后端代码 |
-| 测试代码 | `backend/{项目名}-app/src/test/` | 单元测试和集成测试 |
-| 开发文档 | `backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-java-uniweb.md` | 开发记录 |
-| 评审报告 | `backend/{项目名}-app/reviews/` | AI评审报告 |
-| 更新文档 | `backend/{项目名}-app/README.md` | 合并后的主文档 |
-| 变更记录 | `backend/{项目名}-app/CHANGELOG.md` | 代码变更历史 |
+| 功能代码 | `PROJECT_ROOT/backend/{项目名}-app/src/` | Java后端代码 |
+| 测试代码 | `PROJECT_ROOT/backend/{项目名}-app/src/PROJECT_ROOT/test/` | 单元测试和集成测试 |
+| 开发文档 | `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-java-uniweb.md` | 开发记录 |
+| 评审报告 | `PROJECT_ROOT/backend/{项目名}-app/reviews/` | AI评审报告 |
+| 更新文档 | `PROJECT_ROOT/backend/{项目名}-app/README.md` | 合并后的主文档 |
+| 变更记录 | `PROJECT_ROOT/backend/{项目名}-app/CHANGELOG.md` | 代码变更历史 |
 
 ## 610→620 衔接协议
 
@@ -54,9 +58,9 @@ version: "1.0.0"
 
 | 提取项 | 来源文件 | 用途 |
 |--------|---------|------|
-| 后端技术方案 | `backend/{项目名}-app/issues/FEATURE-DESIGN-*-tech-design.md` | 接口设计、数据模型、实现要点 |
-| DDL文件 | `database/migrations/FEATURE-*.sql` | 数据库变更，需先执行 |
-| 现有架构 | `backend/{项目名}-app/README.md` | 编码规范、模块结构 |
+| 后端技术方案 | `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-*-tech-design.md` | 接口设计、数据模型、实现要点 |
+| DDL文件 | `PROJECT_ROOT/database/migrations/FEATURE-*.sql` | 数据库变更，需先执行 |
+| 现有架构 | `PROJECT_ROOT/backend/{项目名}-app/README.md` | 编码规范、模块结构 |
 
 **并行约束**：620 与 630/631/640 天然独立可并行。DDL需先执行完毕后才能开始 620。
 
@@ -72,7 +76,7 @@ version: "1.0.0"
 | Helper | `service/` | 业务逻辑 |
 | Controller | `controller/` | API接口 |
 | Mapper | `mapper/` | 数据访问（如需要） |
-| 单元测试 | `test/` | JUnit测试 |
+| 单元测试 | `PROJECT_ROOT/test/` | JUnit测试 |
 
 **代码规范**:
 - 遵循UniWeb + SaaS技术栈规范
@@ -138,7 +142,7 @@ Java后端开发完成后，必须进入 PLAN-REVIEW 循环，确保代码质量
 
 ### 5. 生成开发文档
 
-**文件位置**: `backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-java-uniweb.md`
+**文件位置**: `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-java-uniweb.md`
 
 **文档内容**:
 ```markdown
@@ -173,8 +177,8 @@ Java后端开发完成后，必须进入 PLAN-REVIEW 循环，确保代码质量
 ### 6. 文档合并
 
 **合并内容**:
-- 更新 `backend/{项目名}-app/README.md`（接口文档、架构说明）
-- 追加 `backend/{项目名}-app/CHANGELOG.md`
+- 更新 `PROJECT_ROOT/backend/{项目名}-app/README.md`（接口文档、架构说明）
+- 追加 `PROJECT_ROOT/backend/{项目名}-app/CHANGELOG.md`
 
 **CHANGELOG格式**:
 ```markdown
@@ -188,11 +192,11 @@ Java后端开发完成后，必须进入 PLAN-REVIEW 循环，确保代码质量
 
 ## 输出要求
 
-**代码位置**: `backend/{项目名}-app/src/`
+**代码位置**: `PROJECT_ROOT/backend/{项目名}-app/src/`
 
-**开发文档**: `backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-java-uniweb.md`
+**开发文档**: `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-java-uniweb.md`
 
-**评审报告**: `backend/{项目名}-app/reviews/REVIEW-CODE-{YYMMDDHHMM}.md`
+**评审报告**: `PROJECT_ROOT/backend/{项目名}-app/reviews/REVIEW-CODE-{YYMMDDHHMM}.md`
 
 ## 流转关系
 
