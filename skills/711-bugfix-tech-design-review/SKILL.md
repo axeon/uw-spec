@@ -8,19 +8,9 @@ version: "1.0.0"
 
 # Bug修复方案评审
 
-## 描述
-对710阶段产出的Bug修复方案进行全面评审, 确保修复方案正确、彻底、风险可控, 且不引入新问题。
-
 ## 项目环境检测
 
 从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
-
-## 使用场景
-| 触发条件 | 示例 |
-|---------|------|
-| 修复方案设计完成后 | "评审修复方案" |
-| 检查修复设计 | "检查Bug修复方案" |
-| 修复评审 | "修复方案评审" |
 
 ## 角色职责
 | 角色 | 职责 | 智能体 |
@@ -52,11 +42,7 @@ version: "1.0.0"
 |--------|------|------|
 | 修复方案评审报告 | `PROJECT_ROOT/issue/reviews/REVIEW-BUGFIX-DESIGN-{YYMMDDHHMM}.md` | 评审结论和问题清单 |
 
-## 流转关系
-```
-通过 → 进入Bug修复阶段（720/730/731/740）
-不通过 → 返回 710-bugfix-tech-design 修改
-```
+报告格式详见 [评审报告模板](../0-init/references/review-report-template.md)。
 
 ## 评审维度
 | 维度 | 检查要点 |
@@ -69,7 +55,7 @@ version: "1.0.0"
 | 影响范围 | 变更范围最小化, 无不必要修改 |
 | 回滚方案 | 回滚步骤明确, 数据可恢复 |
 
-## 量化通过标准
+## 通过标准
 
 ### 通过（≥95分）
 | 检查项 | 标准 | 分值 |
@@ -93,28 +79,21 @@ version: "1.0.0"
 
 ## 评审流程
 
-### 1. 准备阶段
-- **读取源技能**：读取 [710-bugfix-tech-design/SKILL.md](../710-bugfix-tech-design/SKILL.md) 全文，提取修复方案设计规范，作为评审的权威依据
-- 读取Bug分析报告
-- 读取修复方案文档
-- 读取DDL文件（如有）
-- 查看相关代码
+> 开始评审前，先按"源技能引用"读取源技能，按"输入"读取所有评审对象。
 
-### 2. 执行评审
+### 1. 执行评审
 按维度检查, 记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。
 
 **维度**: 根因理解/修复正确性/彻底性/数据库变更/接口变更/影响范围/回滚方案
 **评审对象**: PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-*
 **参与人员**: @system-architect @java-developer @test-engineer
-**流转方向**: 通过 -> 进入Bug修复; 不通过 -> 返回710修改
 
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
-## 输出要求
-**报告位置**: `PROJECT_ROOT/issue/reviews/REVIEW-BUGFIX-DESIGN-{YYMMDDHHMM}.md`
 
-**必须包含**:
-- 评审信息（日期、人员、对象、Bug编号）
-- 各维度评审结果和得分
-- 问题清单（含严重程度、责任人、状态）
-- 量化评审结论
+### 2. 评审结论与修复循环
+
+评分 ≥ 95 → **通过**，输出报告，按流转关系进入下一阶段。
+
+评分 < 95 → **不通过**，调用 `710-bugfix-tech-design` 修复，按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行。
+

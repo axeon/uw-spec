@@ -8,19 +8,9 @@ version: "1.0.0"
 
 # 测试执行评审
 
-## 描述
-对四类测试执行结果（API/E2E/压测/安全）进行全面审计，验证报告真实性、缺陷管理规范性、SLA达标情况、安全漏洞修复状态。
-
 ## 项目环境检测
 
 从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
-
-## 使用场景
-| 触发条件 | 示例 |
-|---------|------|
-| 测试执行完成后 | "评审测试结果" |
-| 审计测试报告 | "审计测试报告" |
-| 确认发布条件 | "确认是否可以发布" |
 
 ## 角色职责
 | 角色 | 职责 | 智能体 |
@@ -54,11 +44,7 @@ version: "1.0.0"
 |--------|------|------|
 | 测试执行评审报告 | `PROJECT_ROOT/test/reviews/REVIEW-EXECUTION-YYMMDDHHMM.md` | 评审结论和问题清单 |
 
-## 流转关系
-```
-通过 → 进入发布阶段
-不通过 → 返回 410-test-case-execution 重新测试
-```
+报告格式详见 [评审报告模板](../0-init/references/review-report-template.md)。
 
 ## 评审维度
 
@@ -91,7 +77,7 @@ version: "1.0.0"
 | Trivy结果 | 无 Critical 级别依赖漏洞 |
 | 修复状态 | 已发现漏洞的修复或规避措施 |
 
-## 量化通过标准
+## 通过标准
 
 ### 通过（≥95分）
 | 检查项 | 标准 | 分值 |
@@ -113,46 +99,24 @@ version: "1.0.0"
 - High缺陷 >2个
 - 测试通过率 <95%
 
-## 发布标准
-
-| 检查项 | 标准 |
-|--------|------|
-| 致命缺陷 | 0个 |
-| 严重缺陷 | 0个 |
-| 一般缺陷 | ≤5个（有规避措施） |
-| API通过率 | ≥98% |
-| E2E通过率 | ≥98% |
-| SLA达标 | 全部指标达标 |
-| 安全漏洞 | 无Critical/High |
-
 ## 评审流程
 
-### 1. 准备阶段
-- **读取源技能**：读取 [410-test-case-execution/SKILL.md](../410-test-case-execution/SKILL.md) 全文，提取所有执行标准和 SLA 指标，作为评审的权威依据
-- 获取四类测试报告
-- 获取缺陷记录
+> 开始评审前，先按"源技能引用"读取源技能，按"输入"读取所有评审对象。
 
-### 2. 执行评审
+### 1. 执行评审
 按维度检查，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。
 
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
 **评审对象**: `PROJECT_ROOT/test/reports/`
 **参与人员**: @project-manager @test-engineer @system-architect
-**流转方向**: 通过 → 发布阶段；不通过 → 返回 410 重新测试
 
-## 输出要求
-**报告位置**: `PROJECT_ROOT/test/reviews/REVIEW-EXECUTION-YYMMDDHHMM.md`
 
-**必须包含**:
-- 评审信息（日期、人员、对象）
-- 四类测试各维度评审结果和得分
-- 缺陷统计表
-- 问题清单（含严重程度、责任人、状态）
-- 量化评审结论
-- 发布建议
-- 流转方向说明
-- 下一步行动项
+### 2. 评审结论与修复循环
+
+评分 ≥ 95 → **通过**，输出报告，按流转关系进入下一阶段。
+
+评分 < 95 → **不通过**，调用 `410-test-case-execution` 修复，按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行。
 
 ## 参考
 - [评审报告模版](../0-init/references/review-report-template.md) - 通用评审报告格式

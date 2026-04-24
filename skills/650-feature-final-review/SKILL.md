@@ -8,22 +8,9 @@ version: "1.0.0"
 
 # 功能最终验收评审
 
-## 描述
-
-在所有开发阶段（620/630/631/640）完成后，执行全面的验收测试，生成验收报告，并由人工进行最终的上线决策。
-
 ## 项目环境检测
 
 从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
-
-## 使用场景
-
-| 触发条件 | 示例 |
-|---------|------|
-| 功能验收 | "验收订单导出功能" |
-| 上线确认 | "确认功能可以上线" |
-| 最终评审 | "进行功能最终评审" |
-| 完成确认 | "确认功能开发完成" |
 
 ## 角色职责
 
@@ -63,9 +50,11 @@ version: "1.0.0"
 | 扫描报告 | `PROJECT_ROOT/issue/` | 安全扫描报告 |
 | 风险评估 | `PROJECT_ROOT/issue/reviews/` | 风险评估报告 |
 
+报告格式详见 [评审报告模板](../0-init/references/review-report-template.md)。
+
 ## 执行流程
 
-> **前置步骤**：先读取 [600-feature-clarify/SKILL.md](../600-feature-clarify/SKILL.md) 和 [610-feature-tech-design/SKILL.md](../610-feature-tech-design/SKILL.md)，提取功能需求规范和技术方案规范，作为验收的权威依据。
+> 按上方"源技能引用"读取源技能，按"输入"读取所有评审对象。
 
 详细的验收检查清单见 [checklist.md](references/checklist.md)。
 
@@ -173,10 +162,6 @@ npx playwright test --grep "FEATURE-{简述}"
 - [ ] 功能完整性确认
 - [ ] 质量达标确认
 - [ ] 上线决策确认
-
-## 下一步
-- 通过: 进入 660-feature-update-doc
-- 不通过: 返回对应开发阶段修复
 ```
 
 ## 人工检查点 ★
@@ -190,30 +175,14 @@ npx playwright test --grep "FEATURE-{简述}"
 
 **确认后流转**:
 - 通过 → 进入 660-feature-update-doc
-- 不通过 → 返回对应开发阶段修复
+- 不通过 → 调用源技能修复，修复后重新评审（最多5轮）
 
-## 输出要求
 
-**验收报告**: `PROJECT_ROOT/issue/reviews/REVIEW-FEATURE-{YYMMDDHHMM}.md`
+### 6. 评审结论与修复循环
 
-**测试报告**: `PROJECT_ROOT/test/reports/summary/final-YYMMDDHHMM.md`
+评分 ≥ 95 → **通过**，输出报告，按流转关系进入下一阶段。
 
-**安全报告**: `PROJECT_ROOT/issue/`
-
-## 流转关系
-
-```
-输入: 所有开发阶段输出
-    ↓
-650-feature-final-review
-    ↓
-针对性测试 → 回归测试 → 安全扫描 → 性能扫描 → 生成报告
-    ↓
-人工确认 ★
-    ↓
-├─ 通过 → 进入 660-feature-update-doc
-└─ 不通过 → 返回对应开发阶段
-```
+评分 < 95 → **不通过**，调用 `600-feature-clarify` 修复，按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行。
 
 ## 通过标准
 

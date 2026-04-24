@@ -8,20 +8,9 @@ version: "1.0.0"
 
 # 移动端开发评审
 
-## 描述
-对UniApp移动端代码进行全面评审，验证TDD实践、跨平台兼容性、代码质量和性能优化。
-
 ## 项目环境检测
 
 从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
-
-## 使用场景
-| 触发条件 | 示例 |
-|---------|------|
-| 移动端代码开发完成后 | "评审移动端代码" |
-| 检查UniApp规范 | "检查UniApp代码质量" |
-| 评审TDD实践 | "检查移动端测试覆盖" |
-| 跨平台兼容性检查 | "检查跨平台兼容性" |
 
 ## 角色职责
 | 角色 | 职责 | 智能体 |
@@ -56,11 +45,7 @@ version: "1.0.0"
 |--------|------|------|
 | 移动端开发评审报告 | `PROJECT_ROOT/frontend/{项目名}-admin-uniapp/reviews/REVIEW-CODE-YYMMDDHHMM.md` | 评审结论和问题清单 |
 
-## 流转关系
-```
-通过 → 并行进入其他开发评审（311/331）
-不通过 → 返回 320-admin-uniapp-dev 修改
-```
+报告格式详见 [评审报告模板](../0-init/references/review-report-template.md)。
 
 ## 评审维度
 
@@ -76,7 +61,7 @@ version: "1.0.0"
 | 性能优化 | 分包加载、图片优化、数据缓存、下拉刷新/上拉加载 | 320 → 开发步骤 |
 | 安全性 | 存储安全、传输安全（HTTPS）、代码安全 | 320 → 开发步骤 |
 
-## 量化通过标准
+## 通过标准
 
 ### 通过（≥95分）
 | 检查项 | 标准 | 分值 |
@@ -100,13 +85,9 @@ version: "1.0.0"
 
 ## 评审流程
 
-### 1. 准备阶段
-- **读取源技能**：读取 [320-admin-uniapp-dev/SKILL.md](../320-admin-uniapp-dev/SKILL.md) 全文，提取所有开发规范和约定，作为评审的权威依据
-- 获取移动端代码和测试代码
-- 获取测试覆盖率报告
-- 准备检查清单
+> 开始评审前，先按"源技能引用"读取源技能，按"输入"读取所有评审对象。
 
-### 2. 执行评审
+### 1. 执行评审
 按维度检查，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。报告中需包含"覆盖率统计"扩展统计节。
 
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
@@ -114,16 +95,11 @@ version: "1.0.0"
 **维度**: TDD/UniApp/兼容性/代码质量/字段一致性/性能/安全性
 **评审对象**: PROJECT_ROOT/frontend/{项目名}-admin-uniapp/
 **参与人员**: @js-lead @system-architect @js-developer
-**流转方向**: 通过 -> 进入下一阶段评审；不通过 -> 返回开发修改
 
-## 输出要求
-**报告位置**: `PROJECT_ROOT/frontend/{项目名}-admin-uniapp/reviews/REVIEW-CODE-YYMMDDHHMM.md`
 
-**必须包含**:
-- 评审信息（日期、人员、对象）
-- 各维度评审结果和得分
-- 覆盖率统计数据
-- 问题清单（含严重程度、责任人、状态）
-- 量化评审结论
-- 流转方向说明
-- 下一步行动项
+### 2. 评审结论与修复循环
+
+评分 ≥ 95 → **通过**，输出报告，按流转关系进入下一阶段。
+
+评分 < 95 → **不通过**，调用 `320-admin-uniapp-dev` 修复，按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行。
+

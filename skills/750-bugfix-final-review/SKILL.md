@@ -8,21 +8,9 @@ version: "1.0.0"
 
 # Bug修复最终验收
 
-## 描述
-
-在所有Bug修复阶段（720/730/731/740）完成后，执行全面的回归测试，验证Bug已修复且未引入新问题，由人工进行最终的修复确认。
-
 ## 项目环境检测
 
 从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
-
-## 使用场景
-
-| 触发条件 | 示例 |
-|---------|------|
-| Bug验收 | "验收Bug修复" |
-| 修复确认 | "确认Bug已修复" |
-| Bug完成 | "完成Bug修复" |
 
 ## 角色职责
 
@@ -57,9 +45,11 @@ version: "1.0.0"
 | 修复验收报告 | `PROJECT_ROOT/issue/reviews/REVIEW-BUGFIX-{YYMMDDHHMM}.md` | 最终验收报告 |
 | 测试报告 | `PROJECT_ROOT/test/reports/summary/final-YYMMDDHHMM.md` | 测试执行报告 |
 
+报告格式详见 [评审报告模板](../0-init/references/review-report-template.md)。
+
 ## 执行流程
 
-> **前置步骤**：先读取 [700-bugfix-analysis/SKILL.md](../700-bugfix-analysis/SKILL.md) 和 [710-bugfix-tech-design/SKILL.md](../710-bugfix-tech-design/SKILL.md)，提取 Bug 分析规范和修复方案规范，作为验收的权威依据。
+> 按上方"源技能引用"读取源技能，按"输入"读取所有评审对象。
 
 详细的验收检查清单见 [checklist.md](references/checklist.md)。
 
@@ -133,10 +123,6 @@ version: "1.0.0"
 - [ ] Bug已修复确认
 - [ ] 无新问题确认
 - [ ] 修复完成确认
-
-## 下一步
-- 通过: 进入 760-bugfix-update-doc
-- 不通过: 返回对应修复阶段
 ```
 
 ## 人工检查点 ★
@@ -148,30 +134,16 @@ version: "1.0.0"
 
 **确认后流转**:
 - 通过 → 进入 760-bugfix-update-doc
-- 不通过 → 返回对应修复阶段
+- 不通过 → 调用对应修复技能修复问题，修复后重新执行本技能评审（最多5轮）
 
-## 输出要求
 
-**修复验收报告**: `PROJECT_ROOT/issue/reviews/REVIEW-BUGFIX-{YYMMDDHHMM}.md`
+### 4. 评审结论与修复循环
 
-**测试报告**: `PROJECT_ROOT/test/reports/summary/final-YYMMDDHHMM.md`
+评分 ≥ 95 → **通过**，输出报告，按流转关系进入下一阶段。
 
-## 流转关系
+评分 < 95 → **不通过**，调用 `700-bugfix-analysis` 修复，按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行。
 
-```
-输入: 所有修复阶段输出
-    ↓
-750-bugfix-final-review
-    ↓
-Bug修复验证 → 回归测试 → 生成报告
-    ↓
-人工确认 ★
-    ↓
-├─ 通过 → 进入 760-bugfix-update-doc
-└─ 不通过 → 返回对应修复阶段
-```
-
-## 量化通过标准
+## 通过标准
 
 ### 通过（≥95分）
 | 检查项 | 标准 | 分值 |
@@ -191,11 +163,3 @@ Bug修复验证 → 回归测试 → 生成报告
 - Bug未完全修复
 - 回归测试核心流程失败
 - 引入了新的Critical问题
-
-## 通过标准
-
-| 检查项 | 标准 |
-|--------|------|
-| Bug修复 | 100%修复 |
-| 回归测试 | 100%通过 |
-| 人工确认 | 通过 |

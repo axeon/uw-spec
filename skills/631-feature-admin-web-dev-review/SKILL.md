@@ -8,18 +8,9 @@ version: "1.0.0"
 
 # 功能Web前端开发评审（Admin）
 
-## 描述
-对功能开发阶段（630）产出的Web前端代码进行评审, 验证代码实现与技术方案的一致性、TDD实践、Vue3规范和代码质量。
-
 ## 项目环境检测
 
 从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
-
-## 使用场景
-| 触发条件 | 示例 |
-|---------|------|
-| 功能前端开发完成后 | "评审功能前端代码" |
-| 检查功能实现 | "检查Web功能实现" |
 
 ## 角色职责
 | 角色 | 职责 | 智能体 |
@@ -50,11 +41,7 @@ version: "1.0.0"
 |--------|------|------|
 | 评审报告 | `PROJECT_ROOT/issue/reviews/REVIEW-CODE-{YYMMDDHHMM}.md` | 评审结论和问题清单 |
 
-## 流转关系
-```
-通过 → 合并代码, 可进入 650-feature-final-review
-不通过 → 返回 630-feature-admin-web-dev 修改
-```
+报告格式详见 [评审报告模板](../0-init/references/review-report-template.md)。
 
 ## 评审维度
 | 维度 | 检查要点 |
@@ -67,7 +54,7 @@ version: "1.0.0"
 | 安全性 | 禁止v-html未转义、路由守卫权限控制、Token安全存储 |
 | 影响范围 | 未修改无关模块, 变更范围可控 |
 
-## 量化通过标准
+## 通过标准
 
 ### 通过（≥95分）
 | 检查项 | 标准 | 分值 |
@@ -91,12 +78,9 @@ version: "1.0.0"
 
 ## 评审流程
 
-### 1. 准备阶段
-- **读取源技能**：读取 [630-feature-admin-web-dev/SKILL.md](../630-feature-admin-web-dev/SKILL.md) 全文，提取开发规范和完成标准，作为评审的权威依据
-- 读取技术方案文档和功能需求
-- 获取开发代码和测试代码
+> 开始评审前，先按"源技能引用"读取源技能，按"输入"读取所有评审对象。
 
-### 2. 执行评审
+### 1. 执行评审
 按维度检查, 记录问题。评审发现记录格式详见 [评审报告模版](../0-init/references/review-report-template.md)。
 
 **维度**: 方案一致性/TDD/Vue3/代码质量/性能/安全性/影响范围
@@ -105,5 +89,10 @@ version: "1.0.0"
 
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
-## 输出要求
-**报告位置**: `PROJECT_ROOT/issue/reviews/REVIEW-CODE-{YYMMDDHHMM}.md`
+
+### 2. 评审结论与修复循环
+
+评分 ≥ 95 → **通过**，输出报告，按流转关系进入下一阶段。
+
+评分 < 95 → **不通过**，调用 `630-feature-admin-web-dev` 修复，按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行。
+

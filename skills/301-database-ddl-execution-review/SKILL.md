@@ -8,21 +8,9 @@ version: "1.0.0"
 
 # 数据库DDL执行评审
 
-## 描述
-
-对 300-database-ddl-execution 阶段的执行结果进行全面评审，验证数据库实际 Schema 与设计文档一致，确保后端开发环境可用。
-
 ## 项目环境检测
 
 从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
-
-## 使用场景
-
-| 触发条件 | 示例 |
-|---------|------|
-| DDL执行后 | "评审建表结果" |
-| Schema验证 | "验证数据库表结构" |
-| 数据库检查 | "检查数据库是否正确" |
 
 ## 角色职责
 
@@ -56,12 +44,7 @@ version: "1.0.0"
 |--------|------|------|
 | DDL执行评审报告 | `PROJECT_ROOT/database/reviews/REVIEW-DDL-EXECUTION-YYMMDDHHMM.md` | 评审结论 |
 
-## 流转关系
-
-```
-通过 → 进入阶段3-实施阶段（310-java-uniweb-dev 等）
-不通过 → 返回 300-database-ddl-execution 修复
-```
+报告格式详见 [评审报告模板](../0-init/references/review-report-template.md)。
 
 ## 评审维度
 
@@ -76,7 +59,7 @@ version: "1.0.0"
 
 **验证方式**：对每张表执行 `SHOW CREATE TABLE` 和 `SHOW INDEX`，与 `database-ddl.sql` 逐项比对。
 
-## 量化通过标准
+## 通过标准
 
 ### 通过（≥95分）
 | 检查项 | 标准 | 分值 |
@@ -98,13 +81,9 @@ version: "1.0.0"
 
 ## 评审流程
 
-### 1. 准备阶段
-- **读取源技能**：读取 [300-database-ddl-execution/SKILL.md](../300-database-ddl-execution/SKILL.md) 全文，提取所有执行规范和验证标准，作为评审的权威依据
-- 读取执行报告和DDL文件
-- 读取设计文档
-- 连接目标数据库
+> 开始评审前，先按"源技能引用"读取源技能，按"输入"读取所有评审对象。
 
-### 2. 执行评审
+### 1. 执行评审
 逐表验证，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。
 
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
@@ -112,19 +91,13 @@ version: "1.0.0"
 **维度**: 表完整性/字段一致性/索引正确性/通用字段/初始数据
 **评审对象**: `PROJECT_ROOT/database/` + 实际数据库
 **参与人员**: @system-architect @java-developer
-**流转方向**: 通过 → 进入实施阶段；不通过 → 返回DDL执行修复
 
-## 输出要求
 
-**报告位置**: `PROJECT_ROOT/database/reviews/REVIEW-DDL-EXECUTION-YYMMDDHHMM.md`
+### 2. 评审结论与修复循环
 
-**必须包含**:
-- 评审信息（日期、人员、数据库地址）
-- 逐表验证结果
-- 问题清单（含严重程度、表名、状态）
-- 量化评审结论
-- 流转方向说明
-- 下一步行动项
+评分 ≥ 95 → **通过**，输出报告，按流转关系进入下一阶段。
+
+评分 < 95 → **不通过**，调用 `300-database-ddl-execution` 修复，按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行。
 
 ## 参考
 

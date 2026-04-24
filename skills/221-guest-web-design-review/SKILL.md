@@ -8,19 +8,9 @@ version: "1.0.0"
 
 # Web端原型评审
 
-## 描述
-对Web端原型进行全面评审，确保设计质量，按前端类型（管理端、游客端、商户端等）分别进行专项评审。评审对象为 README.md 页面设计文档 + 原型页面代码质量。
-
 ## 项目环境检测
 
 从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
-
-## 使用场景
-| 触发条件 | 示例 |
-|---------|------|
-| Web端原型完成后 | "评审一下这个原型" |
-| 检查设计 | "检查原型设计是否有问题" |
-| 原型评审 | "原型评审" |
 
 ## 角色职责
 | 角色 | 职责 | 智能体 |
@@ -54,11 +44,7 @@ version: "1.0.0"
 |--------|------|------|
 | Web端原型评审报告 | `PROJECT_ROOT/frontend/{项目名}-guest-web/reviews/REVIEW-DESIGN-YYMMDDHHMM.md` | 评审结论和问题清单 |
 
-## 流转关系
-```
-通过 → 进入 320-guest-web-dev 前端开发
-不通过 → 返回 220-guest-web-design 修改
-```
+报告格式详见 [评审报告模板](../0-init/references/review-report-template.md)。
 
 ## 评审维度
 
@@ -107,7 +93,7 @@ version: "1.0.0"
 | 订单管理 | 状态清晰、操作便捷 |
 | 数据统计 | 多维度统计、趋势分析 |
 
-## 量化通过标准
+## 通过标准
 
 ### 通过（≥95分）
 | 检查项 | 标准 | 分值 |
@@ -128,13 +114,9 @@ version: "1.0.0"
 
 ## 评审流程
 
-### 1. 准备阶段
-- **读取源技能**：读取 [220-guest-web-design/SKILL.md](../220-guest-web-design/SKILL.md) 全文，提取所有架构约定和设计完成标准，作为评审的权威依据
-- 读取原型设计文件
-- 确定评审范围（前端类型）
-- 准备检查清单
+> 开始评审前，先按"源技能引用"读取源技能，按"输入"读取所有评审对象。
 
-### 2. 执行评审
+### 1. 执行评审
 按维度检查，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。
 
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
@@ -142,15 +124,11 @@ version: "1.0.0"
 **维度**: 需求符合度/用户体验/视觉设计/技术可行性/一致性
 **评审对象**: PROJECT_ROOT/frontend/{项目名}-guest-web/
 **参与人员**: @prototype-reviewer @product-manager @system-architect @js-developer
-**流转方向**: 通过 -> 进入 320-guest-web-dev 前端开发；不通过 -> 返回 220-guest-web-design 修改
 
-## 输出要求
-**报告位置**: `PROJECT_ROOT/frontend/{项目名}-guest-web/reviews/REVIEW-DESIGN-YYMMDDHHMM.md`
 
-**必须包含**:
-- 评审信息（日期、人员、对象、前端类型）
-- 各维度评审结果和得分
-- 问题清单（含严重程度、责任人、状态）
-- 量化评审结论
-- 流转方向说明
-- 下一步行动项
+### 2. 评审结论与修复循环
+
+评分 ≥ 95 → **通过**，输出报告，按流转关系进入下一阶段。
+
+评分 < 95 → **不通过**，调用 `220-guest-web-design` 修复，按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行。
+

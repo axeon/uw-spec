@@ -135,22 +135,7 @@ $PROJECT_ROOT/test/reports/
 
 测试执行完成后，必须进入 PLAN-REVIEW 循环，确保测试质量达标。
 
-调用技能 `411-test-case-execution-review`，评分 ≥ 95 通过，< 95 按下表修复后重新评审（最多5轮，round ≥ 6 强制退出）:
-
-| 优先级 | 要求 |
-|--------|------|
-| Critical | 本轮必须全部修复，不可遗留 |
-| Major | 本轮修复 ≥ 80%，剩余标注下轮计划 |
-| Minor | 记录但不阻塞，按优先级排列 |
-
-循环结束时，在评审报告末尾追加：
-```markdown
-## PLAN-REVIEW 循环结论
-- 总轮次: {N}/5
-- 最终评分: {N}分
-- 状态: {通过 | 有条件通过 | 强制退出}
-- 遗留问题: Critical {N}, Major {N}, Minor {N}
-```
+调用技能 `411-test-case-execution-review`，评分 ≥ 95 通过，< 95 按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行修复循环。
 
 ## 参考
 
