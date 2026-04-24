@@ -187,5 +187,3 @@ AI生成代码 → AI评审(321) → 自动修复 → 测试执行
 ## 参考
 
 - [Web前端评审技能](../631-feature-guest-web-dev-review/SKILL.md) - AI自动评审调用
-- [Vue3速查](../0-init/references/frontend/vue3-cheatsheet.md)
-- [Element Plus速查](../0-init/references/frontend/element-plus-cheatsheet.md)

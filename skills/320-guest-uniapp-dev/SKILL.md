@@ -68,9 +68,9 @@ version: "1.0.0"
 
 | 技术 | 用途 | 文档 |
 |------|------|------|
-| UniApp + Vue3 | 跨平台框架 | [UniApp速查](../0-init/references/frontend/uniapp-cheatsheet.md) |
+| UniApp + Vue3 | 跨平台框架 | - |
 | TypeScript | 类型安全 | - |
-| Pinia | 状态管理 | [Pinia速查](../0-init/references/frontend/pinia-cheatsheet.md) |
+| Pinia | 状态管理 | setup风格 |
 | uni-ui | UI组件库 | [uni-ui文档](https://uniapp.dcloud.net.cn/component/uniui/uni-ui.html) |
 
 ## 开发模式

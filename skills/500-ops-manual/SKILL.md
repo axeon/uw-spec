@@ -1,5 +1,5 @@
 ---
-name: 500-devops-doc
+name: 500-ops-manual
 description: 运维文档编写技能。当需要编写系统运维文档时触发：(1)编写系统部署手册, (2)编写监控告警手册, (3)编写故障处理手册, (4)编写应急预案文档, (5)编写备份恢复手册, (6)编写日常维护手册。请务必在用户提及运维文档、部署手册、监控文档、故障处理、应急预案、系统运维时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
@@ -53,7 +53,7 @@ version: "1.0.0"
 
 ## PLAN-REVIEW 循环（必须执行）
 
-运维文档编写完成后，调用 `501-ops-manual` 执行评审。
+运维文档编写完成后，调用 `501-ops-manual-review` 执行评审。
 
 ## 输出位置
 
@@ -74,4 +74,4 @@ manual/ops-manual/
 ## 参考
 
 - [文档模板](references/templates.md) - 架构说明、部署手册、监控手册、故障处理模板
-- [运维文档评审技能](../501-ops-manual/SKILL.md) - PLAN-REVIEW循环调用的评审技能
+- [运维文档评审技能](../501-ops-manual-review/SKILL.md) - PLAN-REVIEW循环调用的评审技能

@@ -200,5 +200,4 @@ AI生成代码 → 平台适配 → AI评审(321) → 自动修复 → 测试执
 ## 参考
 
 - [UniApp开发评审技能](../631-feature-guest-uniapp-dev-review/SKILL.md) - AI自动评审调用
-- [Vue3速查](../0-init/references/frontend/vue3-cheatsheet.md)
 - [UniApp文档](https://uniapp.dcloud.net.cn/)

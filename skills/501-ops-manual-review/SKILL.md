@@ -1,5 +1,5 @@
 ---
-name: 501-ops-manual
+name: 501-ops-manual-review
 description: 运维文档评审技能。当运维文档编写完成后触发：(1)检查文档完整性和覆盖度, (2)验证内容准确性和一致性, (3)确认操作步骤可操作性, (4)检查架构一致性和准确性, (5)验证应急方案可行性, (6)输出评审结论和改进建议。请务必在用户提及运维文档评审、部署手册评审、监控文档检查、运维交付物评审时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
@@ -26,8 +26,8 @@ version: "1.0.0"
 
 | 源技能文件 | 评审时读取的内容 |
 |-----------|----------------|
-| [500-devops-doc/SKILL.md](../500-devops-doc/SKILL.md) | **必读全文**：运维文档规范、交付物清单、完成标准 |
-| [500-devops-doc/references/templates.md](../500-devops-doc/references/templates.md) | 文档模板 |
+| [500-ops-manual/SKILL.md](../500-ops-manual/SKILL.md) | **必读全文**：运维文档规范、交付物清单、完成标准 |
+| [500-ops-manual/references/templates.md](../500-ops-manual/references/templates.md) | 文档模板 |
 
 ## 输入
 | 输入项 | 来源 | 说明 |
@@ -95,7 +95,7 @@ version: "1.0.0"
 - 准备检查清单
 
 ### 2. 执行评审
-按维度检查，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。报告中需包含"交付物检查"扩展统计节。
+按维度检查，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模板](../0-init/references/review-report-template.md)。报告中需包含"交付物检查"扩展统计节。
 
 **维度**: 完整性/准确性/可操作性/架构一致性
 **评审对象**: manual/ops-manual/

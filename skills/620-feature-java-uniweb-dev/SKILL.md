@@ -187,4 +187,4 @@ AI生成代码 → AI评审(311) → 自动修复 → 测试执行
 
 - [Java开发评审技能](../621-feature-java-uniweb-dev-review/SKILL.md) - AI自动评审调用
 - [UniWeb开发规范](../210-java-uniweb-design/references/backend/uniweb/dev-standards.md)
-- [SaaS开发规范](../210-java-uniweb-design/references/backend/saas/dev-standards.md)
+- [SaaS开发规范](../210-java-uniweb-design/references/backend/saas/README.md)

@@ -84,7 +84,7 @@ version: "1.0.0"
 > 开始评审前，先按"源技能引用"读取源技能，按"输入"读取所有评审对象。
 
 ### 1. 执行评审
-按维度检查, 记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。
+按维度检查, 记录问题。评审发现记录格式和评审报告结构详见 [评审报告模板](../0-init/references/review-report-template.md)。
 
 **维度**: 修复正确性/彻底性/回归测试/uw-base/代码质量/副作用/安全性
 **评审对象**: PROJECT_ROOT/backend/{项目名}-app/src/（仅修复变更部分）

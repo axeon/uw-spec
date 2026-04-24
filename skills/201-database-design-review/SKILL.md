@@ -53,7 +53,7 @@ version: "1.0.0"
 | 性能优化 | 分区策略、归档方案、查询优化 |
 | 安全性 | 敏感数据加密、权限控制 |
 
-详细的各维度检查项见 [checklist.md](references/checklist.md)。命名规范对照 [命名规范](../200-database-design/references/naming-convention.md)。
+详细的各维度检查项见 [checklist.md](references/checklist.md)。命名规范对照 [数据库设计指南](../200-database-design/references/database-design-guide.md)。
 
 ## 通过标准
 
@@ -79,7 +79,7 @@ version: "1.0.0"
 > 开始评审前，先按"源技能引用"读取源技能，按"输入"读取所有评审对象。
 
 ### 1. 执行评审
-按维度检查，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。
+按维度检查，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模板](../0-init/references/review-report-template.md)。
 
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
 

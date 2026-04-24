@@ -208,9 +208,9 @@ AskUserQuestion({
 
    | 并行组 | 可并行流程 |
    |--------|-----------|
-   | 文档组 | 500-devops-doc, 510-requirement-doc, 520-user-manual |
+   | 文档组 | 500-ops-manual, 510-requirement-doc, 520-user-manual |
 
-   评审流程（串行）：501-ops-manual, 511-requirement-doc-review, 521-user-manual-review
+   评审流程（串行）：501-ops-manual-review, 511-requirement-doc-review, 521-user-manual-review
 
    **阶段6 - 功能开发阶段**（按需执行）
    - 600-feature-clarify → 610-feature-tech-design

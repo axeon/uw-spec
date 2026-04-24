@@ -228,7 +228,7 @@ grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 
 - [TDD设计指南](../210-java-uniweb-design/references/tdd-design-guide.md) - TDD三阶段映射、Mock策略、测试模板
 - [UniWeb开发规范](../210-java-uniweb-design/references/backend/uniweb/dev-standards.md) - 项目初始化、依赖、配置、编码规范
-- [SaaS开发规范](../210-java-uniweb-design/references/backend/saas/dev-standards.md) - 命名规范、API路径规范、工具类速查
+- [SaaS开发规范](../210-java-uniweb-design/references/backend/saas/README.md) - SaaS框架总览、模块速查、命名规范
 - [Java开发评审技能](../311-java-uniweb-dev-review/SKILL.md) - PLAN-REVIEW循环调用的评审技能
 
 ## PLAN-REVIEW 循环（必须执行）

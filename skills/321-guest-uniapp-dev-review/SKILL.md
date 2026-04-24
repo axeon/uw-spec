@@ -88,7 +88,7 @@ version: "1.0.0"
 > 开始评审前，先按"源技能引用"读取源技能，按"输入"读取所有评审对象。
 
 ### 1. 执行评审
-按维度检查，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模版](../0-init/references/review-report-template.md)。报告中需包含"覆盖率统计"扩展统计节。
+按维度检查，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模板](../0-init/references/review-report-template.md)。报告中需包含"覆盖率统计"扩展统计节。
 
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
 

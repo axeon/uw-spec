@@ -70,10 +70,10 @@ version: "1.0.0"
 
 | 技术 | 用途 | 文档 |
 |------|------|------|
-| Vue 3 + TypeScript | 前端框架 | [Vue3速查](../0-init/references/frontend/vue3-cheatsheet.md) |
-| Element Plus | UI组件库 | [ElementPlus速查](../0-init/references/frontend/element-plus-cheatsheet.md) |
-| Pinia | 状态管理 | [Pinia速查](../0-init/references/frontend/pinia-cheatsheet.md) |
-| Vue Router 4 | 路由 | [VueRouter速查](../0-init/references/frontend/vue-router-cheatsheet.md) |
+| Vue 3 + TypeScript | 前端框架 | Composition API |
+| Element Plus | UI组件库 | - |
+| Pinia | 状态管理 | setup风格 |
+| Vue Router 4 | 路由 | - |
 | Axios | HTTP客户端 | 已封装在 `src/utils/request.ts` |
 
 ## 开发模式
