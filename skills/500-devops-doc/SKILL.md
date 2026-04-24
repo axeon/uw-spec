@@ -61,9 +61,7 @@ version: "1.0.0"
 
 ## PLAN-REVIEW 循环（必须执行）
 
-运维文档编写完成后，必须进入 PLAN-REVIEW 循环，确保文档质量达标。
-
-调用技能 `501-ops-manual`，评分 ≥ 95 通过，< 95 按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行修复循环。
+运维文档编写完成后，调用 `501-ops-manual` 执行评审。
 
 ## 输出位置
 

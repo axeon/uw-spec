@@ -104,9 +104,7 @@ version: "1.0.0"
 
 ## PLAN-REVIEW 循环（必须执行）
 
-Web前端修复完成后，必须进入 PLAN-REVIEW 循环，确保修复质量达标。
-
-调用技能 `731-bugfix-guest-web-review`，评分 ≥ 95 通过，< 95 按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行修复循环。
+Web前端修复完成后，调用 `731-bugfix-guest-web-review` 执行评审。
 
 ### 5. 生成修复文档
 

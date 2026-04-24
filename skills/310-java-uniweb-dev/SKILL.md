@@ -249,15 +249,5 @@ grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 
 ## PLAN-REVIEW 循环（必须执行）
 
-Java后端开发完成后，必须进入 PLAN-REVIEW 循环，确保代码质量达标。
-
-#### 单模块 vs 并行模式
-
-| 模式 | review 范围 | 说明 |
-|------|-----------|------|
-| 单模块 | 该模块全部代码 | 一个Agent完成即review |
-| 并行多模块 | 每个模块独立review | 模块A review通过后，依赖A的模块才可开始开发 |
-| 顺序全量 | 每个模块独立review | 同并行，但串行执行 |
-
-调用技能 `311-java-uniweb-dev-review`，评分 ≥ 95 通过，< 95 按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行修复循环。
+Java后端开发完成后，调用 `311-java-uniweb-dev-review` 执行评审。
 

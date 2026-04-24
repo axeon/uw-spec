@@ -247,9 +247,7 @@ CREATE INDEX idx_{name} ON {table_name}({column_list});
 
 ## PLAN-REVIEW 循环（必须执行）
 
-技术方案设计完成后，必须进入 PLAN-REVIEW 循环，确保方案质量达标。
-
-调用技能 `611-feature-tech-design-review`，评分 ≥ 95 通过，< 95 按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行修复循环。
+技术方案设计完成后，调用 `611-feature-tech-design-review` 执行评审。
 
 ## 人工检查点 ★
 

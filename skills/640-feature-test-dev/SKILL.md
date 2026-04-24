@@ -111,9 +111,7 @@ version: "1.0.0"
 
 ## PLAN-REVIEW 循环（必须执行）
 
-测试脚本开发完成后，必须进入 PLAN-REVIEW 循环，确保脚本质量达标。
-
-调用技能 `641-feature-test-dev-review`，评分 ≥ 95 通过，< 95 按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行修复循环。
+测试脚本开发完成后，调用 `641-feature-test-dev-review` 执行评审。
 
 ### 4. 测试执行
 

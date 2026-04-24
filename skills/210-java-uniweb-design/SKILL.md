@@ -417,9 +417,7 @@ void testSave_Normal_ReturnSuccess() { fail("TDD Red"); }
 
 ## PLAN-REVIEW 循环（必须执行）
 
-设计完成后，必须进入 PLAN-REVIEW 循环，确保设计质量达标。
-
-调用技能 `211-java-uniweb-design-review`，评分 ≥ 95 通过，< 95 按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行修复循环。
+设计完成后，调用 `211-java-uniweb-design-review` 执行评审。
 
 ## 产出结构
 

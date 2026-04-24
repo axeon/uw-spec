@@ -176,9 +176,7 @@ mysql -h {host} -P {port} -u {user} -p{pass} {db_name} < "{selected_file}"
 
 ## PLAN-REVIEW 循环（必须执行）
 
-DDL执行完成后，必须进入 PLAN-REVIEW 循环，确保执行质量达标。
-
-调用技能 `301-database-ddl-execution-review`，评分 ≥ 95 通过，< 95 按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行修复循环。
+DDL执行完成后，调用 `301-database-ddl-execution-review` 执行评审。
 
 ## 输出要求
 

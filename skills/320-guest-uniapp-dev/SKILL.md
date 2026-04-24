@@ -218,17 +218,7 @@ npm run dev:h5
 
 ## PLAN-REVIEW 循环（必须执行）
 
-UniApp移动端开发完成后，必须进入 PLAN-REVIEW 循环，确保代码质量达标。
-
-#### 单模块 vs 并行模式
-
-| 模式 | review 范围 | 说明 |
-|------|-----------|------|
-| 单模块 | 该模块全部页面 | 一个Agent完成即review |
-| 并行多模块 | 每个模块独立review | 页面天然独立，无需等全部完成 |
-| 顺序全量 | 每个模块独立review | 同并行，但串行执行 |
-
-调用技能 `321-guest-uniapp-dev-review`，评分 ≥ 95 通过，< 95 按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行修复循环。
+UniApp移动端开发完成后，调用 `321-guest-uniapp-dev-review` 执行评审。
 
 ## 参考
 

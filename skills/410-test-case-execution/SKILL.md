@@ -133,9 +133,7 @@ $PROJECT_ROOT/test/reports/
 
 ## PLAN-REVIEW 循环（必须执行）
 
-测试执行完成后，必须进入 PLAN-REVIEW 循环，确保测试质量达标。
-
-调用技能 `411-test-case-execution-review`，评分 ≥ 95 通过，< 95 按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行修复循环。
+测试执行完成后，调用 `411-test-case-execution-review` 执行评审。
 
 ## 参考
 
