@@ -1,36 +1,16 @@
 ---
 name: 210-java-uniweb-design
-description: SaaS后端技术设计（TDD驱动, 设计即代码）。当需要基于PRD和数据库设计进行后端技术设计时触发：(1)确认模块划分与定制API, (2)编写项目README.md总体设计（含测试策略）, (3)裁剪DTO和Controller, (4)新建Helper方法签名与缓存定义, (5)编写Helper单元测试骨架（TDD Red阶段）, (6)确保编译通过且测试可运行。当用户提及后端设计、接口设计、技术设计、生成脚手架时使用此技能。
+description: UniWeb后端技术设计（TDD驱动, 设计即代码）。当需要基于PRD和数据库设计进行后端技术设计时触发：(1)确认模块划分与定制API, (2)编写项目README.md总体设计（含测试策略）, (3)裁剪DTO和Controller, (4)新建Helper方法签名与缓存定义, (5)编写Helper单元测试骨架（TDD Red阶段）, (6)确保编译通过且测试可运行。当用户提及后端设计、接口设计、技术设计、生成脚手架时使用此技能。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
 version: "1.0.0"
 ---
 
-# SaaS 后端技术设计（TDD 驱动，设计即代码）
-
-## 描述
-
-基于 UniWeb + SaaS 技术栈，采用**TDD 驱动 + 设计即代码**模式：设计文档融入代码 Javadoc，总体设计作为项目 README.md。设计阶段同步产出 Helper 单元测试骨架（TDD Red 阶段），确保每个 Helper 方法都有可执行的测试契约。设计完成后项目可编译通过、测试可运行（全红为预期）、Swagger 可用。
-
-**设计阶段 vs 开发阶段分工**：
-
-| 阶段 | Controller | Helper | 测试 |
-|------|-----------|--------|------|
-| **设计阶段（210）** | 方法体包含完整调用链路：`return XxxHelper.saveXxx(entity)` 或 `return DaoManager.getInstance().list(Xxx.class, param)` | 方法签名 + Javadoc，方法体返回 `ResponseData.success(null)` | 测试骨架（TDD Red） |
-| **开发阶段（310）** | 不改动（调用链路已确定） | 实现 Helper 方法内部逻辑 | 实现测试断言（TDD Green） |
+# UniWeb后端技术设计（TDD 驱动，设计即代码）
 
 ## 项目环境检测
 
 从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
-
-## 使用场景
-
-| 触发条件 | 示例 |
-|---------|------|
-| 后端设计 | "开始后端技术设计" |
-| 接口设计 | "设计API接口" |
-| 脚手架生成 | "生成后端脚手架" |
-| 设计裁剪 | "裁剪DTO和Controller" |
 
 ## 核心理念
 
@@ -352,7 +332,7 @@ public class XxxHelper {
 
 | 内容 | 说明 |
 |------|------|
-| 测试类位置 | `src/$PROJECT_ROOT/test/java/{包路径}/service/{Module}HelperTest.java` |
+| 测试类位置 | `src/test/java/{包路径}/service/{Module}HelperTest.java` |
 | 测试类注解 | `@ExtendWith(MockitoExtension.class)` + `@MockedStatic DaoManager` + `@MockedStatic FusionCache/GlobalLocker`（静态方法测试用 MockedStatic） |
 | 测试方法数 | 每个 Helper 方法 ≥ 2 个测试方法（正常 + 边界/异常） |
 | 命名规范 | `test{Method}_{Scenario}_{ExpectedResult}` |
@@ -437,7 +417,7 @@ void testSave_Normal_ReturnSuccess() { fail("TDD Red"); }
 │   ├── entity/                       # 保留不动
 │   ├── dto/                          # 裁剪后
 │   └── vo/                           # 新建（如需）
-├── src/$PROJECT_ROOT/test/java/{包路径}/
+├── src/test/java/{包路径}/
 │   └── service/                      # TDD Red 阶段测试骨架
 │       ├── {ModuleA}HelperTest.java
 │       └── {ModuleB}HelperTest.java

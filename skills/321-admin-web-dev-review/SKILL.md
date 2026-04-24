@@ -57,6 +57,7 @@ version: "1.0.0"
 | Vue3规范 | `<script setup>`、Composition API、TypeScript类型定义、禁用any | 220 → references/web-dev-standards.md |
 | 状态管理 | Store按模块划分、Actions职责单一、Pinia setup风格 | 320 → 开发步骤 |
 | 代码质量 | 目录结构、命名规范、类型完整、字段一致性 | 220 → references/web-dev-standards.md |
+| 字段一致性 | 前端字段与后端DTO字段命名一致（camelCase）、表单绑定与API参数一致 | 220 → Phase 2 Step 4 |
 | 性能优化 | 路由懒加载、v-for key、computed缓存 | 320 → 开发步骤 |
 | 安全性 | 禁止v-html未转义、路由守卫权限控制、Token安全存储 | 320 → 开发步骤 |
 

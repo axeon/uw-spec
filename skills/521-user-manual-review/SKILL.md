@@ -15,9 +15,9 @@ version: "1.0.0"
 ## 角色职责
 | 角色 | 职责 | 智能体 |
 |------|------|--------|
-| 主导 | 文档评审 | `test-engineer` |
-| 协作 | 操作步骤准确性 | `test-engineer` |
+| 主导 | 文档评审 | `project-manager` |
 | 协作 | 功能描述准确性 | `product-manager` |
+| 协作 | 操作步骤准确性 | `test-engineer` |
 | 协作 | 界面描述准确性 | `ui-designer` |
 
 ## 源技能引用

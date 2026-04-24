@@ -8,25 +8,9 @@ version: "1.0.0"
 
 # Java SaaS开发
 
-## 描述
-
-基于 UniWeb + SaaS 技术栈（uw-base / saas-base / saas-finance）实现后端业务逻辑。210 设计阶段已产出 Controller 骨架和 Helper 签名，本阶段在此基础上填充实现代码。
-
 ## 项目环境检测
 
 从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
-
-## 使用场景
-
-| 触发条件 | 示例 |
-|---------|------|
-| Helper实现 | "实现商品Helper" |
-| Controller开发 | "开发订单接口" |
-| 指定模块开发 | "开发product模块" |
-| 并行开发 | "并行开发所有模块" |
-| 数据访问 | "查询商品列表" |
-| 缓存集成 | "添加FusionCache" |
-| SaaS服务对接 | "对接saas-finance支付" |
 
 ## 角色职责
 
@@ -217,7 +201,7 @@ grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 | 检查项 | 命令 | 通过标准 |
 |--------|------|---------|
 | 无残留 TODO | `grep -r "// TODO:" src/main/java/` | 0 行 |
-| 无残留 TDD Red | `grep -r "TDD Red" src/$PROJECT_ROOT/test/java/` | 0 行 |
+| 无残留 TDD Red | `grep -r "TDD Red" src/test/java/` | 0 行 |
 | 全量编译 | `mvn compile` | BUILD SUCCESS |
 | 全量测试通过 | `mvn test` | 全绿 |
 | 应用启动正常 | 启动 + Swagger 可访问 | 无异常 |
@@ -237,7 +221,7 @@ grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 ## 输出要求
 
 - **代码位置**: `PROJECT_ROOT/backend/{项目名}-app/src/main/java/{包路径}/`
-- **测试位置**: `PROJECT_ROOT/backend/{项目名}-app/src/$PROJECT_ROOT/test/java/{包路径}/service/`
+- **测试位置**: `PROJECT_ROOT/backend/{项目名}-app/src/test/java/{包路径}/service/`
 - **包含内容**: Helper实现代码、Controller业务调用、单元测试全绿、编译验证通过
 
 ## 参考

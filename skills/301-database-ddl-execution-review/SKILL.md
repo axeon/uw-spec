@@ -102,7 +102,6 @@ version: "1.0.0"
 ## 参考
 
 - [评审报告模版](../0-init/references/review-report-template.md) - 通用评审报告格式
-
-详细的评审检查清单见 [checklist.md](references/checklist.md)。
+- [评审检查清单](references/checklist.md) - DDL执行评审检查项
 - [DDL执行技能](../300-database-ddl-execution/SKILL.md) - 被评审的上游技能
 - [数据库设计评审技能](../201-database-design-review/SKILL.md) - 设计评审参考

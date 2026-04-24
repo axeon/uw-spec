@@ -119,7 +119,7 @@ version: "1.0.0"
 评分 < 95 → **不通过**，调用 `410-test-case-execution` 修复，按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行。
 
 ## 参考
-- [评审报告模版](../0-init/references/review-report-template.md) - 通用评审报告格式
 
-详细的评审检查清单见 [checklist.md](references/checklist.md)。
+- [评审报告模版](../0-init/references/review-report-template.md) - 通用评审报告格式
+- [评审检查清单](references/checklist.md) - 测试执行评审检查项
 - [测试执行技能](../410-test-case-execution/SKILL.md) - 被评审的上游技能
