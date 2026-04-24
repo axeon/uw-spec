@@ -1,4 +1,4 @@
-### uw-httpclient — HTTP客户端
+# uw-httpclient — HTTP客户端
 
 **Maven 坐标**: `com.umtone:uw-httpclient`
 
@@ -12,7 +12,7 @@
 | SSL | 支持自签名证书（`SSLContextUtils`） |
 | 文件 | 上传下载支持 |
 
-#### 核心入口类
+## 核心入口类
 
 ```java
 // JSON接口帮助类
@@ -32,7 +32,7 @@ public class XmlInterfaceHelper extends HttpInterface {
 }
 ```
 
-#### HttpInterface API
+## HttpInterface API
 
 ```java
 public class HttpInterface {
@@ -122,7 +122,7 @@ public interface HttpData {
 }
 ```
 
-#### HttpConfig配置
+## HttpConfig配置
 
 ```java
 public class HttpConfig {
@@ -142,7 +142,7 @@ public class HttpConfig {
 }
 ```
 
-#### 使用示例
+## 使用示例
 
 ```java
 @Service
@@ -248,7 +248,7 @@ public class HttpService {
 }
 ```
 
-#### SSL自签名证书支持
+## SSL自签名证书支持
 
 ```java
 // 信任所有证书（仅测试使用）

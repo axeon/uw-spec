@@ -1,4 +1,4 @@
-### uw-task — 分布式任务框架
+# uw-task — 分布式任务框架
 
 **Maven 坐标**: `com.umtone:uw-task`
 
@@ -38,7 +38,7 @@ uw:
 | 队列任务 | `TaskRunner<P, R>` | 流量控制、错误重试、动态配置 |
 | RPC 调用 | - | 同步/异步远程调用，自动本地/远程判定 |
 
-#### TaskCroner 定时任务
+## TaskCroner 定时任务
 
 **TaskCroner API**：
 
@@ -145,7 +145,7 @@ public class OrderTimeoutCheckTask extends TaskCroner {
 }
 ```
 
-#### TaskRunner 队列任务
+## TaskRunner 队列任务
 
 **TaskRunner API**：
 
@@ -321,7 +321,7 @@ public class OrderNotifyTask extends TaskRunner<OrderNotifyParam, NotifyResult> 
 }
 ```
 
-#### TaskFactory 任务执行
+## TaskFactory 任务执行
 
 **TaskFactory API**：
 
@@ -414,7 +414,7 @@ public class OrderService {
 }
 ```
 
-#### 任务异常处理
+## 任务异常处理
 
 ```java
 // 第三方接口异常（会触发重试）
@@ -459,7 +459,7 @@ public NotifyResult runTask(TaskData<OrderNotifyParam, NotifyResult> taskData) t
 }
 ```
 
-#### TaskContact 联系人配置
+## TaskContact 联系人配置
 
 ```java
 public class TaskContact implements Serializable {

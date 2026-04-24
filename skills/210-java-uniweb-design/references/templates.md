@@ -249,6 +249,107 @@ public class $PackageInfo$ {
 }
 ```
 
+---
+
+## 4. @MscPermDeclare 按角色映射表
+
+| 角色 | user | auth | 说明 |
+|------|------|------|------|
+| SAAS | `UserType.SAAS` | `AuthType.PERM` | 需验证权限，注册为菜单 |
+| MCH | `UserType.MCH` | `AuthType.PERM` | 需验证权限，注册为菜单 |
+| ADMIN | `UserType.ADMIN` | `AuthType.PERM` | 需验证权限，注册为菜单 |
+| ROOT | `UserType.ROOT` | `AuthType.PERM` | 需验证权限，注册为菜单 |
+| OPS | `UserType.OPS` | `AuthType.PERM` | 需验证权限，注册为菜单 |
+| RPC | `UserType.RPC` | `AuthType.NONE` | 内部调用无需鉴权 |
+| **GUEST** | `UserType.GUEST` | `AuthType.USER` | **仅验证用户类型，不验证权限** |
+
+> Guest 控制器使用 `AuthType.USER`（仅验证登录），不使用 `AuthType.PERM`。
+
+## 5. Controller 方法体模板
+
+```java
+// 简单 CRUD - 直接调 DaoManager
+@GetMapping("/list")
+@MscPermDeclare(name = "列表", auth = AuthType.PERM, log = ActionLog.REQUEST)
+public ResponseData<DataList<Xxx>> list(AuthQueryParam param) {
+    return DaoManager.getInstance().list(Xxx.class, param);
+}
+
+// 复杂逻辑 - 调用 Helper 静态方法
+@PostMapping("/save")
+@MscPermDeclare(name = "新增", auth = AuthType.PERM, log = ActionLog.ALL)
+public ResponseData<Xxx> save(@RequestBody Xxx entity) {
+    return XxxHelper.saveXxx(entity);
+}
+```
+
+**角色移动示例**：
+```bash
+mv controller/admin/product/ controller/saas/product/
+# 修正包名: my.shop.controller.admin.product → my.shop.controller.saas.product
+# 修正权限注解: UserType.ADMIN → UserType.SAAS
+```
+
+## 6. FusionCache 初始化模板
+
+```java
+public class XxxHelper {
+    private static final DaoManager daoManager = DaoManager.getInstance();
+    private static final int CACHE_MAX_NUM = 500;
+    private static final long CACHE_EXPIRE_MILLIS = 1800_000L;
+
+    static {
+        FusionCache.config(new FusionCache.Config(
+            XxxEntity.class,
+            CACHE_MAX_NUM,
+            CACHE_EXPIRE_MILLIS
+        ), new CacheDataLoader<Long, XxxEntity>() {
+            @Override
+            public XxxEntity load(Long key) {
+                return daoManager.load(XxxEntity.class, key).getData();
+            }
+        });
+    }
+
+    // TODO: [Tn] implement getXxx with FusionCache
+    public static ResponseData<XxxEntity> getXxx(Long id) {
+        return ResponseData.success(null);
+    }
+
+    // TODO: [Tn] implement saveXxx
+    public static ResponseData<XxxEntity> saveXxx(XxxEntity entity) {
+        return ResponseData.success(null);
+    }
+}
+```
+
+> FusionCache Config（缓存容量、过期时间）和 CacheDataLoader（数据加载器签名）在设计阶段确定。GlobalCache 不需要 static 初始化（直接用 `GlobalCache.get(...)` 带行内 CacheDataLoader），但 FusionCache 必须在类加载时完成 config。
+
+## 7. 产出结构
+
+```
+{后端项目根目录}/
+├── README.md                         # 总体设计文档（Phase 1 产出）
+├── TASKS.md                          # 开发任务分工（Phase 1.5 产出，310 消费）
+├── src/main/java/{包路径}/
+│   ├── controller/
+│   │   ├── saas/                     # 裁剪 + Javadoc + $PackageInfo$
+│   │   ├── mch/
+│   │   ├── admin/
+│   │   └── rpc/
+│   ├── service/                      # 新建 Helper
+│   │   ├── {ModuleA}Helper.java
+│   │   └── {ModuleB}Helper.java
+│   ├── entity/                       # 保留不动
+│   ├── dto/                          # 裁剪后
+│   └── vo/                           # 新建（如需）
+├── src/test/java/{包路径}/
+│   └── service/                      # TDD Red 阶段测试骨架
+│       ├── {ModuleA}HelperTest.java
+│       └── {ModuleB}HelperTest.java
+└── pom.xml
+```
+
 角色路径对照：
 
 | 角色 | @RequestMapping | @MscPermDeclare user | @MscPermDeclare auth | controller 包名 | $PackageInfo$ |
@@ -265,7 +366,7 @@ public class $PackageInfo$ {
 
 ---
 
-## 4. Controller Javadoc 模板
+## 8. Controller Javadoc 模板
 
 > 裁剪代码生成器产出的 Controller 后，为每个保留方法补充 Javadoc。
 
@@ -422,7 +523,7 @@ public ResponseData<Integer> disable(@RequestParam Long id) {
 
 ---
 
-## 5. Helper 模板
+## 9. Helper 模板
 
 > service 包下新建，纯静态工具类，不加 `@Component`，不使用构造器注入。
 > **创建前提**：三条件满足至少一项（逻辑复杂/功能性/多处调用），简单 CRUD 不建 Helper。
@@ -589,7 +690,7 @@ public static ResponseData<DataList<{Entity}>> list{Entity}Cached(AuthQueryParam
 
 ---
 
-## 6. VO 模板
+## 10. VO 模板
 
 > 仅在需要聚合多表数据时创建。VO 用于 Controller 响应，不用于接收请求参数。
 
@@ -644,7 +745,7 @@ public class {Business}VO {
 
 ---
 
-## 7. Helper 单元测试模板
+## 11. Helper 单元测试模板
 
 > 设计阶段（TDD Red）产出测试骨架，开发阶段实现 Mock 和断言逻辑。
 
@@ -807,7 +908,7 @@ class {Module}HelperTest {
 
 ---
 
-## 8. Controller 单元测试模板
+## 12. Controller 单元测试模板
 
 > 设计阶段（TDD Red）产出测试骨架，验证 API 契约：HTTP 方法、路径、参数绑定、权限注解、响应格式、调用链路。
 > 测试类位置与源码目录结构对齐：`src/test/java/{包路径}/controller/{角色}/{模块}/{Module}ControllerTest.java`
@@ -906,7 +1007,7 @@ class {Module}ControllerTest {
 
 ---
 
-## 9. Helper 间调用模板
+## 13. Helper 间调用模板
 
 > Helper 是静态工具类，Helper 间直接通过类名调用静态方法，无需注入。
 

@@ -1,10 +1,10 @@
-### uw-notify-client — 通知客户端
+# uw-notify-client — 通知客户端
 
 **Maven 坐标**: `com.umtone:uw-notify-client`
 
 基于 SSE（Server-Sent Events）的实时通知推送客户端，用于向指定用户或运营商推送 Web 通知。
 
-#### NotifyClientHelper API
+## NotifyClientHelper API
 
 ```java
 public class NotifyClientHelper {
@@ -19,7 +19,7 @@ public class NotifyClientHelper {
 }
 ```
 
-#### WebNotifyMsg 通知消息
+## WebNotifyMsg 通知消息
 
 ```java
 public class WebNotifyMsg implements Serializable {
@@ -40,7 +40,7 @@ public class WebNotifyMsg implements Serializable {
 }
 ```
 
-#### 使用示例
+## 使用示例
 
 ```java
 @Service

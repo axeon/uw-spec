@@ -1,8 +1,8 @@
-## 核心基础模块（saas-base-common）
+# 核心基础模块（saas-base-common）
 
 saas-base-common 是所有 SaaS 微服务的基础依赖，GroupId 为 `saas`，Parent POM 版本通过 `${revision}` 管理。提供SAAS租户管理、商户管理、消息通知、对象存储等基础能力。
 
-### 模块依赖关系
+## 模块依赖关系
 
 **Maven 坐标**: `saas:saas-base-common`
 
@@ -24,7 +24,7 @@ saas-base-common 是所有 SaaS 微服务的基础依赖，GroupId 为 `saas`，
 - `com.umtone:uw-notify-client` - 通知服务客户端
 
 
-### 核心 Helper 类
+## 核心 Helper 类
 
 | Helper 类 | 功能 | 主要方法 |
 |-----------|------|----------|
@@ -37,7 +37,7 @@ saas-base-common 是所有 SaaS 微服务的基础依赖，GroupId 为 `saas`，
 | `SysAreaHelper` | 系统地区信息 | `getSaasAreaInfoByAreaCode()`, `getCityAreaCode()` |
 | `LocaleHelper` | 系统国际化 | `getResolvedLocale()` |
 
-### SaasInfoHelper API 详解
+## SaasInfoHelper API 详解
 
 ```java
 // ========== SAAS租户查询 ==========
@@ -64,7 +64,7 @@ static void disable(long saasId)
 static void publishChangeNotify(long saasId)
 ```
 
-### SaasMchHelper API 详解
+## SaasMchHelper API 详解
 
 ```java
 // ========== SAAS商户查询 ==========
@@ -92,7 +92,7 @@ static void incrementSaleStats(long saasId, long distributorMchId,
 static void publishChangeNotify(long saasId, long mchId)
 ```
 
-### MsgHelper API 详解
+## MsgHelper API 详解
 
 ```java
 // ========== 系统消息通知发送 ==========
@@ -119,7 +119,7 @@ mail.setContent("<h1>欢迎</h1>");
 ResponseData result = MsgHelper.sendMail(mail);
 ```
 
-### SysOssHelper API 详解
+## SysOssHelper API 详解
 
 ```java
 // ========== 文件上传 ==========

@@ -75,6 +75,7 @@ version: "1.0.0"
 代码生成器产出全部在 `controller/admin/{module}/`，设计阶段按角色权限映射移动到目标角色目录（`saas/`、`mch/` 等），修正 package 声明和 import。
 
 详细目录示例见 [references/templates.md](references/templates.md) 角色路径对照表。
+
 ## 设计流程
 
 ### Phase 0: 需求确认
@@ -91,15 +92,7 @@ version: "1.0.0"
 
 **横切关注点识别（重要）**：
 
-模块级 Helper 按"一个模块一个 Helper"识别，但**横切关注点 Helper 按"一个业务规则一个 Helper"识别**。横切关注点天然满足 Helper 三条件中的"多处调用"。
-
-| 横切关注点 | 影响的模块 | Helper 方法 | 说明 |
-|-----------|-----------|------------|------|
-| 敏感词检测 | PostQuestion, PostAnswer, PostArticle, CmsComment | `SensitiveWordHelper.checkSensitiveWord(text)` | 内容发布前检测，决定审核状态 |
-| 通知发送 | PostQuestion, PostAnswer, PostArticle, GuestUser | `MsgNotifyHelper.sendNotify(entity)` | 多种业务事件触发通知 |
-| 其他通用规则 | 按PRD分析 | `{Xxx}Helper.{method}()` | 按需识别 |
-
-**识别方法**：通读 PRD，找出"在多个模块中出现相同描述"的业务规则（如"敏感词检测"、"发送通知"、"权限校验"），每个都应抽象为独立 Helper。
+模块级 Helper 按"一个模块一个 Helper"识别，**横切关注点 Helper 按"一个业务规则一个 Helper"识别**。识别方法：通读 PRD，找出"在多个模块中出现相同描述"的业务规则，每个都应抽象为独立 Helper。
 
 模块分类决策：
 
@@ -116,20 +109,7 @@ version: "1.0.0"
 **读取技术栈**：先读取 [backend/README.md](references/backend/README.md) 建立全局认知。
 **输出**：后端项目根目录 `README.md`
 
-**必须包含的章节**：
-
-| 章节 | 内容 | 必要性 |
-|------|------|--------|
-| 模块总览 | 模块清单、复杂度分类、代码策略 | 必须 |
-| 模块依赖关系 | Mermaid graph，禁止循环依赖 | 必须 |
-| PRD 功能点映射 | 功能点 → 模块 → 接口的映射表 | 必须 |
-| 角色权限映射 | 角色（SAAS/MCH/ADMIN/ROOT/OPS）× 模块 R/W 矩阵 | 必须 |
-| 状态机设计 | 有状态实体的 Mermaid stateDiagram | 按需 |
-| 全局缓存策略 | FusionCache/GlobalCache 选型、Key规范、TTL分级、更新机制 | 必须 |
-| 性能预算 | 数据量估算（3月/1年/3年）、索引策略、RT/QPS目标 | 必须 |
-| 外部依赖 | saas-finance、第三方接口、异步任务清单 | 按需 |
-| 全局错误码 | 业务错误码体系 | 按需 |
-| 测试策略 | 测试分层（单元/集成）、覆盖率目标、Mock策略、关键测试场景 | 必须 |
+**必须包含的章节**：模块总览、模块依赖关系（Mermaid graph）、PRD功能点映射、角色权限映射、全局缓存策略、性能预算、测试策略（均为必须）。状态机设计、外部依赖、全局错误码按需。
 
 **README.md 模板**：参见 [references/templates.md](references/templates.md)
 
@@ -153,21 +133,9 @@ version: "1.0.0"
 
 每个复杂模块（需建 Helper）生成一张任务卡片，简单模块（仅 CRUD）不列入。卡片中的任务 ID 与代码中 `// TODO: [Tn]` 标记一一对应。
 
-卡片必须包含以下字段：
+卡片字段：PRD路径、数据库表位置、待实现Helper.java路径、测试骨架HelperTest.java路径、技术栈文档列表、待实现方法签名列表、依赖任务ID。
 
-| 字段 | 说明 | 示例 |
-|------|------|------|
-| PRD | 关联的 PRD 文件路径 | `PROJECT_ROOT/requirement/prds/product.md` |
-| 数据库 | 关联的数据库表（含文档位置） | `PROJECT_ROOT/database/database-design.md` § Product 表 |
-| 待实现 | Helper.java 文件的完整路径 | `src/main/java/.../service/ProductHelper.java` |
-| 测试骨架 | HelperTest.java 文件的完整路径 | `src/PROJECT_ROOT/test/java/.../service/ProductHelperTest.java` |
-| 技术栈 | 该模块需要读取的技术栈文档 | `uw-dao.md`、`uw-cache.md` |
-| 待实现方法 | 所有带 `// TODO: [Tn]` 标记的方法签名 | `getProduct()`、`saveProduct()` |
-| 依赖任务 | 前置任务 ID | 无 / T1 |
-
-并行分组规则：按 Mermaid 依赖图拓扑排序，无依赖模块同组可并行，有依赖模块串行。
-
-末尾必须包含联调验证清单（自动化检查项），供 310 联调阶段直接执行。
+并行分组规则：按 Mermaid 依赖图拓扑排序，无依赖模块同组可并行，有依赖模块串行。末尾必须包含联调验证清单。
 
 **TASKS.md 模板**：参见 [references/templates.md](references/templates.md)
 
@@ -215,67 +183,24 @@ version: "1.0.0"
 | 补充 Javadoc | 每个方法添加完整设计说明（设计思路 + 实现步骤） |
 | 补充 $PackageInfo$.java | 仅标准角色（saas/mch/admin/root/ops/rpc）的 `{角色}/{模块}/` 目录下新建 $PackageInfo$.java，声明角色级权限。**guest 角色不适用** |
 
-**@MscPermDeclare 按角色映射表**（参考 [uw-auth-service.md](references/backend/uniweb/uw-auth-service.md)）：
-
-| 角色 | user | auth | 说明 |
-|------|------|------|------|
-| SAAS | `UserType.SAAS` | `AuthType.PERM` | 需验证权限，注册为菜单 |
-| MCH | `UserType.MCH` | `AuthType.PERM` | 需验证权限，注册为菜单 |
-| ADMIN | `UserType.ADMIN` | `AuthType.PERM` | 需验证权限，注册为菜单 |
-| ROOT | `UserType.ROOT` | `AuthType.PERM` | 需验证权限，注册为菜单 |
-| OPS | `UserType.OPS` | `AuthType.PERM` | 需验证权限，注册为菜单 |
-| RPC | `UserType.RPC` | `AuthType.NONE` | 内部调用无需鉴权 |
-| **GUEST** | `UserType.GUEST` | `AuthType.USER` | **仅验证用户类型，不验证权限** |
+**@MscPermDeclare 按角色映射表**、**Controller 方法体模板**和**角色移动示例**：详见 [references/templates.md](references/templates.md) 第4-5节。
 
 > **重要**：Guest 控制器使用 `AuthType.USER`（仅验证登录），不使用 `AuthType.PERM`（会注册为菜单权限，但 Guest 无后台菜单系统）。
-
-**Controller 方法体模板**：
-```java
-// 简单 CRUD - 直接调 DaoManager
-@GetMapping("/list")
-@MscPermDeclare(name = "列表", auth = AuthType.PERM, log = ActionLog.REQUEST)
-public ResponseData<DataList<Xxx>> list(AuthQueryParam param) {
-    return DaoManager.getInstance().list(Xxx.class, param);
-}
-
-// 复杂逻辑 - 调用 Helper 静态方法
-@PostMapping("/save")
-@MscPermDeclare(name = "新增", auth = AuthType.PERM, log = ActionLog.ALL)
-public ResponseData<Xxx> save(@RequestBody Xxx entity) {
-    return XxxHelper.saveXxx(entity);
-}
-```
-
-**角色移动示例**：
-```bash
-# 将 product 模块从 admin 移动到 saas
-mv controller/admin/product/ controller/saas/product/
-# 修正包名: my.shop.controller.admin.product → my.shop.controller.saas.product
-# 修正权限注解: UserType.ADMIN → UserType.SAAS
-```
 
 #### Step 3: 新建 Helper
 
 > service 包下新建 `{Module}Helper.java`，仅包含 static 方法签名和完整 Javadoc，方法返回默认值。
 
-**创建判断**：Helper 仅在以下条件满足**至少一项**时才创建：
-
-| 条件 | 说明 | 示例 |
-|------|------|------|
-| 逻辑复杂 | 状态机、多步流程、计算、复杂校验 | 内容审核（多状态流转）、回答采纳（锁+状态+积分） |
-| 功能性 | 缓存、分布式锁、事务等横切关注点 | 详情缓存（FusionCache）、并发操作（GlobalLocker） |
-| 多处调用 | 2个以上 Controller 或其他 Helper 调用 | 发送通知（多处触发）、用户信息查询（多处引用） |
-
-**不建 Helper 的场景**：简单 CRUD（list/get/save/update/delete/enable/disable）直接在 Controller 中调 `DaoManager.getInstance()` 即可。
+**创建判断**：仅在满足架构约定中 Helper 三条件（逻辑复杂/功能性/多处调用）之一时才创建。简单 CRUD 直接在 Controller 调 `DaoManager.getInstance()`。
 
 **Helper 两种类型**：
 
 | 类型 | 识别维度 | 示例 |
 |------|---------|------|
-| **模块级 Helper** | 按数据库表/模块识别，封装该模块的复杂业务 | PostQuestionHelper、PostAnswerHelper |
-| **横切 Helper** | 按 PRD 中跨模块的公共业务规则识别，不绑定单表 | SensitiveWordHelper（敏感词检测）、MsgNotifyHelper（通知发送） |
+| **模块级 Helper** | 按数据库表/模块识别 | PostQuestionHelper、PostAnswerHelper |
+| **横切 Helper** | 按 PRD 中跨模块的公共业务规则识别 | SensitiveWordHelper、MsgNotifyHelper |
 
-> **横切 Helper 识别方法**：通读 PRD，找出"在多个模块中出现相同描述"的业务规则。例如 PRD 中 PostQuestion/PostAnswer/PostArticle/CmsComment 都提到"敏感词检测"，这就是一个横切关注点，需要独立 Helper。Phase 0 的"横切关注点识别"步骤会提前列出这些。
+> **横切 Helper 识别方法**：通读 PRD，找出"在多个模块中出现相同描述"的业务规则。Phase 0 的"横切关注点识别"步骤会提前列出这些。
 
 | 内容 | 说明 |
 |------|------|
@@ -287,40 +212,7 @@ mv controller/admin/product/ controller/saas/product/
 | **缓存初始化** | **设计阶段必须完成**：所有使用 FusionCache 的 Helper 必须在 `static {}` 块中调用 `FusionCache.config(new FusionCache.Config(...), new CacheDataLoader<>() {...})` 完成初始化，包括 Config 参数和 CacheDataLoader 数据加载器。缓存参数（localCacheMaxNum、cacheExpireMillis）在设计阶段就确定，开发阶段仅实现 CacheDataLoader.load() 内部的查询逻辑 |
 | Javadoc | 设计思路 + 实现步骤 + 缓存策略 + 事务策略 |
 
-**FusionCache 初始化模板**（设计阶段必须产出）：
-
-```java
-public class XxxHelper {
-    private static final DaoManager daoManager = DaoManager.getInstance();
-    private static final int CACHE_MAX_NUM = 500;
-    private static final long CACHE_EXPIRE_MILLIS = 1800_000L;
-
-    static {
-        FusionCache.config(new FusionCache.Config(
-            XxxEntity.class,
-            CACHE_MAX_NUM,
-            CACHE_EXPIRE_MILLIS
-        ), new CacheDataLoader<Long, XxxEntity>() {
-            @Override
-            public XxxEntity load(Long key) {
-                return daoManager.load(XxxEntity.class, key).getData();
-            }
-        });
-    }
-
-    // TODO: [Tn] implement getXxx with FusionCache
-    public static ResponseData<XxxEntity> getXxx(Long id) {
-        return ResponseData.success(null);
-    }
-
-    // TODO: [Tn] implement saveXxx
-    public static ResponseData<XxxEntity> saveXxx(XxxEntity entity) {
-        return ResponseData.success(null);
-    }
-}
-```
-
-> **重要**：FusionCache 的 Config（缓存容量、过期时间）和 CacheDataLoader（数据加载器签名）在设计阶段确定。GlobalCache 不需要 static 初始化（直接用 `GlobalCache.get(...)` 带行内 CacheDataLoader），但 FusionCache 必须在类加载时完成 config。
+**FusionCache 初始化模板**：详见 [references/templates.md](references/templates.md) 第6节。
 
 #### Step 3.5: 编写测试骨架（TDD Red）
 
@@ -330,52 +222,21 @@ public class XxxHelper {
 
 ##### Helper 单元测试
 
+测试类规范、注解、命名规范和 MockedStatic 策略详见 [references/tdd-design-guide.md](references/tdd-design-guide.md)。
+
 | 内容 | 说明 |
 |------|------|
 | 测试类位置 | `src/test/java/{包路径}/service/{Module}HelperTest.java` |
-| 测试类注解 | `@ExtendWith(MockitoExtension.class)` + `@MockedStatic DaoManager` + `@MockedStatic FusionCache/GlobalLocker`（静态方法测试用 MockedStatic） |
 | 测试方法数 | 每个 Helper 方法 ≥ 2 个测试方法（正常 + 边界/异常） |
-| 命名规范 | `test{Method}_{Scenario}_{ExpectedResult}` |
-| 注解 | `@Test` + `@DisplayName("...")` |
-| Javadoc | 测试意图 + 准备数据 + 预期结果 |
-| 方法体 | `fail("TDD Red: [Tn] Helper 方法尚未实现")` 标记 Red 状态，Tn 为任务 ID |
-| MockedStatic | DaoManager.getInstance()、FusionCache、GlobalLocker、AuthServiceHelper 的静态 Mock 在开发阶段补充 |
-
-**测试模板**：参见 [references/templates.md](references/templates.md) 第6节 Helper 单元测试模板
-
-**快速示例**：
-```java
-// {Module}HelperTest.java - 每个Helper方法 ≥ 2个测试方法
-@Test @DisplayName("查询详情 - 正常返回")
-void testGet{Entity}_Found_ReturnEntity() { fail("TDD Red: [Tn]"); }
-
-@Test @DisplayName("查询详情 - 不存在返回warn")
-void testGet{Entity}_NotFound_ReturnWarn() { fail("TDD Red: [Tn]"); }
-```
+| 方法体 | `fail("TDD Red: [Tn] Helper 方法尚未实现")` 标记 Red 状态 |
 
 ##### Controller 单元测试
 
-> Controller 测试验证 API 契约：HTTP 方法、路径、参数绑定、权限注解、响应格式、调用链路。
-
 | 内容 | 说明 |
 |------|------|
-| 测试类位置 | `src/PROJECT_ROOT/test/java/{包路径}/controller/{角色}/{模块}/{Module}ControllerTest.java`（与源码目录结构对齐） |
-| 测试类注解 | `@ExtendWith(MockitoExtension.class)` |
+| 测试类位置 | `src/PROJECT_ROOT/test/java/{包路径}/controller/{角色}/{模块}/{Module}ControllerTest.java` |
 | 测试方法数 | 每个 Controller 方法 ≥ 1 个测试方法 |
-| 命名规范 | `test{Method}_{Scenario}_{ExpectedResult}` |
-| 注解 | `@Test` + `@DisplayName("...")` |
-| Javadoc | 测试意图 + API 调用方式 + 预期响应 |
 | 方法体 | `fail("TDD Red: Controller 测试尚未实现")` 标记 Red 状态 |
-
-**快速示例**：
-```java
-// {Module}ControllerTest.java - 每个Controller方法 ≥ 1个测试方法
-@Test @DisplayName("列表查询 - 正常返回")
-void testList_Normal_ReturnSuccess() { fail("TDD Red"); }
-
-@Test @DisplayName("新增 - 正常返回")
-void testSave_Normal_ReturnSuccess() { fail("TDD Red"); }
-```
 
 #### Step 4: 新建 VO（如需）
 
@@ -401,28 +262,7 @@ void testSave_Normal_ReturnSuccess() { fail("TDD Red"); }
 
 ## 产出结构
 
-```
-{后端项目根目录}/
-├── README.md                         # 总体设计文档（Phase 1 产出）
-├── TASKS.md                          # 开发任务分工（Phase 1.5 产出，310 消费）
-├── src/main/java/{包路径}/
-│   ├── controller/
-│   │   ├── saas/                     # 裁剪 + Javadoc + $PackageInfo$
-│   │   ├── mch/
-│   │   ├── admin/
-│   │   └── rpc/
-│   ├── service/                      # 新建 Helper
-│   │   ├── {ModuleA}Helper.java
-│   │   └── {ModuleB}Helper.java
-│   ├── entity/                       # 保留不动
-│   ├── dto/                          # 裁剪后
-│   └── vo/                           # 新建（如需）
-├── src/test/java/{包路径}/
-│   └── service/                      # TDD Red 阶段测试骨架
-│       ├── {ModuleA}HelperTest.java
-│       └── {ModuleB}HelperTest.java
-└── pom.xml
-```
+详见 [references/templates.md](references/templates.md) 第7节。
 
 ## 设计完成标准
 

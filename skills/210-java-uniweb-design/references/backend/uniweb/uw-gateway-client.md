@@ -1,4 +1,4 @@
-### uw-gateway-client — 网关客户端
+# uw-gateway-client — 网关客户端
 
 **Maven 坐标**: `com.umtone:uw-gateway-client`
 
@@ -6,7 +6,7 @@
 
 **配置前缀**: `uw.gateway`
 
-#### GatewayClientHelper API
+## GatewayClientHelper API
 
 ```java
 public class GatewayClientHelper {
@@ -36,7 +36,7 @@ public class GatewayClientHelper {
 }
 ```
 
-#### 使用示例
+## 使用示例
 
 ```java
 @Service

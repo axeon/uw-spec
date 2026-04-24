@@ -1,4 +1,4 @@
-### uw-webot — Web自动化框架
+# uw-webot — Web自动化框架
 
 **Maven 坐标**: `com.umtone:uw-webot`
 
@@ -40,7 +40,7 @@ uw:
         canvas-noise: true
 ```
 
-#### 核心概念
+## 核心概念
 
 **Hybrid 混合模式架构**:
 ```
@@ -60,7 +60,7 @@ WebotManager (单例)
 - **BrowserInstance**: 实际的浏览器进程实例
 - **BrowserTab**: 页签级隔离单元（独立的 Cookie/Storage/代理）
 
-#### WebotManager API
+## WebotManager API
 
 ```java
 public class WebotManager {
@@ -102,7 +102,7 @@ public class WebotManager {
 }
 ```
 
-#### WebotSession 会话
+## WebotSession 会话
 
 ```java
 public class WebotSession implements Serializable {
@@ -121,7 +121,7 @@ public class WebotSession implements Serializable {
 }
 ```
 
-#### BrowserConfig 浏览器配置
+## BrowserConfig 浏览器配置
 
 ```java
 public class BrowserConfig {
@@ -146,7 +146,7 @@ public enum BrowserType {
 }
 ```
 
-#### BrowserTab 浏览器页签
+## BrowserTab 浏览器页签
 
 ```java
 public class BrowserTab implements Closeable {
@@ -196,7 +196,7 @@ public class BrowserTab implements Closeable {
 }
 ```
 
-#### 验证码服务
+## 验证码服务
 
 ```java
 public interface CaptchaService {
@@ -232,7 +232,7 @@ public class CaptchaResult {
 }
 ```
 
-#### 代理服务
+## 代理服务
 
 ```java
 public interface ProxyService {
@@ -266,7 +266,7 @@ public class ProxyConfig {
 }
 ```
 
-#### 反检测服务
+## 反检测服务
 
 ```java
 public class StealthService {
@@ -284,7 +284,7 @@ public class StealthConfig {
 }
 ```
 
-#### 使用示例
+## 使用示例
 
 ```java
 @Service

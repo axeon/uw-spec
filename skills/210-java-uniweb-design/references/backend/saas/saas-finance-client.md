@@ -1,8 +1,8 @@
-## SaaS 财务客户端（saas-finance-client）
+# SaaS 财务客户端（saas-finance-client）
 
 saas-finance-client 是独立的财务微服务，提供支付通道、余额管理、对账管理等财务相关功能。
 
-### 引入财务客户端
+## 引入财务客户端
 
 ```xml
 <dependency>
@@ -12,7 +12,7 @@ saas-finance-client 是独立的财务微服务，提供支付通道、余额管
 </dependency>
 ```
 
-### 余额管理
+## 余额管理
 
 余额管理支持三种账户类型：
 
@@ -22,7 +22,7 @@ saas-finance-client 是独立的财务微服务，提供支付通道、余额管
 | **授信** | 永久授信或临时授信，需还款 | 熟悉的分销商 |
 | **佣金** | 仅收入、退款、取现，不可预存 | C 端分销商 |
 
-### FinBalanceHelper API 详解
+## FinBalanceHelper API 详解
 
 ```java
 // ========== 余额查询 ==========
@@ -57,7 +57,7 @@ static ResponseData enable(long saasId, long mchId, String currency)
 static ResponseData disable(long saasId, long mchId, String currency)
 ```
 
-### 支付通道
+## 支付通道
 
 支付通道通过 AIS Linker 机制实现，支持多种支付方式：
 
@@ -68,7 +68,7 @@ static ResponseData disable(long saasId, long mchId, String currency)
 | 支付宝国际 | `AliPayGlobalPaymentLinker` | 支付宝跨境支付 |
 | 合利宝 | `HelipayPaymentLinker` | 合利宝支付通道 |
 
-### FinPaymentHelper API 详解
+## FinPaymentHelper API 详解
 
 ```java
 // ========== 支付操作 ==========
@@ -95,7 +95,7 @@ response.onSuccess(payResponse -> {
 });
 ```
 
-### 汇率管理
+## 汇率管理
 
 ```java
 // ========== FinCurrencyHelper API ==========
@@ -118,7 +118,7 @@ String rate = FinCurrencyHelper.getCurrencyRate(saasId, "USD", "CNY");
 long cnyAmount = FinCurrencyHelper.calcCurrencyRate(rate, usdAmount);
 ```
 
-### 对账接口
+## 对账接口
 
 业务系统需要实现 `FinOrderBillInterface` 接口以支持对账功能：
 
@@ -149,7 +149,7 @@ public interface FinOrderBillInterface {
 }
 ```
 
-### 支付回调接口
+## 支付回调接口
 
 业务系统需要实现 `FinPaymentNotifyInterface` 接口以接收支付回调：
 

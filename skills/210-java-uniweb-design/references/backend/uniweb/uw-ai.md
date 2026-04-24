@@ -1,4 +1,4 @@
-### uw-ai — AI集成模块
+# uw-ai — AI集成模块
 
 **Maven 坐标**: `com.umtone:uw-ai`
 
@@ -10,7 +10,7 @@ uw:
     ai-center-host: http://uw-ai-center
 ```
 
-#### AiClientHelper API
+## AiClientHelper API
 
 ```java
 public class AiClientHelper {
@@ -120,7 +120,7 @@ public class AiToolMeta {
 }
 ```
 
-#### AI工具扩展
+## AI工具扩展
 
 ```java
 // 定义工具参数
@@ -163,7 +163,7 @@ public abstract class AiToolParam {
 }
 ```
 
-#### 使用示例
+## 使用示例
 
 ```java
 @Service

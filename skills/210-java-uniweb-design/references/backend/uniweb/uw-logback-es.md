@@ -1,4 +1,4 @@
-### uw-logback-es — Logback ES Appender
+# uw-logback-es — Logback ES Appender
 
 **Maven 坐标**: `com.umtone:uw-logback-es`
 

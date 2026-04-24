@@ -1,4 +1,4 @@
-### uw-mfa — 多因素认证
+# uw-mfa — 多因素认证
 
 **Maven 坐标**: `com.umtone:uw-mfa`
 
@@ -47,7 +47,7 @@ uw:
       port: 6379
 ```
 
-#### MfaFusionHelper 统一认证入口
+## MfaFusionHelper 统一认证入口
 
 **API 说明**：
 
@@ -233,7 +233,7 @@ public class LoginService {
 }
 ```
 
-#### 独立Helper类
+## 独立Helper类
 
 如需单独使用某项功能，可直接使用对应的Helper类：
 
