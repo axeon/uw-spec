@@ -32,6 +32,15 @@ version: "1.0.0"
 | 协作 | 风险评估 | `project-manager` |
 | 决策 | 修复确认 | `product-manager` ★ |
 
+## 源技能引用
+
+评审**必须先读取源技能文件**获取原始约定，再基于约定进行评审，禁止仅凭模型自身知识评审。
+
+| 源技能文件 | 评审时读取的内容 |
+|-----------|----------------|
+| [700-bugfix-analysis/SKILL.md](../700-bugfix-analysis/SKILL.md) | Bug分析规范 |
+| [710-bugfix-tech-design/SKILL.md](../710-bugfix-tech-design/SKILL.md) | 修复方案规范 |
+
 ## 输入
 
 | 输入项 | 来源 | 说明 |
@@ -49,6 +58,8 @@ version: "1.0.0"
 | 测试报告 | `PROJECT_ROOT/test/reports/summary/final-YYMMDDHHMM.md` | 测试执行报告 |
 
 ## 执行流程
+
+> **前置步骤**：先读取 [700-bugfix-analysis/SKILL.md](../700-bugfix-analysis/SKILL.md) 和 [710-bugfix-tech-design/SKILL.md](../710-bugfix-tech-design/SKILL.md)，提取 Bug 分析规范和修复方案规范，作为验收的权威依据。
 
 详细的验收检查清单见 [checklist.md](references/checklist.md)。
 

@@ -30,7 +30,16 @@ version: "1.0.0"
 | 协作 | 测试评估 | `test-engineer` |
 | 决策 | 方案确认 | `product-manager` ★ |
 
+## 源技能引用
+
+评审**必须先读取源技能文件**获取原始约定，再基于约定进行评审，禁止仅凭模型自身知识评审。
+
+| 源技能文件 | 评审时读取的内容 |
+|-----------|----------------|
+| [710-bugfix-tech-design/SKILL.md](../710-bugfix-tech-design/SKILL.md) | **必读全文**：修复方案设计规范、交付物规范 |
+
 ## 输入
+
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
 | Bug分析报告 | `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-{简述}.md` | 700阶段输出 |
@@ -85,6 +94,7 @@ version: "1.0.0"
 ## 评审流程
 
 ### 1. 准备阶段
+- **读取源技能**：读取 [710-bugfix-tech-design/SKILL.md](../710-bugfix-tech-design/SKILL.md) 全文，提取修复方案设计规范，作为评审的权威依据
 - 读取Bug分析报告
 - 读取修复方案文档
 - 读取DDL文件（如有）

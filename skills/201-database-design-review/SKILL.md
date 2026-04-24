@@ -30,7 +30,17 @@ version: "1.0.0"
 | 协作 | 测试数据需求 | `test-engineer` |
 | 协作 | 业务数据确认 | `product-manager` |
 
+## 源技能引用
+
+评审**必须先读取源技能文件**获取原始约定，再基于约定进行评审，禁止仅凭模型自身知识评审。
+
+| 源技能文件 | 评审时读取的内容 |
+|-----------|----------------|
+| [200-database-design/SKILL.md](../200-database-design/SKILL.md) | **必读全文**：设计规范、命名约定、设计流程、设计完成标准 |
+| [200-database-design/references/database-design-guide.md](../200-database-design/references/database-design-guide.md) | 数据库设计指南 |
+
 ## 输入
+
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
 | 数据库设计文档 | `PROJECT_ROOT/database/database-design.md` | 表结构、索引、关联关系 |
@@ -81,6 +91,7 @@ version: "1.0.0"
 ## 评审流程
 
 ### 1. 准备阶段
+- **读取源技能**：读取 [200-database-design/SKILL.md](../200-database-design/SKILL.md) 全文，提取所有设计规范和命名约定，作为评审的权威依据
 - 读取数据库设计文档
 - 确认评审范围
 - 准备检查清单

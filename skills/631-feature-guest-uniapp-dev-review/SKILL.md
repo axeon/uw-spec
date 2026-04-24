@@ -28,7 +28,16 @@ version: "1.0.0"
 | 协作 | 架构规范 | `system-architect` |
 | 协作 | 代码修改 | `js-developer` |
 
+## 源技能引用
+
+评审**必须先读取源技能文件**获取原始约定，再基于约定进行评审，禁止仅凭模型自身知识评审。
+
+| 源技能文件 | 评审时读取的内容 |
+|-----------|----------------|
+| [630-feature-guest-uniapp-dev/SKILL.md](../630-feature-guest-uniapp-dev/SKILL.md) | **必读全文**：开发规范、完成标准 |
+
 ## 输入
+
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
 | 功能代码 | `PROJECT_ROOT/frontend/{项目名}-guest-uniapp/src/` | 功能开发产出 |
@@ -80,6 +89,10 @@ version: "1.0.0"
 - 存在Critical问题, Major问题 >3个
 
 ## 评审流程
+
+### 1. 准备阶段
+- **读取源技能**：读取 [630-feature-guest-uniapp-dev/SKILL.md](../630-feature-guest-uniapp-dev/SKILL.md) 全文，提取开发规范和完成标准，作为评审的权威依据
+- 获取开发代码和测试代码
 
 ### 2. 执行评审
 按维度检查。详见 [评审报告模版](../0-init/references/review-report-template.md)。

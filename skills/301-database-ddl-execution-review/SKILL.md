@@ -32,6 +32,15 @@ version: "1.0.0"
 | 协作 | ORM映射确认 | `java-developer` |
 | 协作 | 业务数据确认 | `product-manager` |
 
+## 源技能引用
+
+评审**必须先读取源技能文件**获取原始约定，再基于约定进行评审，禁止仅凭模型自身知识评审。
+
+| 源技能文件 | 评审时读取的内容 |
+|-----------|----------------|
+| [300-database-ddl-execution/SKILL.md](../300-database-ddl-execution/SKILL.md) | **必读全文**：DDL执行流程、验证标准 |
+| [200-database-design/SKILL.md](../200-database-design/SKILL.md) | 设计阶段命名约定和设计完成标准 |
+
 ## 输入
 
 | 输入项 | 来源 | 说明 |
@@ -90,6 +99,7 @@ version: "1.0.0"
 ## 评审流程
 
 ### 1. 准备阶段
+- **读取源技能**：读取 [300-database-ddl-execution/SKILL.md](../300-database-ddl-execution/SKILL.md) 全文，提取所有执行规范和验证标准，作为评审的权威依据
 - 读取执行报告和DDL文件
 - 读取设计文档
 - 连接目标数据库

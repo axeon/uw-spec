@@ -30,7 +30,17 @@ version: "1.0.0"
 | 协作 | 可测试性确认 | `test-engineer` |
 | 协作 | 技术可行性 | `system-architect` |
 
+## 源技能引用
+
+评审**必须先读取源技能文件**获取原始约定，再基于约定进行评审，禁止仅凭模型自身知识评审。
+
+| 源技能文件 | 评审时读取的内容 |
+|-----------|----------------|
+| [510-requirement-doc/SKILL.md](../510-requirement-doc/SKILL.md) | **必读全文**：文档规范、交付物清单、完成标准 |
+| [510-requirement-doc/references/templates.md](../510-requirement-doc/references/templates.md) | 文档模板 |
+
 ## 输入
+
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
 | 需求文档 | `PROJECT_ROOT/requirement/` | 6项需求文档 |
@@ -89,6 +99,7 @@ version: "1.0.0"
 ## 评审流程
 
 ### 1. 准备阶段
+- **读取源技能**：读取 [510-requirement-doc/SKILL.md](../510-requirement-doc/SKILL.md) 全文，提取所有文档规范和交付物要求，作为评审的权威依据
 - 获取需求文档
 - 获取原始需求
 - 准备检查清单

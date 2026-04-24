@@ -32,11 +32,23 @@ version: "1.0.0"
 | 协作 | 代码质量 | `java-developer` |
 | 协作 | 业务确认 | `product-manager` |
 
+## 源技能引用
+
+评审**必须先读取源技能文件**获取原始约定，再基于约定进行评审，禁止仅凭模型自身知识评审。
+
+| 源技能文件 | 评审时读取的内容 |
+|-----------|----------------|
+| [210-java-uniweb-design/SKILL.md](../210-java-uniweb-design/SKILL.md) | **必读全文**：架构约定、设计流程 Phase 0-2.5、设计完成标准 |
+| [210-java-uniweb-design/references/templates.md](../210-java-uniweb-design/references/templates.md) | README 模板、代码模板、测试模板 |
+| [210-java-uniweb-design/references/tdd-design-guide.md](../210-java-uniweb-design/references/tdd-design-guide.md) | TDD 设计阶段规则 |
+| [210-java-uniweb-design/references/backend/uniweb/README.md](../210-java-uniweb-design/references/backend/uniweb/README.md) | UniWeb 技术栈规范 |
+
 ## 输入
 
 | 输入项 | 位置 | 说明 |
 |--------|------|------|
 | README.md | 后端项目根目录 | 总体设计文档 |
+| TASKS.md | 后端项目根目录 | 开发任务分工 |
 | Controller 代码 | `src/main/java/{包}/controller/` | 接口声明 + Javadoc |
 | Helper 代码 | `src/main/java/{包}/service/` | 方法签名 + Javadoc + 缓存定义 |
 | DTO 代码 | `src/main/java/{包}/dto/` | 裁剪后的 QueryParam |
@@ -60,15 +72,18 @@ version: "1.0.0"
 
 ## 评审维度
 
-| 维度 | 检查要点 | 分值 |
-|------|---------|------|
-| README.md 完整性 | 模块总览、依赖关系、PRD映射、权限映射、缓存策略、性能预算、测试策略 | 20分 |
-| 代码可编译性 | mvn compile 通过、mvn test-compile 通过、mvn test 可运行（全红为预期）、Swagger 可用 | 必须 |
-| Controller 质量 | 权限注解完整、Javadoc 完整、方法签名合理 | 15分 |
-| Helper 质量 | 方法签名合理、Javadoc 含实现步骤、缓存定义正确、static 方法风格 | 15分 |
-| 测试骨架质量 | 每个 Helper 有测试类、每个方法 ≥2 测试、@ExtendWith+MockedStatic、@DisplayName、fail("TDD Red: [Tn]") | 15分 |
-| DTO/VO 质量 | 搜索字段裁剪合理、校验注解完整 | 15分 |
-| PRD 覆盖度 | 所有 PRD 功能点都有对应接口 | 20分 |
+> 每个维度的检查标准以 [210-java-uniweb-design/SKILL.md](../210-java-uniweb-design/SKILL.md) 中的原始约定为准，下表为概要。详细检查清单见 [checklist.md](references/checklist.md)。
+
+| 维度 | 检查要点 | 源技能章节 | 分值 |
+|------|---------|-----------|------|
+| README.md 完整性 | 模块总览、依赖关系、PRD映射、权限映射、缓存策略、性能预算、测试策略 | 210 → Phase 1 必须章节 | 20分 |
+| TASKS.md 完整性 | 并行分组、任务卡片（含 Tn ID 和文件路径）、联调验证清单 | 210 → Phase 1.5 | 10分 |
+| 代码可编译性 | mvn compile 通过、mvn test-compile 通过、mvn test 可运行（全红为预期）、Swagger 可用 | 210 → Phase 2 Step 5 | 必须 |
+| Controller 质量 | 权限注解完整（含 guest 特殊规则）、Javadoc 完整、方法体有完整调用链路、URL 规范 | 210 → Phase 2 Step 2 | 15分 |
+| Helper 质量 | Helper 三条件合理性、方法签名合理、Javadoc 含实现步骤、FusionCache 初始化完成、static 方法风格 | 210 → Phase 2 Step 3 | 15分 |
+| 测试骨架质量 | 每个 Helper 有测试类、每个方法 ≥2 测试、@ExtendWith+MockedStatic、@DisplayName、fail("TDD Red: [Tn]") 与 TASKS.md ID 对应 | 210 → Phase 2 Step 3.5 | 15分 |
+| DTO/VO 质量 | 搜索字段裁剪合理、校验注解完整 | 210 → Phase 2 Step 1 | 10分 |
+| PRD 覆盖度 | 所有 PRD 功能点都有对应接口 | 210 → Phase 1 PRD功能点映射 | 15分 |
 
 ## 量化通过标准
 
@@ -98,7 +113,9 @@ version: "1.0.0"
 ## 评审流程
 
 ### 1. 准备阶段
+- **读取源技能**：读取 [210-java-uniweb-design/SKILL.md](../210-java-uniweb-design/SKILL.md) 全文，提取所有架构约定和设计完成标准，作为评审的权威依据
 - 读取 README.md
+- 读取 TASKS.md
 - 读取 PRD 文档和数据库设计
 - 列出所有 Controller/Helper/DTO 文件清单
 

@@ -34,6 +34,15 @@ version: "1.0.0"
 | 协作 | 风险评估 | `project-manager` |
 | 决策 | 上线确认 | `product-manager` ★ |
 
+## 源技能引用
+
+评审**必须先读取源技能文件**获取原始约定，再基于约定进行评审，禁止仅凭模型自身知识评审。
+
+| 源技能文件 | 评审时读取的内容 |
+|-----------|----------------|
+| [600-feature-clarify/SKILL.md](../600-feature-clarify/SKILL.md) | 功能需求规范 |
+| [610-feature-tech-design/SKILL.md](../610-feature-tech-design/SKILL.md) | 技术方案规范 |
+
 ## 输入
 
 | 输入项 | 来源 | 说明 |
@@ -55,6 +64,8 @@ version: "1.0.0"
 | 风险评估 | `PROJECT_ROOT/issue/reviews/` | 风险评估报告 |
 
 ## 执行流程
+
+> **前置步骤**：先读取 [600-feature-clarify/SKILL.md](../600-feature-clarify/SKILL.md) 和 [610-feature-tech-design/SKILL.md](../610-feature-tech-design/SKILL.md)，提取功能需求规范和技术方案规范，作为验收的权威依据。
 
 详细的验收检查清单见 [checklist.md](references/checklist.md)。
 

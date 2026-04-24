@@ -31,7 +31,17 @@ version: "1.0.0"
 | 协作 | 测试策略确认 | `test-engineer` |
 | 决策 | 方案确认 | `product-manager` ★ |
 
+## 源技能引用
+
+评审**必须先读取源技能文件**获取原始约定，再基于约定进行评审，禁止仅凭模型自身知识评审。
+
+| 源技能文件 | 评审时读取的内容 |
+|-----------|----------------|
+| [610-feature-tech-design/SKILL.md](../610-feature-tech-design/SKILL.md) | **必读全文**：技术方案设计规范、交付物规范 |
+| [210-java-uniweb-design/SKILL.md](../210-java-uniweb-design/SKILL.md) | 后端架构约定（如涉及后端） |
+
 ## 输入
+
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
 | 功能需求文档 | `PROJECT_ROOT/issue/features/FEATURE-{YYMMDD}-{简述}.md` | 600阶段输出 |
@@ -85,6 +95,7 @@ version: "1.0.0"
 ## 评审流程
 
 ### 1. 准备阶段
+- **读取源技能**：读取 [610-feature-tech-design/SKILL.md](../610-feature-tech-design/SKILL.md) 全文，提取技术方案设计规范，作为评审的权威依据
 - 读取功能需求文档
 - 读取技术方案各端文档
 - 读取DDL文件

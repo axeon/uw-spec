@@ -31,7 +31,17 @@ version: "1.0.0"
 
 > **职责边界**: 回归测试质量由 Java 开发工程师负责, 评审由 java-lead / system-architect 执行。测试工程师专职于测试脚本、API/E2E/压力/安全测试（阶段 740）。
 
+## 源技能引用
+
+评审**必须先读取源技能文件**获取原始约定，再基于约定进行评审，禁止仅凭模型自身知识评审。
+
+| 源技能文件 | 评审时读取的内容 |
+|-----------|----------------|
+| [720-bugfix-java-uniweb/SKILL.md](../720-bugfix-java-uniweb/SKILL.md) | **必读全文**：Bug修复开发规范 |
+| [210-java-uniweb-design/SKILL.md](../210-java-uniweb-design/SKILL.md) | 架构约定（修复代码必须遵循） |
+
 ## 输入
+
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
 | 修复代码 | `PROJECT_ROOT/backend/{项目名}-app/src/` | 修复后的代码 |
@@ -86,6 +96,7 @@ version: "1.0.0"
 ## 评审流程
 
 ### 1. 准备阶段
+- **读取源技能**：读取 [720-bugfix-java-uniweb/SKILL.md](../720-bugfix-java-uniweb/SKILL.md) 全文，提取 Bug 修复开发规范，作为评审的权威依据
 - 读取Bug分析报告
 - 读取修复方案文档
 - 获取修复代码和回归测试代码

@@ -32,7 +32,18 @@ version: "1.0.0"
 
 > **职责边界**：前端单元测试质量由前端工程师负责，评审由 js-lead / system-architect 执行。测试工程师不参与单元测试评审，专职于测试脚本、API/E2E/压力/安全测试（阶段 330+）。
 
+## 源技能引用
+
+评审**必须先读取源技能文件**获取原始约定，再基于约定进行评审，禁止仅凭模型自身知识评审。
+
+| 源技能文件 | 评审时读取的内容 |
+|-----------|----------------|
+| [320-guest-uniapp-dev/SKILL.md](../320-guest-uniapp-dev/SKILL.md) | **必读全文**：开发规范、开发步骤、220→320 衔接 |
+| [220-guest-uniapp-design/SKILL.md](../220-guest-uniapp-design/SKILL.md) | 设计阶段架构约定（开发阶段必须遵循） |
+| [220-guest-uniapp-design/references/md-dev-standards.md](../220-guest-uniapp-design/references/md-dev-standards.md) | UniApp 移动端编码规范 |
+
 ## 输入
+
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
 | 移动端代码 | `PROJECT_ROOT/frontend/{项目名}-guest-uniapp/src/` | 开发完成的代码 |
@@ -52,15 +63,18 @@ version: "1.0.0"
 ```
 
 ## 评审维度
-| 维度 | 检查要点 |
-|------|---------|
-| TDD实践 | 测试先行、覆盖率≥70%、composables/Store/工具函数有测试 |
-| UniApp规范 | 正确使用uni API、条件编译（#ifdef）、生命周期 |
-| 跨平台兼容 | 样式适配（rpx）、API兼容、功能降级 |
-| 代码质量 | 目录结构、命名规范、TypeScript类型完整、defineProps泛型风格 |
-| 字段一致性 | 前端字段与后端DTO字段命名一致（camelCase）、表单绑定与API参数一致 |
-| 性能优化 | 分包加载、图片优化、数据缓存、下拉刷新/上拉加载 |
-| 安全性 | 存储安全（uni.setStorageSync敏感数据加密）、传输安全（HTTPS）、代码安全 |
+
+> 每个维度的检查标准以 [320-guest-uniapp-dev/SKILL.md](../320-guest-uniapp-dev/SKILL.md) 和 [220-guest-uniapp-design/SKILL.md](../220-guest-uniapp-design/SKILL.md) 中的原始约定为准。详细检查清单见 [checklist.md](references/checklist.md)。
+
+| 维度 | 检查要点 | 源技能章节 |
+|------|---------|-----------|
+| TDD实践 | 测试先行、覆盖率≥70%、composables/Store/工具函数有测试 | 320 → 开发步骤 |
+| UniApp规范 | 正确使用uni API、条件编译（#ifdef）、生命周期 | 220 → references/md-dev-standards.md |
+| 跨平台兼容 | 样式适配（rpx）、API兼容、功能降级 | 320 → 开发步骤 |
+| 代码质量 | 目录结构、命名规范、TypeScript类型完整、defineProps泛型风格 | 220 → references/md-dev-standards.md |
+| 字段一致性 | 前端字段与后端DTO字段命名一致（camelCase）、表单绑定与API参数一致 | 220 → Phase 2 Step 4 |
+| 性能优化 | 分包加载、图片优化、数据缓存、下拉刷新/上拉加载 | 320 → 开发步骤 |
+| 安全性 | 存储安全、传输安全（HTTPS）、代码安全 | 320 → 开发步骤 |
 
 ## 量化通过标准
 
@@ -87,6 +101,7 @@ version: "1.0.0"
 ## 评审流程
 
 ### 1. 准备阶段
+- **读取源技能**：读取 [320-guest-uniapp-dev/SKILL.md](../320-guest-uniapp-dev/SKILL.md) 全文，提取所有开发规范和约定，作为评审的权威依据
 - 获取移动端代码和测试代码
 - 获取测试覆盖率报告
 - 准备检查清单

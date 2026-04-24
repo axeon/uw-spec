@@ -30,7 +30,17 @@ version: "1.0.0"
 | 协作 | 功能描述准确性 | `product-manager` |
 | 协作 | 界面描述准确性 | `ui-designer` |
 
+## 源技能引用
+
+评审**必须先读取源技能文件**获取原始约定，再基于约定进行评审，禁止仅凭模型自身知识评审。
+
+| 源技能文件 | 评审时读取的内容 |
+|-----------|----------------|
+| [520-user-manual/SKILL.md](../520-user-manual/SKILL.md) | **必读全文**：文档规范、交付物清单、完成标准 |
+| [520-user-manual/references/templates.md](../520-user-manual/references/templates.md) | 文档模板 |
+
 ## 输入
+
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
 | 用户文档 | `manual/user-manual/` | 6项用户文档 |
@@ -89,6 +99,7 @@ version: "1.0.0"
 ## 评审流程
 
 ### 1. 准备阶段
+- **读取源技能**：读取 [520-user-manual/SKILL.md](../520-user-manual/SKILL.md) 全文，提取所有文档规范和交付物要求，作为评审的权威依据
 - 获取用户文档
 - 获取系统访问权限
 - 准备检查清单

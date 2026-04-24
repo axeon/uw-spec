@@ -29,7 +29,18 @@ version: "1.0.0"
 | 协作 | 后端确认 | `java-developer` |
 | 协作 | 前端确认 | `js-developer` |
 
+## 源技能引用
+
+评审**必须先读取源技能文件**获取原始约定，再基于约定进行评审，禁止仅凭模型自身知识评审。
+
+| 源技能文件 | 评审时读取的内容 |
+|-----------|----------------|
+| [330-test-case-dev/SKILL.md](../330-test-case-dev/SKILL.md) | **必读全文**：四类测试脚本开发规范、完成标准 |
+| [330-test-case-dev/references/examples.md](../330-test-case-dev/references/examples.md) | 测试脚本示例 |
+| [330-test-case-dev/references/jmeter-template.md](../330-test-case-dev/references/jmeter-template.md) | JMeter 模板 |
+
 ## 输入
+
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
 | API测试脚本 | `PROJECT_ROOT/test/scripts/api/` | Playwright request API 脚本 |
@@ -118,6 +129,7 @@ version: "1.0.0"
 ## 评审流程
 
 ### 1. 准备阶段
+- **读取源技能**：读取 [330-test-case-dev/SKILL.md](../330-test-case-dev/SKILL.md) 全文，提取所有脚本开发规范和完成标准，作为评审的权威依据
 - 读取四类测试脚本
 - 读取设计文档作为基准
 

@@ -31,7 +31,17 @@ version: "1.0.0"
 
 > **职责边界**: 单元测试质量由 Java 开发工程师负责, 评审由 java-lead / system-architect 执行。测试工程师专职于测试脚本、API/E2E/压力/安全测试（阶段 640）。
 
+## 源技能引用
+
+评审**必须先读取源技能文件**获取原始约定，再基于约定进行评审，禁止仅凭模型自身知识评审。
+
+| 源技能文件 | 评审时读取的内容 |
+|-----------|----------------|
+| [620-feature-java-uniweb-dev/SKILL.md](../620-feature-java-uniweb-dev/SKILL.md) | **必读全文**：开发规范、TDD规则 |
+| [210-java-uniweb-design/SKILL.md](../210-java-uniweb-design/SKILL.md) | 架构约定（开发阶段必须遵循） |
+
 ## 输入
+
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
 | 功能代码 | `PROJECT_ROOT/backend/{项目名}-app/src/` | 功能开发产出的代码 |
@@ -85,6 +95,7 @@ version: "1.0.0"
 ## 评审流程
 
 ### 1. 准备阶段
+- **读取源技能**：读取 [620-feature-java-uniweb-dev/SKILL.md](../620-feature-java-uniweb-dev/SKILL.md) 全文，提取开发规范和 TDD 规则，作为评审的权威依据
 - 读取技术方案文档
 - 读取功能需求文档
 - 获取开发代码和测试代码

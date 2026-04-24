@@ -30,7 +30,18 @@ version: "1.0.0"
 | 协作 | 后端可测试性 | `java-developer` |
 | 协作 | 前端可测试性 | `js-developer` |
 
+## 源技能引用
+
+评审**必须先读取源技能文件**获取原始约定，再基于约定进行评审，禁止仅凭模型自身知识评审。
+
+| 源技能文件 | 评审时读取的内容 |
+|-----------|----------------|
+| [230-test-case-design/SKILL.md](../230-test-case-design/SKILL.md) | **必读全文**：四类测试设计规范、模板、完成标准 |
+| [230-test-case-design/references/methods.md](../230-test-case-design/references/methods.md) | 测试方法论 |
+| [230-test-case-design/references/templates.md](../230-test-case-design/references/templates.md) | 测试设计模板 |
+
 ## 输入
+
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
 | API测试设计 | `PROJECT_ROOT/test/design/api/README.md` | API接口测试用例 |
@@ -114,6 +125,7 @@ version: "1.0.0"
 ## 评审流程
 
 ### 1. 准备阶段
+- **读取源技能**：读取 [230-test-case-design/SKILL.md](../230-test-case-design/SKILL.md) 全文，提取所有测试设计规范和模板要求，作为评审的权威依据
 - 读取四类测试设计文档
 - 确定评审范围
 - 准备检查清单

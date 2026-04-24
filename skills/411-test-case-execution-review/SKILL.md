@@ -30,7 +30,17 @@ version: "1.0.0"
 | 协作 | 技术风险评估 | `system-architect` |
 | 协作 | 缺陷修复确认 | `java-developer` / `js-developer` |
 
+## 源技能引用
+
+评审**必须先读取源技能文件**获取原始约定，再基于约定进行评审，禁止仅凭模型自身知识评审。
+
+| 源技能文件 | 评审时读取的内容 |
+|-----------|----------------|
+| [410-test-case-execution/SKILL.md](../410-test-case-execution/SKILL.md) | **必读全文**：执行流程、SLA标准、报告规范 |
+| [230-test-case-design/references/load-metrics.md](../230-test-case-design/references/load-metrics.md) | SLA 指标定义 |
+
 ## 输入
+
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
 | API测试报告 | `PROJECT_ROOT/test/reports/api/report-YYMMDDHHMM.html` | API测试结果 |
@@ -118,6 +128,7 @@ version: "1.0.0"
 ## 评审流程
 
 ### 1. 准备阶段
+- **读取源技能**：读取 [410-test-case-execution/SKILL.md](../410-test-case-execution/SKILL.md) 全文，提取所有执行标准和 SLA 指标，作为评审的权威依据
 - 获取四类测试报告
 - 获取缺陷记录
 

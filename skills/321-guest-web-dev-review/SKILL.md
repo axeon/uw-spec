@@ -32,7 +32,18 @@ version: "1.0.0"
 
 > **职责边界**：前端单元测试质量由前端工程师负责，评审由 js-lead / system-architect 执行。测试工程师不参与单元测试评审，专职于测试脚本、API/E2E/压力/安全测试（阶段 330+）。
 
+## 源技能引用
+
+评审**必须先读取源技能文件**获取原始约定，再基于约定进行评审，禁止仅凭模型自身知识评审。
+
+| 源技能文件 | 评审时读取的内容 |
+|-----------|----------------|
+| [320-guest-web-dev/SKILL.md](../320-guest-web-dev/SKILL.md) | **必读全文**：开发规范、开发步骤、220→320 衔接 |
+| [220-guest-web-design/SKILL.md](../220-guest-web-design/SKILL.md) | 设计阶段架构约定（开发阶段必须遵循） |
+| [220-guest-web-design/references/web-dev-standards.md](../220-guest-web-design/references/web-dev-standards.md) | Vue3+TS+Vite 编码规范 |
+
 ## 输入
+
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
 | Web前端代码 | `PROJECT_ROOT/frontend/{项目名}-guest-web/src/` | 开发完成的代码 |
@@ -52,14 +63,17 @@ version: "1.0.0"
 ```
 
 ## 评审维度
-| 维度 | 检查要点 |
-|------|---------|
-| TDD实践 | composables/Store/工具函数有测试、覆盖率≥70%、Vitest + Vue Test Utils |
-| Vue3规范 | `<script setup>`、Composition API、TypeScript类型定义、禁用any |
-| 状态管理 | Store按模块划分、Actions职责单一、Pinia setup风格 |
-| 代码质量 | 目录结构、命名规范、类型完整、字段一致性 |
-| 性能优化 | 路由懒加载、v-for key、computed缓存 |
-| 安全性 | 禁止v-html未转义、路由守卫权限控制、Token安全存储 |
+
+> 每个维度的检查标准以 [320-guest-web-dev/SKILL.md](../320-guest-web-dev/SKILL.md) 和 [220-guest-web-design/SKILL.md](../220-guest-web-design/SKILL.md) 中的原始约定为准。详细检查清单见 [checklist.md](references/checklist.md)。
+
+| 维度 | 检查要点 | 源技能章节 |
+|------|---------|-----------|
+| TDD实践 | composables/Store/工具函数有测试、覆盖率≥70%、Vitest + Vue Test Utils | 320 → 开发步骤 |
+| Vue3规范 | `<script setup>`、Composition API、TypeScript类型定义、禁用any | 220 → references/web-dev-standards.md |
+| 状态管理 | Store按模块划分、Actions职责单一、Pinia setup风格 | 320 → 开发步骤 |
+| 代码质量 | 目录结构、命名规范、类型完整、字段一致性 | 220 → references/web-dev-standards.md |
+| 性能优化 | 路由懒加载、v-for key、computed缓存 | 320 → 开发步骤 |
+| 安全性 | 禁止v-html未转义、路由守卫权限控制、Token安全存储 | 320 → 开发步骤 |
 
 ## 量化通过标准
 
@@ -95,6 +109,7 @@ version: "1.0.0"
 ## 评审流程
 
 ### 1. 准备阶段
+- **读取源技能**：读取 [320-guest-web-dev/SKILL.md](../320-guest-web-dev/SKILL.md) 全文，提取所有开发规范和约定，作为评审的权威依据
 - 获取前端代码和测试代码
 - 获取测试覆盖率报告
 - 准备检查清单

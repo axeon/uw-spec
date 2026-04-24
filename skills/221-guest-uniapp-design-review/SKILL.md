@@ -30,7 +30,19 @@ version: "1.0.0"
 | 协作 | 技术可行性 | `system-architect` |
 | 协作 | 移动端实现 | `js-developer` |
 
+## 源技能引用
+
+评审**必须先读取源技能文件**获取原始约定，再基于约定进行评审，禁止仅凭模型自身知识评审。
+
+| 源技能文件 | 评审时读取的内容 |
+|-----------|----------------|
+| [220-guest-uniapp-design/SKILL.md](../220-guest-uniapp-design/SKILL.md) | **必读全文**：架构约定、设计流程、设计完成标准 |
+| [220-guest-uniapp-design/references/md-dev-standards.md](../220-guest-uniapp-design/references/md-dev-standards.md) | UniApp 移动端开发规范 |
+| [220-guest-uniapp-design/references/md-design-spec.md](../220-guest-uniapp-design/references/md-design-spec.md) | 移动端设计规范 |
+| [220-guest-uniapp-design/references/templates.md](../220-guest-uniapp-design/references/templates.md) | README 模板、页面模板 |
+
 ## 输入
+
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
 | 移动端原型 | `PROJECT_ROOT/frontend/{项目名}-guest-uniapp/` | 原型设计文件 |
@@ -49,13 +61,17 @@ version: "1.0.0"
 ```
 
 ## 评审维度
-| 维度 | 检查要点 |
-|------|---------|
-| 需求符合度 | 功能覆盖、业务流程完整 |
-| 移动端体验 | 触摸操作、手势支持、适配 |
-| 视觉设计 | 风格统一、字体合适、间距合理 |
-| 技术可行性 | 跨平台兼容、性能优化 |
-| 一致性 | 组件复用、交互统一 |
+
+> 每个维度的检查标准以 [220-guest-uniapp-design/SKILL.md](../220-guest-uniapp-design/SKILL.md) 中的原始约定为准。详细检查清单见 [checklist.md](references/checklist.md)。
+
+| 维度 | 检查要点 | 源技能章节 |
+|------|---------|-----------|
+| 需求符合度 | 功能覆盖、业务流程完整 | 220 → Phase 0 需求确认 |
+| 移动端体验 | 触摸操作、手势支持、适配 | 220 → references/md-design-spec.md |
+| 视觉设计 | 风格统一、字体合适、间距合理 | 220 → references/md-design-spec.md |
+| 技术可行性 | 跨平台兼容、性能优化 | 220 → Phase 2 Step 5 |
+| 一致性 | 组件复用、交互统一、字段一致 | 220 → Phase 2 Step 4 |
+| **源技能约定** | 页面路径角色化、pages.json配置、导入路径修正 | 220 → 架构约定 + Phase 2 |
 
 ## 移动端专项评审
 
@@ -113,6 +129,7 @@ version: "1.0.0"
 ## 评审流程
 
 ### 1. 准备阶段
+- **读取源技能**：读取 [220-guest-uniapp-design/SKILL.md](../220-guest-uniapp-design/SKILL.md) 全文，提取所有架构约定和设计完成标准，作为评审的权威依据
 - 读取原型设计文件
 - 确定评审范围（用户端/商户端）
 - 准备检查清单
