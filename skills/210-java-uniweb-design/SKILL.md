@@ -65,7 +65,7 @@ version: "1.0.0"
 | `$PackageInfo$.java` | 仅标准角色（saas/mch/admin/root/ops/rpc）的 controller 包下 `{module}/` 目录必须包含。**guest 角色不适用** |
 | Helper 命名 | service 包内组件统一命名为 `{Module}Helper` |
 | Helper 存在前提 | **三条件满足其一才创建**：(1)逻辑非常复杂（状态机/多步流程/计算），(2)功能性（缓存/分布式锁/事务），(3)多处调用（2个以上调用方）。简单CRUD直接在Controller调DaoManager，不建Helper |
-| Helper 方法风格 | **全部 static 方法**。DaoManager 通过 `DaoManager.getInstance()` 获取，FusionCache/GlobalCache/GlobalLocker 本身就是静态API |
+| Helper 方法风格 | **全部 static 方法**。DaoManager 通过 `private static final DaoManager dao = DaoManager.getInstance()` 获取，FusionCache/GlobalCache/GlobalLocker 本身就是静态API |
 | Entity | 代码生成器产出，保留不修改 |
 | DTO | 代码生成器产出，仅裁剪不新建 |
 | 禁用 Lombok | 全局禁用，getter/setter/构造器均手写 |
@@ -84,7 +84,7 @@ version: "1.0.0"
 
 | 确认项 | 目的 | 启发式问题 |
 |--------|------|-----------|
-| 模块清单 + 复杂度分类 | 决定哪些用生成器代码、哪些需要 Helper | "根据PRD和数据库，识别到N个模块[列出]，是否有遗漏？" |
+
 | **横切关注点识别** | **识别跨模块的公共业务规则** | "PRD中哪些业务规则影响多个模块？（如敏感词检测、通知发送、权限校验、数据脱敏等）" |
 | 定制 API | 确定设计工作量 | "除标准CRUD+enable+disable外，各模块还有哪些接口？" |
 | 外部依赖 | 识别技术风险 | "需要对接哪些外部系统？saas-finance？第三方API？异步任务？" |
