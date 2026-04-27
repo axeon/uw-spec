@@ -163,7 +163,12 @@ mysql -h {host} -P {port} -u {user} -p{pass} {db_name} < "{selected_file}"
 
 ## REVIEW评审
 
-DDL执行完成后，**自动调用 `301-database-ddl-execution-review`**，无需等待用户确认。
+DDL执行完成后，调用 `301-database-ddl-execution-review`。
+
+- [ ] 已调用 `301-database-ddl-execution-review`
+- [ ] 已收到评审通过确认（评分 ≥ 95）
+
+> 未收到通过确认前，禁止结束DDL执行任务。
 
 ## 输出要求
 

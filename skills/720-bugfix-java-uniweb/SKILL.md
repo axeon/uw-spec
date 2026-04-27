@@ -93,7 +93,12 @@ version: "1.0.0"
 
 ## REVIEW评审
 
-Java后端修复完成后，**自动调用 `721-bugfix-java-uniweb-dev-review`**，无需等待用户确认。
+Java后端修复完成后，调用 `721-bugfix-java-uniweb-dev-review`。
+
+- [ ] 已调用 `721-bugfix-java-uniweb-dev-review`
+- [ ] 已收到评审通过确认（评分 ≥ 95）
+
+> 未收到通过确认前，禁止结束修复任务。
 
 ### 5. 生成修复文档
 

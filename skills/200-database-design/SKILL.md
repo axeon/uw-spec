@@ -92,7 +92,12 @@ version: "1.0.0"
 
 ## REVIEW评审
 
-数据库设计完成后，**自动调用 `201-database-design-review`**，无需等待用户确认。
+数据库设计完成后，调用 `201-database-design-review`。
+
+- [ ] 已调用 `201-database-design-review`
+- [ ] 已收到评审通过确认（评分 ≥ 95）
+
+> 未收到通过确认前，禁止结束数据库设计任务。
 
 ## 输出要求
 

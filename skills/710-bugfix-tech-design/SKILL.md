@@ -130,7 +130,12 @@ version: "1.0.0"
 
 ## REVIEW评审
 
-修复方案设计完成后，**自动调用 `711-bugfix-tech-design-review`**，无需等待用户确认。
+修复方案设计完成后，调用 `711-bugfix-tech-design-review`。
+
+- [ ] 已调用 `711-bugfix-tech-design-review`
+- [ ] 已收到评审通过确认（评分 ≥ 95）
+
+> 未收到通过确认前，禁止结束修复设计任务。
 
 ## 人工检查点 ★
 

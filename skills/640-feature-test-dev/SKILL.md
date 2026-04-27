@@ -98,7 +98,12 @@ version: "1.0.0"
 
 ## REVIEW评审
 
-测试脚本开发完成后，**自动调用 `641-feature-test-dev-review`**，无需等待用户确认。
+测试脚本开发完成后，调用 `641-feature-test-dev-review`。
+
+- [ ] 已调用 `641-feature-test-dev-review`
+- [ ] 已收到评审通过确认（评分 ≥ 95）
+
+> 未收到通过确认前，禁止结束测试脚本开发任务。
 
 ### 4. 测试执行
 

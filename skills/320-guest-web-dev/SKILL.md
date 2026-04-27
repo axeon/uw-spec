@@ -103,7 +103,7 @@ version: "1.0.0"
 | 页面天然独立 | 各模块页面在不同文件，无文件级冲突 |
 | 共享组件串行 | 公共组件（components/）修改需串行 |
 | API层只读 | src/api/ 由代码生成器产出，并行时只读不改 |
-| review按模块 | 每个模块开发完成后**自动调用**对应review技能 |
+| review按模块 | 每个模块开发完成后调用 `321-guest-web-dev-review`，通过后才继续下一模块 |
 
 ## 开发流程
 
@@ -218,7 +218,12 @@ npm run dev
 
 ## REVIEW评审
 
-Web前端开发完成后，**自动调用 `321-guest-web-dev-review`**，无需等待用户确认。
+Web前端开发完成后，调用 `321-guest-web-dev-review`。
+
+- [ ] 已调用 `321-guest-web-dev-review`
+- [ ] 已收到评审通过确认（评分 ≥ 95）
+
+> 未收到通过确认前，禁止结束开发任务。
 
 ## 参考
 

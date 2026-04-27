@@ -99,7 +99,12 @@ version: "1.0.0"
 
 ## REVIEW评审
 
-Java后端开发完成后，**自动调用 `621-feature-java-uniweb-dev-review`**，无需等待用户确认。
+Java后端开发完成后，调用 `621-feature-java-uniweb-dev-review`。
+
+- [ ] 已调用 `621-feature-java-uniweb-dev-review`
+- [ ] 已收到评审通过确认（评分 ≥ 95）
+
+> 未收到通过确认前，禁止结束开发任务。
 
 ### 4. 测试执行
 

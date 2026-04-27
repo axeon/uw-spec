@@ -51,22 +51,23 @@ version: "1.0.0"
 
 | 维度 | 检查要点 | 源技能章节 | 分值 |
 |------|---------|-----------|------|
-| README.md 完整性 | 模块总览、依赖关系、PRD映射、权限映射、缓存策略、性能预算、测试策略 | 210 → Phase 1 必须章节 | 20分 |
-| TASKS.md 完整性 | 并行分组、任务卡片（含 Tn ID 和文件路径）、联调验证清单 | 210 → Phase 1.5 | 10分 |
-| 代码可编译性 | mvn compile 通过、mvn test-compile 通过、mvn test 可运行（全红为预期）、Swagger 可用 | 210 → Phase 2 Step 5 | 必须 |
-| Controller 质量 | 权限注解完整（含 guest 特殊规则）、Javadoc 完整、方法体有完整调用链路、URL 规范 | 210 → Phase 2 Step 2 | 15分 |
-| Helper 质量 | Helper 三条件合理性、方法签名合理、Javadoc 含实现步骤、FusionCache 初始化完成、static 方法风格 | 210 → Phase 2 Step 3 | 15分 |
-| 测试骨架质量 | 每个 Helper 有测试类、每个方法 ≥2 测试、@ExtendWith+MockedStatic、@DisplayName、fail("TDD Red: [Tn]") 与 TASKS.md ID 对应 | 210 → Phase 2 Step 3.5 | 15分 |
-| DTO/VO 质量 | 搜索字段裁剪合理、校验注解完整 | 210 → Phase 2 Step 1 | 10分 |
-| PRD 覆盖度 | 所有 PRD 功能点都有对应接口 | 210 → Phase 1 PRD功能点映射 | 15分 |
+| README.md 完整性 | 模块总览、依赖关系、PRD映射、权限映射、缓存策略、性能预算、测试策略 | `210-java-uniweb-design` → Phase 1 必须章节 | 20分 |
+| TASKS.md 完整性 | 并行分组、任务卡片（含 Tn ID 和文件路径）、联调验证清单 | `210-java-uniweb-design` → Phase 1.5 | 10分 |
+| 代码可编译性 | mvn compile 通过、mvn test-compile 通过、mvn test 可运行（全红为预期）、Swagger 可用 | `210-java-uniweb-design` → Phase 2 Step 5 | 必须 |
+| Controller 质量 | 权限注解完整（含 guest 特殊规则）、Javadoc 完整、方法体有完整调用链路、URL 规范 | `210-java-uniweb-design` → Phase 2 Step 2 | 15分 |
+| Helper 质量 | Helper 三条件合理性、方法签名合理、Javadoc 含实现步骤、FusionCache 初始化完成、static 方法风格 | `210-java-uniweb-design` → Phase 2 Step 3 | 15分 |
+| 测试骨架质量 | 每个 Helper 有测试类、每个方法 ≥2 测试、@ExtendWith+MockedStatic、@DisplayName、fail("TDD Red: [Tn]") 与 TASKS.md ID 对应 | `210-java-uniweb-design` → Phase 2 Step 3.5 | 15分 |
+| DTO/VO 质量 | 搜索字段裁剪合理、校验注解完整 | `210-java-uniweb-design` → Phase 2 Step 1 | 10分 |
+| PRD 覆盖度 | 所有 PRD 功能点都有对应接口 | `210-java-uniweb-design` → Phase 1 PRD功能点映射 | 15分 |
 
 ## 通过标准
 
 | 等级 | 分值 | Critical | Major | 编译 |
 |------|------|----------|-------|------|
 | 通过 | ≥ 95 | 0 | ≤1 | 必须通过 |
-| 有条件通过 | 85-94 | 0 | ≤3 且有修复计划 | 必须通过 |
-| 不通过 | < 85 | 存在 或 编译不通过 或 Major >3 | — | — |
+| 不通过 | < 95 | 存在 或 编译不通过 或 Major >1 | — | — |
+
+> 评分 < 95 进入修复循环，无"有条件通过"中间态。
 
 ## 评审流程
 
@@ -81,9 +82,18 @@ version: "1.0.0"
 ### 2. 按维度评审
 按上方评审维度逐项检查，记录问题。详细检查清单见 [checklist.md](references/checklist.md)。
 
-### 3. 结论与流转
-- 评分 ≥ 95 → **通过**，输出报告，进入 310-java-uniweb-dev
-- 评分 < 95 → **不通过**，自动调用 `210-java-uniweb-design` 修复，传入评审报告中的问题清单，按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行
+### 3. 评审结论
+
+计算最终评分后，**必须逐项确认以下检查清单**：
+
+**评分 ≥ 95（通过）：**
+- [ ] 已标记评审状态为「通过」
+
+**评分 < 95（不通过）：**
+- [ ] 已调用 `210-java-uniweb-design` 技能，传入问题清单
+- [ ] 修复完成后已重新执行本技能评审
+
+> 以上检查项未全部勾选，禁止结束本技能任务。
 
 ## 输出
 

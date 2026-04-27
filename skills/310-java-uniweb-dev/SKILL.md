@@ -19,7 +19,7 @@ version: "1.1.0"
 | 主导 | 后端开发 + 全链路测试实现 | `java-developer` |
 | 协作 | 技术方案确认 | `system-architect` |
 
-> **职责边界**：全链路测试由 Java 开发工程师负责（TDD Green 阶段，从 210 设计阶段产出的 Red 骨架实现为 Green）。测试工程师不参与单元测试，专职于测试脚本、API/E2E/压力/安全测试（阶段 330+）。
+> **职责边界**：全链路测试由 Java 开发工程师负责（TDD Green 阶段，从 `210-java-uniweb-design` 阶段产出的 Red 骨架实现为 Green）。测试工程师不参与单元测试，专职于测试脚本、API/E2E/压力/安全测试（阶段 330+）。
 
 ## 输入
 
@@ -28,10 +28,10 @@ version: "1.1.0"
 | PRD | `PROJECT_ROOT/requirement/prds/*` | 产品需求文档，功能模块及验收标准 |
 | 数据库设计文档 | `PROJECT_ROOT/database/database-design.md` | 表结构、实体关系 |
 | 后端设计文档 | `PROJECT_ROOT/backend/{项目名}-app/README.md` | 模块划分、接口设计、角色权限映射、缓存策略 |
-| Controller代码 | `PROJECT_ROOT/backend/{项目名}-app/src/main/java/{包路径}/controller/` | 210阶段裁剪后的Controller |
-| Helper代码 | `PROJECT_ROOT/backend/{项目名}-app/src/main/java/{包路径}/service/` | 210阶段新建的Helper方法签名 |
-| DTO代码 | `PROJECT_ROOT/backend/{项目名}-app/src/main/java/{包路径}/dto/` | 210阶段裁剪后的DTO |
-| 测试骨架代码 | `PROJECT_ROOT/backend/{项目名}-app/src/test/java/{包路径}/service/` | 210阶段产出的 Helper 测试骨架（TDD Red） |
+| Controller代码 | `PROJECT_ROOT/backend/{项目名}-app/src/main/java/{包路径}/controller/` | `210-java-uniweb-design` 裁剪后的Controller |
+| Helper代码 | `PROJECT_ROOT/backend/{项目名}-app/src/main/java/{包路径}/service/` | `210-java-uniweb-design` 新建的Helper方法签名 |
+| DTO代码 | `PROJECT_ROOT/backend/{项目名}-app/src/main/java/{包路径}/dto/` | `210-java-uniweb-design` 裁剪后的DTO |
+| 测试骨架代码 | `PROJECT_ROOT/backend/{项目名}-app/src/test/java/{包路径}/service/` | `210-java-uniweb-design` 产出的 Helper 测试骨架（TDD Red） |
 | 测试用例设计 | `PROJECT_ROOT/test/design/` | 测试场景和用例覆盖（API/E2E/压测/安全） |
 
 ## 技术栈
@@ -67,17 +67,17 @@ version: "1.1.0"
 
 > **默认模式**：未明确指定时，按"顺序全量"执行（安全）。
 
-## 210→310 衔接协议
+## `210-java-uniweb-design` → `310-java-uniweb-dev` 衔接协议
 
-210 设计完成后产出三样东西，310 消费关系如下：
+`210-java-uniweb-design` 设计完成后产出三样东西，`310-java-uniweb-dev` 消费关系如下：
 
-| 210 产出物 | 310 消费方式 | 用途 |
+| `210-java-uniweb-design` 产出物 | `310-java-uniweb-dev` 消费方式 | 用途 |
 |-----------|------------|------|
 | TASKS.md | **直接读取** | 获取任务卡片（PRD/文件/方法/依赖路径） |
 | Helper 代码中的 `// TODO: [Tn]` | `grep "// TODO:" src/main/java/` | 定位待实现方法，确认边界 |
 | Test 代码中的 `fail("TDD Red: [Tn]")` | `grep "TDD Red" src/test/java/` | 定位待变绿测试 |
 
-### 任务卡片结构（210 产出，310 直接使用）
+### 任务卡片结构（`210-java-uniweb-design` 产出，`310-java-uniweb-dev` 直接使用）
 
 每张卡片是一个 Sub Agent 的完整工作订单，包含所有需要的上下文路径：
 
@@ -99,14 +99,14 @@ version: "1.1.0"
 3. 实现 Helper 方法体 → 删除对应 // TODO 行
 4. 替换 fail("TDD Red: [Tn]") 为真实断言 → 测试变绿
 5. mvn test -pl {模块} → 全绿
-6. REVIEW评审 → 通过
+6. 调用 `311-java-uniweb-dev-review` → 通过 → 进入下一模块
 ```
 
 ## 开发步骤
 
 ### 1. 环境准备 + 任务解析
 
-**前置条件**：300-database-ddl-execution 已完成且 301-database-ddl-execution-review 评审通过（数据库表已就绪）。
+**前置条件**：`300-database-ddl-execution` 已完成且 `301-database-ddl-execution-review` 评审通过（数据库表已就绪）。
 
 1. 读取 `PROJECT_ROOT/backend/{项目名}-app/TASKS.md` 提取并行分组表和任务卡片列表
 3. 读取 [dev-standards.md](../210-java-uniweb-design/references/backend/uniweb/dev-standards.md) 了解编码规范
@@ -142,13 +142,13 @@ grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 
 #### 2.3 Helper 实现
 
-> Helper 是业务逻辑的核心载体，位于 service 包下，210 已创建签名和 Javadoc。
+> Helper 是业务逻辑的核心载体，位于 service 包下，`210-java-uniweb-design` 已创建签名和 Javadoc。
 
 | 开发规范 | 说明 |
 |---------|------|
 | 类注解 | 无（纯静态工具类，不加 `@Component`） |
 | 依赖获取 | `DaoManager.getInstance()` 静态获取，FusionCache/GlobalCache/GlobalLocker 本身是静态API |
-| 方法风格 | **全部 static 方法**，210 阶段已定义签名 |
+| 方法风格 | **全部 static 方法**，`210-java-uniweb-design` 阶段已定义签名 |
 | 数据访问 | 使用 `DaoManager.getInstance()`（ResponseData 链式 lambda 风格），不使用 DaoFactory |
 | 查询参数 | 使用 QueryParam 系列（IdQueryParam、AuthQueryParam 等） |
 | 批量操作 | 使用 `BatchUpdateManager` |
@@ -159,7 +159,7 @@ grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 
 #### 2.4 TDD Green — 实现全链路测试
 
-> 210 阶段已产出测试骨架（Red），本阶段实现 Helper 逻辑并让测试逐个变绿。
+> `210-java-uniweb-design` 阶段已产出测试骨架（Red），本阶段实现 Helper 逻辑并让测试逐个变绿。
 
 **TDD 详细指南**：参见 [TDD设计指南](../210-java-uniweb-design/references/tdd-design-guide.md)
 
@@ -189,11 +189,16 @@ grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 
 #### 2.6 REVIEW评审
 
-每个模块开发完成后，**自动调用 `311-java-uniweb-dev-review`**，传入当前模块名作为目标模块参数，无需等待用户确认。不等全部模块完成，按模块独立进入评审。
+模块开发完成后，调用 `311-java-uniweb-dev-review`，传入当前模块名。
+
+- [ ] 已调用 `311-java-uniweb-dev-review`
+- [ ] 已收到评审通过确认（评分 ≥ 95）
+
+> 未收到通过确认前，禁止进入下一模块。
 
 ### 3. 联调验证（所有模块完成后）
 
-> 所有模块开发完成 + review 通过后，执行全量联调验证。
+> 所有模块开发完成后，执行全量联调验证。
 
 执行 TASKS.md "联调验证"章节中列出的检查项：
 
@@ -209,7 +214,12 @@ grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 
 ### 4. 全量 REVIEW评审
 
-联调验证通过后，**自动调用 `311-java-uniweb-dev-review`**（不传模块名，全量评审），无需等待用户确认。
+联调验证通过后，调用 `311-java-uniweb-dev-review`（不传模块名，触发全量评审）。
+
+- [ ] 已调用 `311-java-uniweb-dev-review`（全量模式）
+- [ ] 已收到评审通过确认（评分 ≥ 95）
+
+> 未收到通过确认前，禁止结束开发任务。
 
 ## 并行开发约束
 
@@ -219,7 +229,7 @@ grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 | 有依赖模块需串行 | 模块C依赖A，需A完成review通过后才开发C |
 | 共享文件只读 | entity/dto 由代码生成器产出，并行时只读不改 |
 | Helper天然独立 | 各模块Helper在不同文件，无文件级冲突 |
-| review按模块 | 每个模块开发完成后**自动调用**对应review技能，不等全部完成 |
+| review按模块 | 每个模块开发完成后调用 `311-java-uniweb-dev-review`，通过后才继续下一模块 |
 
 ## 输出要求
 

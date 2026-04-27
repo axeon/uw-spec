@@ -111,7 +111,7 @@ $PROJECT_ROOT/test/scripts/
 | 共享工具串行 | utils/ 和 fixtures/ 修改需串行 |
 | E2E依赖前端 | E2E测试需前端页面可访问 |
 | API依赖后端 | API测试需后端接口可访问 |
-| review按类型 | 每种测试类型完成后**自动调用**对应review技能 |
+| review按类型 | 每种测试类型完成后调用 `331-test-case-dev-review`，通过后才继续下一类型 |
 
 ## 开发流程
 
@@ -177,10 +177,10 @@ await page.locator('[name="userName"]').fill('testuser')
 await page.locator('[name="email"]').fill('test@example.com')
 await page.locator('[name="phone"]').fill('13800138000')
 ```
- 
- | 测试类型 | 脚本规范 | 关键模式 |
- |---------|---------|---------|
- | API | `api/{module}.spec.ts` | `request.post/get()` + 响应断言 |
+
+| 测试类型 | 脚本规范 | 关键模式 |
+|---------|---------|---------|
+| API | `api/{module}.spec.ts` | `request.post/get()` + 响应断言 |
 | E2E单终端 | `e2e/{项目名}/{module}.spec.ts` | Page Object + 字段一致性选择器 |
 | E2E跨终端 | `e2e/cross-case/{flow}.spec.ts` | MultiTerminalTest 多BrowserContext |
 | JMeter | `load/{scenario}.jmx` | 线程组 + HTTP采样器 + CSV数据 |
@@ -225,7 +225,12 @@ await page.locator('[name="phone"]').fill('13800138000')
 
 ## REVIEW评审
 
-测试脚本开发完成后，**自动调用 `331-test-case-dev-review`**，无需等待用户确认。
+测试脚本开发完成后，调用 `331-test-case-dev-review`。
+
+- [ ] 已调用 `331-test-case-dev-review`
+- [ ] 已收到评审通过确认（评分 ≥ 95）
+
+> 未收到通过确认前，禁止结束测试脚本开发任务。
 
 ## 参考
 

@@ -53,35 +53,22 @@ version: "1.0.0"
 
 | 维度 | 检查要点 | 源技能章节 |
 |------|---------|-----------|
-| TDD实践 | 测试先行、覆盖率≥70%、composables/Store/工具函数有测试 | 320 → 开发步骤 |
-| UniApp规范 | 正确使用uni API、条件编译（#ifdef）、生命周期 | 220 → references/md-dev-standards.md |
-| 跨平台兼容 | 样式适配（rpx）、API兼容、功能降级 | 320 → 开发步骤 |
-| 代码质量 | 目录结构、命名规范、TypeScript类型完整、defineProps泛型风格 | 220 → references/md-dev-standards.md |
-| 字段一致性 | 前端字段与后端DTO字段命名一致（camelCase）、表单绑定与API参数一致 | 220 → Phase 2 Step 4 |
-| 性能优化 | 分包加载、图片优化、数据缓存、下拉刷新/上拉加载 | 320 → 开发步骤 |
-| 安全性 | 存储安全、传输安全（HTTPS）、代码安全 | 320 → 开发步骤 |
+| TDD实践 | 测试先行、覆盖率≥70%、composables/Store/工具函数有测试 | `320-admin-uniapp-dev` → 开发步骤 |
+| UniApp规范 | 正确使用uni API、条件编译（#ifdef）、生命周期 | `220-admin-uniapp-design` → references/md-dev-standards.md |
+| 跨平台兼容 | 样式适配（rpx）、API兼容、功能降级 | `320-admin-uniapp-dev` → 开发步骤 |
+| 代码质量 | 目录结构、命名规范、TypeScript类型完整、defineProps泛型风格 | `220-admin-uniapp-design` → references/md-dev-standards.md |
+| 字段一致性 | 前端字段与后端DTO字段命名一致（camelCase）、表单绑定与API参数一致 | `220-admin-uniapp-design` → Phase 2 Step 4 |
+| 性能优化 | 分包加载、图片优化、数据缓存、下拉刷新/上拉加载 | `320-admin-uniapp-dev` → 开发步骤 |
+| 安全性 | 存储安全、传输安全（HTTPS）、代码安全 | `320-admin-uniapp-dev` → 开发步骤 |
 
 ## 通过标准
 
-### 通过（≥95分）
-| 检查项 | 标准 | 分值 |
-|--------|------|------|
-| 无Critical问题 | 0个 | 必须 |
-| Major问题 | ≤2个 | 20分 |
-| 测试覆盖率 | 核心业务≥70% | 20分 |
-| UniApp规范 | 100%符合 | 20分 |
-| 跨平台兼容 | 覆盖H5/小程序/App | 20分 |
-| 性能优化 | 无性能问题 | 10分 |
-| 字段一致性 | 前端字段与后端DTO一致 | 10分 |
+| 等级 | 评分 | 条件 |
+|------|------|------|
+| 通过 | ≥ 95 分 | 无 Critical 问题，Major ≤ 2，测试覆盖率 ≥ 70%，UniApp 规范 100%，跨平台兼容，无性能问题 |
+| 不通过 | < 95 分 | 存在 Critical 或 Major > 2 或覆盖率不达标 |
 
-### 有条件通过（85-94分）
-- Major问题 ≤3个且有修复计划
-- 无Critical问题
-
-### 不通过（<85分）
-- 存在Critical问题（如：安全漏洞、严重bug）
-- Major问题 >3个
-- 测试覆盖率 <50%
+> 评分 < 95 进入修复循环，无"有条件通过"中间态。
 
 ## 评审流程
 
@@ -97,9 +84,16 @@ version: "1.0.0"
 **参与人员**: @js-lead @system-architect @js-developer
 
 
-### 2. 评审结论与修复循环
+### 2. 评审结论
 
-评分 ≥ 95 → **通过**，输出报告，按流转关系进入下一阶段。
+计算最终评分后，**必须逐项确认以下检查清单**：
 
-评分 < 95 → **不通过**，自动调用 `320-admin-uniapp-dev` 修复，传入评审报告中的问题清单，按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行。
+**评分 ≥ 95（通过）：**
+- [ ] 已标记评审状态为「通过」
+
+**评分 < 95（不通过）：**
+- [ ] 已调用 `320-admin-uniapp-dev` 技能，传入问题清单
+- [ ] 修复完成后已重新执行本技能评审
+
+> 以上检查项未全部勾选，禁止结束本技能任务。
 

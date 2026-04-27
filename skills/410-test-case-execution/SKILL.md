@@ -119,7 +119,12 @@ $PROJECT_ROOT/test/reports/
 
 ## REVIEW评审
 
-测试执行完成后，**自动调用 `411-test-case-execution-review`**，无需等待用户确认。
+测试执行完成后，调用 `411-test-case-execution-review`。
+
+- [ ] 已调用 `411-test-case-execution-review`
+- [ ] 已收到评审通过确认（评分 ≥ 95）
+
+> 未收到通过确认前，禁止结束测试执行任务。
 
 ## 参考
 

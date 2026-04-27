@@ -140,8 +140,6 @@ AskUserQuestion({
 | 第四步 | 模块划分与优先级（含依赖确认） |
 | 第五步 | 非功能需求 |
 
-
-
 **1.4 需求澄清与验证（Clarification & Verification）**
 
 **仅对前端项目执行**，后端 app 项目仅列出清单，不参与本阶段。
@@ -214,7 +212,12 @@ AskUserQuestion({
 
 ## REVIEW评审
 
-PRD编写完成后，**自动调用 `111-requirement-review`**，无需等待用户确认。
+PRD编写完成后，调用 `111-requirement-review`。
+
+- [ ] 已调用 `111-requirement-review`
+- [ ] 已收到评审通过确认（评分 ≥ 95）
+
+> 未收到通过确认前，禁止结束需求规划任务。
 
 ## 输出要求
 

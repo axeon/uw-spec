@@ -283,7 +283,12 @@ version: "1.0.0"
 
 ## REVIEW评审
 
-以上标准全部满足后，**自动调用 `211-java-uniweb-design-review`**，无需等待用户确认。
+以上标准全部满足后，调用 `211-java-uniweb-design-review`。
+
+- [ ] 已调用 `211-java-uniweb-design-review`
+- [ ] 已收到评审通过确认（评分 ≥ 95）
+
+> 未收到通过确认前，禁止结束设计任务。
 
 ## 参考
 

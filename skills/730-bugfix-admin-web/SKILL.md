@@ -92,7 +92,12 @@ version: "1.0.0"
 
 ## REVIEW评审
 
-Web前端修复完成后，**自动调用 `731-bugfix-admin-web-review`**，无需等待用户确认。
+Web前端修复完成后，调用 `731-bugfix-admin-web-review`。
+
+- [ ] 已调用 `731-bugfix-admin-web-review`
+- [ ] 已收到评审通过确认（评分 ≥ 95）
+
+> 未收到通过确认前，禁止结束修复任务。
 
 ### 5. 生成修复文档
 

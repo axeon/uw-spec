@@ -159,7 +159,12 @@ version: "1.0.0"
 
 ## REVIEW评审
 
-测试用例设计完成后，**自动调用 `231-test-case-design-review`**，无需等待用户确认。
+测试用例设计完成后，调用 `231-test-case-design-review`。
+
+- [ ] 已调用 `231-test-case-design-review`
+- [ ] 已收到评审通过确认（评分 ≥ 95）
+
+> 未收到通过确认前，禁止结束测试用例设计任务。
 
 ## 输出要求
 

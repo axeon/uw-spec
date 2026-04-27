@@ -92,7 +92,12 @@ version: "1.0.0"
 
 ## REVIEW评审
 
-Web前端开发完成后，**自动调用 `631-feature-admin-web-dev-review`**，无需等待用户确认。
+Web前端开发完成后，调用 `631-feature-admin-web-dev-review`。
+
+- [ ] 已调用 `631-feature-admin-web-dev-review`
+- [ ] 已收到评审通过确认（评分 ≥ 95）
+
+> 未收到通过确认前，禁止结束开发任务。
 
 ### 4. 测试执行
 

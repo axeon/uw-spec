@@ -64,7 +64,12 @@ version: "1.0.0"
 
 ## REVIEW评审
 
-需求文档整理完成后，**自动调用 `511-requirement-doc-review`**，无需等待用户确认。
+需求文档整理完成后，调用 `511-requirement-doc-review`。
+
+- [ ] 已调用 `511-requirement-doc-review`
+- [ ] 已收到评审通过确认（评分 ≥ 95）
+
+> 未收到通过确认前，禁止结束需求文档整理任务。
 
 ## 输出要求
 

@@ -27,7 +27,7 @@ version: "1.0.0"
 
 | 源技能文件 | 评审时读取的内容 |
 |-----------|----------------|
-| [310-java-uniweb-dev/SKILL.md](../310-java-uniweb-dev/SKILL.md) | **必读全文**：开发规范、TDD Green 规则、210→310 衔接协议 |
+| [310-java-uniweb-dev/SKILL.md](../310-java-uniweb-dev/SKILL.md) | **必读全文**：开发规范、TDD Green 规则、`210-java-uniweb-design` → `310-java-uniweb-dev` 衔接协议 |
 | [310-java-uniweb-dev/references/examples.md](../310-java-uniweb-dev/references/examples.md) | TDD 开发示例 |
 | [210-java-uniweb-design/SKILL.md](../210-java-uniweb-design/SKILL.md) | 架构约定（设计阶段定义的规范，开发阶段必须遵循） |
 | [210-java-uniweb-design/references/backend/uniweb/README.md](../210-java-uniweb-design/references/backend/uniweb/README.md) | UniWeb 技术栈规范 |
@@ -40,15 +40,15 @@ version: "1.0.0"
 | Java后端代码 | `PROJECT_ROOT/backend/{项目名}-app/src/` | 开发完成的代码 |
 | 测试代码 | `PROJECT_ROOT/backend/{项目名}-app/src/test/` | 单元测试和集成测试 |
 | 覆盖率报告 | `PROJECT_ROOT/backend/{项目名}-app/target/site/jacoco/` | 测试覆盖率数据 |
-| 架构设计 | `PROJECT_ROOT/backend/{项目名}-app/README.md` | 210阶段产出的总体设计文档 |
-| 开发任务 | `PROJECT_ROOT/backend/{项目名}-app/TASKS.md` | 210阶段产出的任务卡片和联调验证清单 |
+| 架构设计 | `PROJECT_ROOT/backend/{项目名}-app/README.md` | `210-java-uniweb-design` 产出的总体设计文档 |
+| 开发任务 | `PROJECT_ROOT/backend/{项目名}-app/TASKS.md` | `210-java-uniweb-design` 产出的任务卡片和联调验证清单 |
 
 ## 输出
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
 | Java开发评审报告 | `PROJECT_ROOT/backend/{项目名}-app/reviews/REVIEW-CODE-{模块名}-YYMMDDHHMM.md` | 按模块独立输出，含评审结论和问题清单 |
 
-报告格式详见 [评审报告模板](../0-init/references/review-report-template.md)。每轮评审按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 输出每轮记录。
+报告格式详见 [评审报告模板](../0-init/references/review-report-template.md)。
 
 ## 评审维度
 
@@ -56,31 +56,19 @@ version: "1.0.0"
 
 | 维度 | 检查要点 | 源技能章节 |
 |------|---------|-----------|
-| TDD实践 | 210 Red骨架→310 Green实现、覆盖率≥80%、@ExtendWith+MockedStatic、无fail()残留、无TODO残留 | 310 → 开发步骤 2.4 |
-| UniWeb规范 | DaoManager/ResponseData/AuthQueryParam/FusionCache、禁用Lombok、static方法风格 | 310 → 开发步骤 2.3 + 210 → 架构约定 |
-| 代码质量 | 单一职责、分层清晰、命名规范、复杂度 | 310 → 开发步骤 2.3 |
-| 安全性 | @Valid校验、QueryParam参数化、@MscPermDeclare、租户隔离 | 310 → 开发步骤 2.3 |
+| TDD实践 | `210-java-uniweb-design` Red骨架→`310-java-uniweb-dev` Green实现、覆盖率≥80%、@ExtendWith+MockedStatic、无fail()残留、无TODO残留 | `310-java-uniweb-dev` → 开发步骤 2.4 |
+| UniWeb规范 | DaoManager/ResponseData/AuthQueryParam/FusionCache、禁用Lombok、static方法风格 | `310-java-uniweb-dev` → 开发步骤 2.3 + `210-java-uniweb-design` → 架构约定 |
+| 代码质量 | 单一职责、分层清晰、命名规范、复杂度 | `310-java-uniweb-dev` → 开发步骤 2.3 |
+| 安全性 | @Valid校验、QueryParam参数化、@MscPermDeclare、租户隔离 | `310-java-uniweb-dev` → 开发步骤 2.3 |
 
 ## 通过标准
 
-### 通过（≥95分）
-| 检查项 | 标准 | 分值 |
-|--------|------|------|
-| 无Critical问题 | 0个 | 必须 |
-| Major问题 | ≤2个 | 20分 |
-| 测试覆盖率 | 行≥80%，分支≥70% | 20分 |
-| uw-base规范 | 100%符合 | 20分 |
-| 代码质量 | 圈复杂度≤10 | 20分 |
-| 安全性 | @Valid校验、@MscPermDeclare、租户隔离 | 20分 |
+| 等级 | 评分 | 条件 |
+|------|------|------|
+| 通过 | ≥ 95 分 | 无 Critical 问题，Major ≤ 2，覆盖率/规范/质量/安全各 ≥ 20 分 |
+| 不通过 | < 95 分 | 存在 Critical 或 Major > 2 或覆盖率/规范不达标 |
 
-### 有条件通过（85-94分）
-- Major问题 ≤3个且有修复计划
-- 无Critical问题
-
-### 不通过（<85分）
-- 存在Critical问题（如：安全漏洞、严重bug）
-- Major问题 >3个
-- 测试覆盖率 <60%
+> 通过标准详细分值见「评审维度」表格。评分 < 95 进入修复循环，无"有条件通过"中间态。
 
 ## 评审流程
 
@@ -108,9 +96,16 @@ version: "1.0.0"
 
 按模块独立输出评审报告到 `reviews/REVIEW-CODE-{模块名}-YYMMDDHHMM.md`。每轮评审按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 追加每轮记录。
 
-### 3. 评审结论与修复循环
+### 3. 评审结论
 
-评分 ≥ 95 → **通过**，输出报告，按流转关系进入下一阶段。
+计算最终评分后，**必须逐项确认以下检查清单**：
 
-评分 < 95 → **不通过**，**自动调用 `310-java-uniweb-dev`**，传入目标模块名和评审报告中的问题清单，按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行。修复完成后自动回到本技能重新评审目标模块。
+**评分 ≥ 95（通过）：**
+- [ ] 已标记评审状态为「通过」
+
+**评分 < 95（不通过）：**
+- [ ] 已调用 `310-java-uniweb-dev` 技能，传入目标模块名 + 问题清单
+- [ ] 修复完成后已重新执行本技能评审同一模块
+
+> 以上检查项未全部勾选，禁止结束本技能任务。
 
