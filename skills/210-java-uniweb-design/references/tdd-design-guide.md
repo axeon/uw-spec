@@ -1,6 +1,6 @@
 # 设计阶段 TDD 指南
 
-> 设计阶段（210）的 TDD 实践指南。设计即代码，测试先行——在设计阶段产出测试骨架，确保每个 Helper 方法都有可执行的测试契约。
+> 设计阶段（210）的 TDD 实践指南。测试先行——在设计阶段产出测试骨架，确保每个 Helper 方法都有可执行的测试契约。
 
 ## 核心理念
 
@@ -32,15 +32,24 @@
 
 > 测试工程师不参与单元测试编写。单元测试是开发工程师的本职工作，从设计阶段的骨架到开发阶段的实现，全程由开发侧负责。
 
-## 测试策略矩阵
+## 测试策略
 
-### 按模块复杂度分类
+### 测试原则
 
-| 模块分类 | Helper 方法类型 | 测试策略 | 覆盖重点 |
-|---------|---------------|---------|---------|
-| 简单模块 | listXxx / getXxx / saveXxx / updateXxx / deleteXxx | 每个方法 1 个基础测试 | 参数校验、返回类型 |
-| 复杂模块 | 上述 + 业务流程方法 | 每个方法 2-5 个测试用例 | 状态流转、并发控制、缓存一致性 |
-| 跨模块 | 涉及多个 Helper 协作 | 集成测试骨架 | 模块间契约 |
+| 原则 | 说明 |
+|------|------|
+| **全链路测试** | 使用 `@SpringBootTest` 启动完整 Spring 上下文，测试真实行为 |
+| **不 Mock 框架** | 不 Mock DaoManager/FusionCache，测试真实数据库交互 |
+| **单 Context** | 所有测试共享同一个 Spring Context，只启动一次 |
+| **数据隔离** | 使用测试数据前缀 + 手动清理，不用事务回滚 |
+
+### 测试分层
+
+| 层级 | 测试目标 | 技术方案 |
+|------|---------|---------|
+| Helper 测试 | 业务逻辑 + 数据访问 | `@SpringBootTest` + 真实数据库 |
+| Controller 测试 | API 契约 + 参数校验 | `@SpringBootTest` + `MockMvc` |
+| 端到端测试 | 跨模块业务流程 | `@SpringBootTest` + 完整链路 |
 
 ### 按方法类型测试用例数
 
@@ -54,14 +63,6 @@
 | enableXxx / disableXxx | 正常操作 1 | 不存在ID 1 | 重复操作 1 | 3 |
 | 业务流程方法 | 正常流程 1 | 每个分支 1 | 每个异常 1 | 3-5 |
 
-### 缓存测试策略
-
-| 缓存类型 | 测试要点 | Mock 策略 |
-|---------|---------|----------|
-| FusionCache | get 命中/未命中、put 写入、invalidate 失效 | Mock FusionCache 静态方法 |
-| GlobalCache | get/put/delete 操作 | Mock GlobalCache 实例 |
-| GlobalLocker | tryLock 成功/失败、unlock 释放 | Mock GlobalLocker 静态方法 |
-
 ## 设计阶段测试产出要求
 
 ### 产出物
@@ -70,6 +71,8 @@
 |--------|------|------|
 | 测试类 | `src/test/java/{包路径}/service/{Module}HelperTest.java` | 每个 Helper 一个测试类 |
 | 测试方法 | 测试类内 | 每个 Helper 方法 ≥ 2 个测试方法 |
+| 测试基类 | `src/test/java/{包路径}/BaseIntegrationTest.java` | 共享 Spring Context |
+| 测试配置 | `src/test/resources/application-test.yml` | 测试环境配置 |
 | README.md 测试章节 | README.md | 测试策略概览 + 覆盖率目标 |
 
 ### 测试命名规范
@@ -84,47 +87,239 @@
 
 ```
 src/test/java/{包路径}/
+├── BaseIntegrationTest.java           # 测试基类（共享 Context）
+├── TestContextConfig.java             # 测试配置类
 ├── service/
-│   ├── {ModuleA}HelperTest.java      # 每个Helper对应一个测试类
+│   ├── {ModuleA}HelperTest.java      # Helper 测试类
 │   ├── {ModuleB}HelperTest.java
 │   └── ...
-└── README.md                          # 测试说明（可选）
+├── controller/
+│   ├── {ModuleA}ControllerTest.java  # Controller 测试类
+│   └── ...
+└── resources/
+    └── application-test.yml           # 测试配置文件
 ```
 
-## Mock 技术选型
-
-Helper 使用纯 static 方法，所有依赖通过静态 API 获取，测试统一使用 `MockedStatic` 隔离。
-
-| 依赖 | Mock 方式 | 说明 |
-|------|----------|------|
-| DaoManager | `MockedStatic<DaoManager>` + `mock(DaoManager.class)` | mock `getInstance()` 返回 mocked 实例 |
-| FusionCache | `MockedStatic<FusionCache>` | try-with-resources 包裹，验证 get/put/invalidate |
-| GlobalCache | `MockedStatic<GlobalCache>` | try-with-resources 包裹 |
-| GlobalLocker | `MockedStatic<GlobalLocker>` | try-with-resources 包裹，验证 tryLock/unlock |
-| AuthServiceHelper | `MockedStatic<AuthServiceHelper>` | try-with-resources 包裹，模拟 getSaasId/getMchId |
-
-**MockedStatic 使用模式**（所有依赖统一）：
+## 测试认证工具类
 
 ```java
-@Test
-void testGetXxx_CacheHit_ReturnEntity() {
-    try (MockedStatic<FusionCache> fusionCacheMock = mockStatic(FusionCache.class);
-         MockedStatic<AuthServiceHelper> authMock = mockStatic(AuthServiceHelper.class)) {
-        authMock.when(AuthServiceHelper::getSaasId).thenReturn(1001L);
-        fusionCacheMock.when(() -> FusionCache.getIfPresent(Entity.class, 1L))
-            .thenReturn(Optional.ofNullable(entity));
-        // ... 断言
+public class TestAuthUtils {
+    
+    // 测试专用标识，用于数据清理
+    public static final Long TEST_SAAS_ID = 666L;
+    public static final Long TEST_MCH_ID = 666L;
+    public static final Long TEST_USER_ID = 666L;
+    
+    /**
+     * 设置测试用户上下文（使用默认测试用户666）
+     */
+    public static void setTestUser() {
+        setTestUser(TEST_SAAS_ID, TEST_MCH_ID, TEST_USER_ID, UserType.SAAS);
+    }
+    
+    /**
+     * 设置测试用户上下文（自定义用户）
+     * 反射调用 AuthServiceHelper.setContextToken()
+     */
+    public static void setTestUser(Long saasId, Long mchId, Long userId, UserType userType) {
+        AuthTokenData tokenData = createAuthTokenData(saasId, mchId, userId, userType);
+        
+        try {
+            Method method = AuthServiceHelper.class.getDeclaredMethod("setContextToken", AuthTokenData.class);
+            method.setAccessible(true);
+            method.invoke(null, tokenData);
+        } catch (Exception e) {
+            throw new RuntimeException("设置测试用户失败", e);
+        }
+    }
+    
+    /**
+     * 清理测试用户上下文
+     */
+    public static void clear() {
+        try {
+            Method method = AuthServiceHelper.class.getDeclaredMethod("setContextToken", AuthTokenData.class);
+            method.setAccessible(true);
+            method.invoke(null, (AuthTokenData) null);
+        } catch (Exception e) {
+            // 清理失败不影响测试
+        }
+    }
+    
+    private static AuthTokenData createAuthTokenData(Long saasId, Long mchId, 
+                                                      Long userId, UserType userType) {
+        AuthTokenData data = new AuthTokenData();
+        data.setSaasId(saasId);
+        data.setMchId(mchId);
+        data.setUserId(userId);
+        data.setUserType(userType.getCode());
+        data.setLoginName("test_user_" + userId);
+        data.setLoginDate(new Date());
+        data.setToken(UUID.randomUUID().toString());
+        return data;
     }
 }
 ```
 
-**框架依赖**：
+## 测试基类（共享 Spring Context）
 
-| 框架 | 用途 | scope |
-|------|------|-------|
-| JUnit 5 | 测试框架 | test |
-| Mockito | Mock 框架（含 MockedStatic） | test |
-| Spring Boot Test | 集成测试支持 | test |
+```java
+@SpringBootTest(classes = TestContextConfig.class)
+@TestPropertySource(properties = {
+    "spring.profiles.active=test",
+    "spring.cloud.nacos.config.enabled=false",
+    "spring.cloud.nacos.discovery.enabled=false"
+})
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+public abstract class BaseIntegrationTest {
+    
+    @Autowired
+    protected JdbcTemplate jdbcTemplate;
+    
+    @Autowired
+    protected ObjectMapper objectMapper;
+    
+    // 测试数据标识前缀，用于隔离
+    protected static final String TEST_PREFIX = "TEST_" + System.currentTimeMillis() + "_";
+    
+    @BeforeAll
+    void globalSetUp() {
+        // 全局初始化，每个测试类执行一次
+    }
+    
+    @BeforeEach
+    void setUp() {
+        // 设置测试用户（666）
+        TestAuthUtils.setTestUser();
+    }
+    
+    @AfterEach
+    void tearDown() {
+        // 清理本测试方法产生的数据
+        cleanTestData();
+        // 清理测试用户上下文
+        TestAuthUtils.clear();
+    }
+    
+    @AfterAll
+    void globalTearDown() {
+        // 全局清理，每个测试类执行一次
+        cleanAllTestData();
+    }
+    
+    // 清理当前测试产生的数据（由子类实现）
+    protected abstract void cleanTestData();
+    
+    // 清理所有测试数据（按 saas_id = 666 清理）
+    protected void cleanAllTestData() {
+        jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 0");
+        jdbcTemplate.execute("DELETE FROM order_item WHERE saas_id = 666");
+        jdbcTemplate.execute("DELETE FROM order WHERE saas_id = 666");
+        jdbcTemplate.execute("DELETE FROM product WHERE saas_id = 666");
+        jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 1");
+    }
+    
+    // 辅助方法：生成测试数据名称
+    protected String testName(String name) {
+        return TEST_PREFIX + name + "_" + UUID.randomUUID().toString().substring(0, 8);
+    }
+}
+```
+
+## 测试配置类
+
+```java
+@SpringBootConfiguration
+@EnableAutoConfiguration
+@ComponentScan(basePackages = "${your.base.package}")
+public class TestContextConfig {
+    // 测试专用的配置覆盖
+}
+```
+
+## 测试配置文件
+
+```yaml
+# application-test.yml
+spring:
+  main:
+    banner-mode: off
+  cloud:
+    nacos:
+      config:
+        enabled: false
+      discovery:
+        enabled: false
+
+# uw-dao 测试配置（覆盖 Nacos）
+uw:
+  dao:
+    conn-pool:
+      root:
+        driver: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/test_db?useSSL=false&serverTimezone=Asia/Shanghai
+        username: root
+        password: root
+        min-conn: 1
+        max-conn: 5
+
+logging:
+  level:
+    root: WARN
+```
+
+## 测试类示例
+
+```java
+public class ProductHelperTest extends BaseIntegrationTest {
+    
+    // 记录本测试类创建的数据ID，用于清理
+    private final List<Long> createdProductIds = new ArrayList<>();
+    
+    @Override
+    protected void cleanTestData() {
+        if (!createdProductIds.isEmpty()) {
+            String ids = createdProductIds.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+            jdbcTemplate.execute(
+                "DELETE FROM product WHERE id IN (" + ids + ")"
+            );
+            createdProductIds.clear();
+        }
+    }
+    
+    @Test
+    @DisplayName("保存商品 - 正常保存并返回ID")
+    void testSaveProduct_Success_ReturnWithId() {
+        Product product = new Product();
+        product.setName(testName("iPhone"));
+        product.setPrice(new BigDecimal("5999.00"));
+        
+        ResponseData<Product> result = ProductHelper.saveProduct(product);
+        
+        assertTrue(result.isSuccess());
+        assertNotNull(result.getData().getId());
+        createdProductIds.add(result.getData().getId());
+    }
+    
+    @Test
+    @DisplayName("查询商品 - 存在则返回，不存在返回warn")
+    void testGetProduct_Exists_ReturnEntity_NotExists_ReturnWarn() {
+        Product product = new Product();
+        product.setName(testName("MacBook"));
+        ResponseData<Product> saved = ProductHelper.saveProduct(product);
+        Long productId = saved.getData().getId();
+        createdProductIds.add(productId);
+        
+        ResponseData<Product> found = ProductHelper.getProduct(productId);
+        assertTrue(found.isSuccess());
+        
+        ResponseData<Product> notFound = ProductHelper.getProduct(99999999L);
+        assertFalse(notFound.isSuccess());
+    }
+}
+```
 
 ## 设计阶段 vs 开发阶段测试职责
 
@@ -135,12 +330,28 @@ void testGetXxx_CacheHit_ReturnEntity() {
 | 重构阶段（310） | 优化实现，测试保持全绿 | 全绿 |
 
 **设计阶段测试代码特征**：
-- 测试类使用 `@ExtendWith(MockitoExtension.class)`，MockedStatic 在开发阶段补充
+- 继承 `BaseIntegrationTest`，共享 Spring Context
 - 方法签名完整（`@Test` + `@DisplayName` + 访问修饰符 + 参数）
 - Javadoc 包含测试意图、准备数据、预期结果
-- 方法体使用 `fail("TDD Red: [Tn] Helper 方法尚未实现")` 标记为 Red 状态，Tn 为任务 ID
-- 不需要 `@BeforeEach` 的 Mock 初始化（MockitoExtension 自动处理）
-- MockedStatic 静态方法 Mock 在开发阶段实现时补充
+- 方法体使用 `fail("TDD Red: [Tn] Helper 方法尚未实现")` 标记为 Red 状态
+- 包含 `cleanTestData()` 方法框架
+
+## Maven 配置
+
+```xml
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <version>3.1.2</version>
+    <configuration>
+        <reuseForks>true</reuseForks>
+        <forkCount>1</forkCount>
+        <systemPropertyVariables>
+            <spring.profiles.active>test</spring.profiles.active>
+        </systemPropertyVariables>
+    </configuration>
+</plugin>
+```
 
 ## 验收标准
 
@@ -148,6 +359,9 @@ void testGetXxx_CacheHit_ReturnEntity() {
 
 - [ ] 每个 Helper 类有对应 `{Module}HelperTest.java`
 - [ ] 每个 Helper 方法有 ≥ 2 个测试方法
+- [ ] 所有测试类继承 `BaseIntegrationTest`
+- [ ] `TestContextConfig.java` 配置正确
+- [ ] `application-test.yml` 配置测试数据库
 - [ ] 所有测试类可编译通过
 - [ ] `mvn test -pl {模块}` 可运行（全红是预期）
 - [ ] 测试方法有 `@DisplayName` 注解
