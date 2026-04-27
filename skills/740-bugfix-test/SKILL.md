@@ -69,7 +69,7 @@ version: "1.0.0"
 
 ### 2. AI自动评审
 
-**调用评审Skill**: `741-bugfix-test-review`
+**REVIEW评审技能**: `741-bugfix-test-review`
 
 > **评审范围限定**：740 仅生成回归测试脚本（API + E2E），调用 331 评审时仅检查 API 测试脚本和 E2E 测试脚本两个维度，跳过 JMeter/安全/bin 评审。
 

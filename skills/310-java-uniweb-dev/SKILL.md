@@ -31,7 +31,7 @@ version: "1.0.0"
 | Controller代码 | `PROJECT_ROOT/backend/{项目名}-app/src/main/java/{包路径}/controller/` | 210阶段裁剪后的Controller |
 | Helper代码 | `PROJECT_ROOT/backend/{项目名}-app/src/main/java/{包路径}/service/` | 210阶段新建的Helper方法签名 |
 | DTO代码 | `PROJECT_ROOT/backend/{项目名}-app/src/main/java/{包路径}/dto/` | 210阶段裁剪后的DTO |
-| 测试骨架代码 | `PROJECT_ROOT/backend/{项目名}-app/src/PROJECT_ROOT/test/java/{包路径}/service/` | 210阶段产出的 Helper 单元测试骨架（TDD Red） |
+| 测试骨架代码 | `PROJECT_ROOT/backend/{项目名}-app/src/test/java/{包路径}/service/` | 210阶段产出的 Helper 单元测试骨架（TDD Red） |
 | 测试用例设计 | `PROJECT_ROOT/test/design/` | 测试场景和用例覆盖（API/E2E/压测/安全） |
 
 ## 技术栈
@@ -190,7 +190,7 @@ grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 
 #### 2.6 REVIEW评审
 
-每个模块开发完成后独立进入 REVIEW评审（调用 `311-java-uniweb-dev-review`），不等全部完成。
+每个模块开发完成后，**自动调用 `311-java-uniweb-dev-review`**，传入当前模块名作为目标模块参数，无需等待用户确认。不等全部模块完成，按模块独立进入评审。
 
 ### 3. 联调验证（所有模块完成后）
 
@@ -208,6 +208,10 @@ grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 
 **失败处理**：任一项不通过，定位具体模块修复后重新验证。
 
+### 4. 全量 REVIEW评审
+
+联调验证通过后，**自动调用 `311-java-uniweb-dev-review`**（不传模块名，全量评审），无需等待用户确认。
+
 ## 并行开发约束
 
 | 约束 | 说明 |
@@ -216,7 +220,7 @@ grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 | 有依赖模块需串行 | 模块C依赖A，需A完成review通过后才开发C |
 | 共享文件只读 | entity/dto 由代码生成器产出，并行时只读不改 |
 | Helper天然独立 | 各模块Helper在不同文件，无文件级冲突 |
-| review按模块 | 每个模块开发完成后独立进入REVIEW评审，不等全部完成 |
+| review按模块 | 每个模块开发完成后**自动调用**对应review技能，不等全部完成 |
 
 ## 输出要求
 
@@ -230,8 +234,4 @@ grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 - [UniWeb开发规范](../210-java-uniweb-design/references/backend/uniweb/dev-standards.md) - 项目初始化、依赖、配置、编码规范
 - [SaaS开发规范](../210-java-uniweb-design/references/backend/saas/README.md) - SaaS框架总览、模块速查、命名规范
 - [Java开发评审技能](../311-java-uniweb-dev-review/SKILL.md) - REVIEW评审技能
-
-## REVIEW评审
-
-Java后端开发完成后，**自动调用 `311-java-uniweb-dev-review`**，无需等待用户确认。
 

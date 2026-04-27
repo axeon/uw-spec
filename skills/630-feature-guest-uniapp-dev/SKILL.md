@@ -86,7 +86,7 @@ version: "1.0.0"
 
 ### 3. AI自动评审
 
-**调用评审Skill**: `631-feature-guest-uniapp-dev-review`
+**REVIEW评审技能**: `631-feature-guest-uniapp-dev-review`
 
 **评审维度**:
 
@@ -199,5 +199,5 @@ AI生成代码 → 平台适配 → AI评审(321) → 自动修复 → 测试执
 
 ## 参考
 
-- [UniApp开发评审技能](../631-feature-guest-uniapp-dev-review/SKILL.md) - AI自动评审调用
+- [UniApp开发评审技能](../631-feature-guest-uniapp-dev-review/SKILL.md) - REVIEW评审技能
 - [UniApp文档](https://uniapp.dcloud.net.cn/)

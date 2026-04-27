@@ -34,7 +34,7 @@ version: "1.0.0"
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
 | 功能代码 | `PROJECT_ROOT/backend/{项目名}-app/src/` | Java后端代码 |
-| 测试代码 | `PROJECT_ROOT/backend/{项目名}-app/src/PROJECT_ROOT/test/` | 单元测试和集成测试 |
+| 测试代码 | `PROJECT_ROOT/backend/{项目名}-app/src/test/` | 单元测试和集成测试 |
 | 开发文档 | `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-java-uniweb.md` | 开发记录 |
 | 评审报告 | `PROJECT_ROOT/backend/{项目名}-app/reviews/` | AI评审报告 |
 | 更新文档 | `PROJECT_ROOT/backend/{项目名}-app/README.md` | 合并后的主文档 |
@@ -74,7 +74,7 @@ version: "1.0.0"
 
 ### 2. AI自动评审
 
-**调用评审Skill**: `621-feature-java-uniweb-dev-review`
+**REVIEW评审技能**: `621-feature-java-uniweb-dev-review`
 
 **评审维度**:
 
@@ -185,6 +185,6 @@ AI生成代码 → AI评审(311) → 自动修复 → 测试执行
 
 ## 参考
 
-- [Java开发评审技能](../621-feature-java-uniweb-dev-review/SKILL.md) - AI自动评审调用
+- [Java开发评审技能](../621-feature-java-uniweb-dev-review/SKILL.md) - REVIEW评审技能
 - [UniWeb开发规范](../210-java-uniweb-design/references/backend/uniweb/dev-standards.md)
 - [SaaS开发规范](../210-java-uniweb-design/references/backend/saas/README.md)

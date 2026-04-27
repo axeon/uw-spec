@@ -75,7 +75,7 @@ version: "1.0.0"
 
 ### 2. AI自动评审
 
-**调用评审Skill**: `631-feature-admin-web-dev-review`
+**REVIEW评审技能**: `631-feature-admin-web-dev-review`
 
 **评审维度**:
 
@@ -186,4 +186,4 @@ AI生成代码 → AI评审(321) → 自动修复 → 测试执行
 
 ## 参考
 
-- [Web前端评审技能](../631-feature-admin-web-dev-review/SKILL.md) - AI自动评审调用
+- [Web前端评审技能](../631-feature-admin-web-dev-review/SKILL.md) - REVIEW评审技能

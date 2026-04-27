@@ -83,7 +83,7 @@ version: "1.0.0"
 
 ### 3. 结论与流转
 - 评分 ≥ 95 → **通过**，输出报告，进入 310-java-uniweb-dev
-- 评分 < 95 → **不通过**，调用 `210-java-uniweb-design` 修复，按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行
+- 评分 < 95 → **不通过**，自动调用 `210-java-uniweb-design` 修复，传入评审报告中的问题清单，按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行
 
 ## 输出
 

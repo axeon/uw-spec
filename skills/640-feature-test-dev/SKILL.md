@@ -80,7 +80,7 @@ version: "1.0.0"
 
 ### 2. AI自动评审
 
-**调用评审Skill**: `641-feature-test-dev-review`
+**REVIEW评审技能**: `641-feature-test-dev-review`
 
 > **评审范围限定**：640 仅生成 API + E2E 脚本，调用 331 评审时仅检查 API 测试脚本和 E2E 测试脚本两个维度，跳过 JMeter/安全/bin 评审。
 
@@ -187,5 +187,5 @@ AI生成测试 → AI评审(331) → 自动修复 → 测试执行
 
 ## 参考
 
-- [测试脚本评审技能](../641-feature-test-dev-review/SKILL.md) - AI自动评审调用
+- [测试脚本评审技能](../641-feature-test-dev-review/SKILL.md) - REVIEW评审技能
 - [Playwright文档](https://playwright.dev/)

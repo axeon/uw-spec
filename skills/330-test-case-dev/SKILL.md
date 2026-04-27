@@ -111,7 +111,7 @@ $PROJECT_ROOT/test/scripts/
 | 共享工具串行 | utils/ 和 fixtures/ 修改需串行 |
 | E2E依赖前端 | E2E测试需前端页面可访问 |
 | API依赖后端 | API测试需后端接口可访问 |
-| review按类型 | 每种测试类型完成后独立进入 REVIEW评审 |
+| review按类型 | 每种测试类型完成后**自动调用**对应review技能 |
 
 ## 开发流程
 

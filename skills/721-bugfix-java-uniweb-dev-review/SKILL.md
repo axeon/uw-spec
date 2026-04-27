@@ -35,7 +35,7 @@ version: "1.0.0"
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
 | 修复代码 | `PROJECT_ROOT/backend/{项目名}-app/src/` | 修复后的代码 |
-| 回归测试代码 | `PROJECT_ROOT/backend/{项目名}-app/src/PROJECT_ROOT/test/` | 回归测试 |
+| 回归测试代码 | `PROJECT_ROOT/backend/{项目名}-app/src/test/` | 回归测试 |
 | 修复方案 | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md` | 710阶段输出 |
 | Bug分析报告 | `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-{简述}.md` | 700阶段输出 |
 
@@ -97,5 +97,5 @@ version: "1.0.0"
 
 评分 ≥ 95 → **通过**，输出报告，按流转关系进入下一阶段。
 
-评分 < 95 → **不通过**，调用 `720-bugfix-java-uniweb` 修复，按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行。
+评分 < 95 → **不通过**，自动调用 `720-bugfix-java-uniweb` 修复，传入评审报告中的问题清单，按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行。
 

@@ -35,7 +35,7 @@ version: "1.0.0"
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
 | 功能代码 | `PROJECT_ROOT/backend/{项目名}-app/src/` | 功能开发产出的代码 |
-| 测试代码 | `PROJECT_ROOT/backend/{项目名}-app/src/PROJECT_ROOT/test/` | 单元测试 |
+| 测试代码 | `PROJECT_ROOT/backend/{项目名}-app/src/test/` | 单元测试 |
 | 覆盖率报告 | `PROJECT_ROOT/backend/{项目名}-app/target/site/jacoco/` | 测试覆盖率数据 |
 | 技术方案 | `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-*-tech-design.md` | 610阶段技术方案 |
 | 功能需求 | `PROJECT_ROOT/issue/features/FEATURE-{YYMMDD}-{简述}.md` | 600阶段需求文档 |
@@ -96,5 +96,5 @@ version: "1.0.0"
 
 评分 ≥ 95 → **通过**，输出报告，按流转关系进入下一阶段。
 
-评分 < 95 → **不通过**，调用 `620-feature-java-uniweb-dev` 修复，按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行。
+评分 < 95 → **不通过**，自动调用 `620-feature-java-uniweb-dev` 修复，传入评审报告中的问题清单，按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行。
 

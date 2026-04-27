@@ -36,8 +36,9 @@ version: "1.0.0"
 
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
+| **目标模块** | 调用方传入 | 指定评审的模块名（如 `Product`、`Order`）。不传则评审全部模块 |
 | Java后端代码 | `PROJECT_ROOT/backend/{项目名}-app/src/` | 开发完成的代码 |
-| 测试代码 | `PROJECT_ROOT/backend/{项目名}-app/src/PROJECT_ROOT/test/` | 单元测试和集成测试 |
+| 测试代码 | `PROJECT_ROOT/backend/{项目名}-app/src/test/` | 单元测试和集成测试 |
 | 覆盖率报告 | `PROJECT_ROOT/backend/{项目名}-app/target/site/jacoco/` | 测试覆盖率数据 |
 | 架构设计 | `PROJECT_ROOT/backend/{项目名}-app/README.md` | 210阶段产出的总体设计文档 |
 | 开发任务 | `PROJECT_ROOT/backend/{项目名}-app/TASKS.md` | 210阶段产出的任务卡片和联调验证清单 |
@@ -45,9 +46,9 @@ version: "1.0.0"
 ## 输出
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| Java开发评审报告 | `PROJECT_ROOT/backend/{项目名}-app/reviews/REVIEW-CODE-YYMMDDHHMM.md` | 评审结论和问题清单 |
+| Java开发评审报告 | `PROJECT_ROOT/backend/{项目名}-app/reviews/REVIEW-CODE-{模块名}-YYMMDDHHMM.md` | 按模块独立输出，含评审结论和问题清单 |
 
-报告格式详见 [评审报告模板](../0-init/references/review-report-template.md)。
+报告格式详见 [评审报告模板](../0-init/references/review-report-template.md)。每轮评审按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 输出每轮记录。
 
 ## 评审维度
 
@@ -85,19 +86,31 @@ version: "1.0.0"
 
 > 开始评审前，先按"源技能引用"读取源技能，按"输入"读取所有评审对象。
 
+### 0. 确定评审范围
+
+根据输入的**目标模块**参数确定评审范围：
+
+| 参数 | 评审范围 |
+|------|---------|
+| 指定模块名（如 `Product`） | 仅评审该模块的 Helper + Controller + 测试 |
+| 不传 | 评审全部模块 |
+
 ### 1. 执行评审
 按维度检查，记录问题。评审发现记录格式和评审报告结构详见 [评审报告模板](../0-init/references/review-report-template.md)。报告中需包含"覆盖率统计"扩展统计节。
 
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
 **维度**: TDD/uw-base/代码质量/安全性
-**评审对象**: PROJECT_ROOT/backend/{项目名}-app/
+**评审对象**: PROJECT_ROOT/backend/{项目名}-app/（仅目标模块范围）
 **参与人员**: @java-lead @system-architect @java-developer
 
+### 2. 输出评审报告
 
-### 2. 评审结论与修复循环
+按模块独立输出评审报告到 `reviews/REVIEW-CODE-{模块名}-YYMMDDHHMM.md`。每轮评审按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 追加每轮记录。
+
+### 3. 评审结论与修复循环
 
 评分 ≥ 95 → **通过**，输出报告，按流转关系进入下一阶段。
 
-评分 < 95 → **不通过**，调用 `310-java-uniweb-dev` 修复，按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行。
+评分 < 95 → **不通过**，**自动调用 `310-java-uniweb-dev`**，传入目标模块名和评审报告中的问题清单，按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行。修复完成后自动回到本技能重新评审目标模块。
 

@@ -77,7 +77,7 @@ version: "1.0.0"
 
 ### 3. AI自动评审
 
-**调用评审Skill**: `731-bugfix-admin-uniapp-review`
+**REVIEW评审技能**: `731-bugfix-admin-uniapp-review`
 
 **评审维度**:
 

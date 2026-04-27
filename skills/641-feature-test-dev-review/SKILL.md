@@ -82,5 +82,5 @@ version: "1.0.0"
 
 评分 ≥ 95 → **通过**，输出报告，按流转关系进入下一阶段。
 
-评分 < 95 → **不通过**，调用 `640-feature-test-dev` 修复，按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行。
+评分 < 95 → **不通过**，自动调用 `640-feature-test-dev` 修复，传入评审报告中的问题清单，按 [REVIEW-FIX 循环规范](../0-init/references/review-fix-loop.md) 执行。
 
