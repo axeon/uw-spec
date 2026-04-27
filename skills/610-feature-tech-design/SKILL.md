@@ -232,9 +232,9 @@ CREATE INDEX idx_{name} ON {table_name}({column_list});
 
 **CHANGELOG更新**：追加到各端 CHANGELOG.md，记录技术方案设计状态。
 
-## PLAN-REVIEW 循环（必须执行）
+## REVIEW评审
 
-技术方案设计完成后，调用 `611-feature-tech-design-review` 执行评审。
+技术方案设计完成后，**自动调用 `611-feature-tech-design-review`**，无需等待用户确认。
 
 ## 人工检查点 ★
 

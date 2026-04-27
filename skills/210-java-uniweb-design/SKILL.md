@@ -256,10 +256,6 @@ version: "1.0.0"
 
 **代码模板**：参见 [references/templates.md](references/templates.md)
 
-## PLAN-REVIEW 循环（必须执行）
-
-设计完成后，调用 `211-java-uniweb-design-review` 执行评审。
-
 ## 产出结构
 
 详见 [references/templates.md](references/templates.md) 第7节。
@@ -284,6 +280,10 @@ version: "1.0.0"
 - [ ] `mvn test` 可运行（全红为预期）
 - [ ] Swagger UI 可展示所有接口
 - [ ] 前端可基于 Swagger 开始联调
+
+## REVIEW评审
+
+以上标准全部满足后，**自动调用 `211-java-uniweb-design-review`**，无需等待用户确认。
 
 ## 参考
 

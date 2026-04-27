@@ -101,7 +101,7 @@ version: "1.0.0"
 | 页面天然独立 | 各模块页面在不同文件，无文件级冲突 |
 | 共享组件串行 | 公共组件（components/）修改需串行 |
 | API层只读 | src/api/ 由代码生成器产出，并行时只读不改 |
-| review按模块 | 每个模块开发完成后独立进入 PLAN-REVIEW |
+| review按模块 | 每个模块开发完成后独立进入 REVIEW评审 |
 
 ## 开发流程
 
@@ -201,13 +201,13 @@ npm run dev:h5
 - 单元测试
 - 编译验证通过
 
-## PLAN-REVIEW 循环（必须执行）
+## REVIEW评审
 
-UniApp移动端开发完成后，调用 `321-guest-uniapp-dev-review` 执行评审。
+UniApp移动端开发完成后，**自动调用 `321-guest-uniapp-dev-review`**，无需等待用户确认。
 
 ## 参考
 
 - [UniApp 开发规范](../220-guest-uniapp-design/references/md-dev-standards.md) - Vue3+TS 多端开发规范
 - [开发示例](references/examples.md) - API对接、平台适配、组件开发示例
 - [220-guest-uniapp-design](../220-guest-uniapp-design/SKILL.md) - 上游原型设计阶段
-- [321-guest-uniapp-dev-review](../321-guest-uniapp-dev-review/SKILL.md) - PLAN-REVIEW循环评审
+- [321-guest-uniapp-dev-review](../321-guest-uniapp-dev-review/SKILL.md) - REVIEW评审技能

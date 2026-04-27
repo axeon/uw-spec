@@ -62,9 +62,9 @@ version: "1.0.0"
 - 确保AC可测试
 - 标注测试状态
 
-## PLAN-REVIEW 循环（必须执行）
+## REVIEW评审
 
-需求文档整理完成后，调用 `511-requirement-doc-review` 执行评审。
+需求文档整理完成后，**自动调用 `511-requirement-doc-review`**，无需等待用户确认。
 
 ## 输出要求
 
@@ -85,5 +85,5 @@ PROJECT_ROOT/requirement/
 ## 参考
 
 - [PRD文档结构大纲](references/templates.md#prd-文档结构大纲) - 文档模板
-- [需求文档评审技能](../511-requirement-doc-review/SKILL.md) - PLAN-REVIEW循环调用的评审技能
+- [需求文档评审技能](../511-requirement-doc-review/SKILL.md) - REVIEW评审技能
 - [文档模板](references/templates.md) - PRD模板、用户故事地图模板、功能清单模板

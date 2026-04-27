@@ -96,9 +96,9 @@ version: "1.0.0"
 
 ### 3. 自动修复
 
-## PLAN-REVIEW 循环（必须执行）
+## REVIEW评审
 
-测试脚本开发完成后，调用 `641-feature-test-dev-review` 执行评审。
+测试脚本开发完成后，**自动调用 `641-feature-test-dev-review`**，无需等待用户确认。
 
 ### 4. 测试执行
 

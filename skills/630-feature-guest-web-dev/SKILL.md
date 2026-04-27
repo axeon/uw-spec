@@ -90,9 +90,9 @@ version: "1.0.0"
 
 ### 3. 自动修复
 
-## PLAN-REVIEW 循环（必须执行）
+## REVIEW评审
 
-Web前端开发完成后，调用 `631-feature-guest-web-dev-review` 执行评审。
+Web前端开发完成后，**自动调用 `631-feature-guest-web-dev-review`**，无需等待用户确认。
 
 ### 4. 测试执行
 

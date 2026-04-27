@@ -101,9 +101,9 @@ version: "1.0.0"
 
 ### 4. 自动修复
 
-## PLAN-REVIEW 循环（必须执行）
+## REVIEW评审
 
-UniApp移动端开发完成后，调用 `631-feature-guest-uniapp-dev-review` 执行评审。
+UniApp移动端开发完成后，**自动调用 `631-feature-guest-uniapp-dev-review`**，无需等待用户确认。
 
 ### 5. 测试执行
 

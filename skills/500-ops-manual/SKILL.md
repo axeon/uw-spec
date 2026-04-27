@@ -51,9 +51,9 @@ version: "1.0.0"
 - 验证监控配置
 - 验证故障处理流程
 
-## PLAN-REVIEW 循环（必须执行）
+## REVIEW评审
 
-运维文档编写完成后，调用 `501-ops-manual-review` 执行评审。
+运维文档编写完成后，**自动调用 `501-ops-manual-review`**，无需等待用户确认。
 
 ## 输出位置
 
@@ -74,4 +74,4 @@ manual/ops-manual/
 ## 参考
 
 - [文档模板](references/templates.md) - 架构说明、部署手册、监控手册、故障处理模板
-- [运维文档评审技能](../501-ops-manual-review/SKILL.md) - PLAN-REVIEW循环调用的评审技能
+- [运维文档评审技能](../501-ops-manual-review/SKILL.md) - REVIEW评审技能

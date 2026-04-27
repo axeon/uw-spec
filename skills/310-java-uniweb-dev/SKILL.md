@@ -99,7 +99,7 @@ version: "1.0.0"
 3. 实现 Helper 方法体 → 删除对应 // TODO 行
 4. 替换 fail("TDD Red: [Tn]") 为 Mock + assert → 测试变绿
 5. mvn test -pl {模块} → 全绿
-6. PLAN-REVIEW → 通过
+6. REVIEW评审 → 通过
 ```
 
 ## 开发步骤
@@ -188,9 +188,9 @@ grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 | 无残留 TDD Red | `grep "TDD Red: \[Tn\]" {Test文件}` | 0 行 |
 | 模块测试通过 | `mvn test -pl {模块}` | 全绿 |
 
-#### 2.6 PLAN-REVIEW
+#### 2.6 REVIEW评审
 
-每个模块开发完成后独立进入 PLAN-REVIEW（调用 `311-java-uniweb-dev-review`），不等全部完成。
+每个模块开发完成后独立进入 REVIEW评审（调用 `311-java-uniweb-dev-review`），不等全部完成。
 
 ### 3. 联调验证（所有模块完成后）
 
@@ -216,7 +216,7 @@ grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 | 有依赖模块需串行 | 模块C依赖A，需A完成review通过后才开发C |
 | 共享文件只读 | entity/dto 由代码生成器产出，并行时只读不改 |
 | Helper天然独立 | 各模块Helper在不同文件，无文件级冲突 |
-| review按模块 | 每个模块开发完成后独立进入PLAN-REVIEW，不等全部完成 |
+| review按模块 | 每个模块开发完成后独立进入REVIEW评审，不等全部完成 |
 
 ## 输出要求
 
@@ -229,9 +229,9 @@ grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 - [TDD设计指南](../210-java-uniweb-design/references/tdd-design-guide.md) - TDD三阶段映射、Mock策略、测试模板
 - [UniWeb开发规范](../210-java-uniweb-design/references/backend/uniweb/dev-standards.md) - 项目初始化、依赖、配置、编码规范
 - [SaaS开发规范](../210-java-uniweb-design/references/backend/saas/README.md) - SaaS框架总览、模块速查、命名规范
-- [Java开发评审技能](../311-java-uniweb-dev-review/SKILL.md) - PLAN-REVIEW循环调用的评审技能
+- [Java开发评审技能](../311-java-uniweb-dev-review/SKILL.md) - REVIEW评审技能
 
-## PLAN-REVIEW 循环（必须执行）
+## REVIEW评审
 
-Java后端开发完成后，调用 `311-java-uniweb-dev-review` 执行评审。
+Java后端开发完成后，**自动调用 `311-java-uniweb-dev-review`**，无需等待用户确认。
 

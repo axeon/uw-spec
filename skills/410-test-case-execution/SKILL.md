@@ -117,12 +117,12 @@ $PROJECT_ROOT/test/reports/
     └── summary-YYMMDDHHMM.md
 ```
 
-## PLAN-REVIEW 循环（必须执行）
+## REVIEW评审
 
-测试执行完成后，调用 `411-test-case-execution-review` 执行评审。
+测试执行完成后，**自动调用 `411-test-case-execution-review`**，无需等待用户确认。
 
 ## 参考
 
 - [执行示例](references/examples.md) - 四类测试执行命令、报告模板、缺陷模板
 - [测试脚本开发技能](../330-test-case-dev/SKILL.md) - 上游脚本开发阶段
-- [测试执行评审技能](../411-test-case-execution-review/SKILL.md) - PLAN-REVIEW循环评审
+- [测试执行评审技能](../411-test-case-execution-review/SKILL.md) - REVIEW评审技能

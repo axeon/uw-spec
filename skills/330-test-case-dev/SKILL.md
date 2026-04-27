@@ -111,7 +111,7 @@ $PROJECT_ROOT/test/scripts/
 | 共享工具串行 | utils/ 和 fixtures/ 修改需串行 |
 | E2E依赖前端 | E2E测试需前端页面可访问 |
 | API依赖后端 | API测试需后端接口可访问 |
-| review按类型 | 每种测试类型完成后独立进入 PLAN-REVIEW |
+| review按类型 | 每种测试类型完成后独立进入 REVIEW评审 |
 
 ## 开发流程
 
@@ -223,9 +223,9 @@ await page.locator('[name="phone"]').fill('13800138000')
 | `run-security.sh` | 执行安全扫描 |
 | `run-all.sh` | 按顺序执行全部测试 |
 
-## PLAN-REVIEW 循环（必须执行）
+## REVIEW评审
 
-测试脚本开发完成后，调用 `331-test-case-dev-review` 执行评审。
+测试脚本开发完成后，**自动调用 `331-test-case-dev-review`**，无需等待用户确认。
 
 ## 参考
 
@@ -233,4 +233,4 @@ await page.locator('[name="phone"]').fill('13800138000')
 - [JMeter脚本模板](references/jmeter-template.md) - JMeter .jmx 完整模板
 - [安全扫描脚本](references/security-scan.md) - ZAP/Trivy/Playwright安全脚本
 - [测试用例设计技能](../230-test-case-design/SKILL.md) - 上游设计阶段
-- [测试脚本评审技能](../331-test-case-dev-review/SKILL.md) - PLAN-REVIEW循环评审
+- [测试脚本评审技能](../331-test-case-dev-review/SKILL.md) - REVIEW评审技能

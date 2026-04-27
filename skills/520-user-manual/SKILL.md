@@ -80,9 +80,9 @@ version: "1.0.0"
 | 图文并茂 | 配合截图说明 |
 | 覆盖全面 | 覆盖所有用户可见功能 |
 
-## PLAN-REVIEW 循环（必须执行）
+## REVIEW评审
 
-用户手册编写完成后，调用 `521-user-manual-review` 执行评审。
+用户手册编写完成后，**自动调用 `521-user-manual-review`**，无需等待用户确认。
 
 ## 输出要求
 
@@ -96,11 +96,11 @@ manual/user-manual/
 ├── faq.md                # 常见问题
 ├── troubleshooting.md    # 故障排查指南
 ├── videos/               # 操作视频（可选）
-└── reviews/              # 评审报告（PLAN-REVIEW循环产出）
+└── reviews/              # 评审报告（REVIEW评审产出）
     └── REVIEW-USERS-MANUAL-YYMMDDHHMM.md  # 按时间戳命名，24小时制
 ```
 
 ## 参考
 
 - [文档模板](references/templates.md) - 用户手册、快速入门、FAQ、故障排查模板
-- [用户手册评审技能](../521-user-manual-review/SKILL.md) - PLAN-REVIEW循环调用的评审技能
+- [用户手册评审技能](../521-user-manual-review/SKILL.md) - REVIEW评审技能

@@ -161,9 +161,9 @@ mysql -h {host} -P {port} -u {user} -p{pass} {db_name} < "{selected_file}"
 - 警告: {N}条
 ```
 
-## PLAN-REVIEW 循环（必须执行）
+## REVIEW评审
 
-DDL执行完成后，调用 `301-database-ddl-execution-review` 执行评审。
+DDL执行完成后，**自动调用 `301-database-ddl-execution-review`**，无需等待用户确认。
 
 ## 输出要求
 
@@ -188,4 +188,4 @@ DDL执行完成后，调用 `301-database-ddl-execution-review` 执行评审。
 
 - [数据库设计技能](../200-database-design/SKILL.md) - 上游设计阶段
 - [数据库设计评审技能](../201-database-design-review/SKILL.md) - 上游评审阶段
-- [DDL执行评审技能](../301-database-ddl-execution-review/SKILL.md) - PLAN-REVIEW循环评审
+- [DDL执行评审技能](../301-database-ddl-execution-review/SKILL.md) - REVIEW评审技能

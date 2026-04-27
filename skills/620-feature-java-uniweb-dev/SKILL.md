@@ -97,9 +97,9 @@ version: "1.0.0"
 | Major | 自动修复80%，剩余记录 |
 | Minor | 记录但不阻塞 |
 
-## PLAN-REVIEW 循环（必须执行）
+## REVIEW评审
 
-Java后端开发完成后，调用 `621-feature-java-uniweb-dev-review` 执行评审。
+Java后端开发完成后，**自动调用 `621-feature-java-uniweb-dev-review`**，无需等待用户确认。
 
 ### 4. 测试执行
 

@@ -166,9 +166,9 @@ mv src/pages/product/ src/pages/admin/product/
 
 **代码模板**：参见 [references/templates.md](references/templates.md)
 
-## PLAN-REVIEW 循环（必须执行）
+## REVIEW评审
 
-设计完成后，调用 `221-admin-uniapp-design-review` 执行评审。
+设计完成后，**自动调用 `221-admin-uniapp-design-review`**，无需等待用户确认。
 
 ## 产出结构
 
@@ -201,7 +201,7 @@ $PROJECT_ROOT/frontend/{项目名}-admin-uniapp/
 
 ## 下一步
 
-设计（含 PLAN-REVIEW 循环）通过评审后，提示用户进入 **320-admin-uniapp-dev** 进行UniApp移动端业务开发。
+设计（含 REVIEW评审）通过评审后，提示用户进入 **320-admin-uniapp-dev** 进行UniApp移动端业务开发。
 
 **流程位置**：`220-admin-uniapp-init` → `220-admin-uniapp-gencode` → `220-admin-uniapp-design` (+ 221 review) → **320-admin-uniapp-dev**
 

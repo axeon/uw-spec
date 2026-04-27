@@ -90,9 +90,9 @@ version: "1.0.0"
 - [数据库设计指南 - 索引设计](references/database-design-guide.md) - 命名规范、设计流程、索引设计最佳实践
 - 编写 `PROJECT_ROOT/database/database-ddl.sql`
 
-## PLAN-REVIEW 循环（必须执行）
+## REVIEW评审
 
-数据库设计完成后，调用 `201-database-design-review` 执行评审。
+数据库设计完成后，**自动调用 `201-database-design-review`**，无需等待用户确认。
 
 ## 输出要求
 
@@ -104,7 +104,7 @@ PROJECT_ROOT/database/
 ├── database-design.md              # 设计文档（E-R图、实体定义、覆盖度验证）
 ├── database-ddl.sql                # 建表语句
 ├── migrations/                     # DDL变更文件
-└── reviews/                        # 评审报告（PLAN-REVIEW循环产出）
+└── reviews/                        # 评审报告（REVIEW评审产出）
     └── REVIEW-DB-YYMMDDHHMM.md     # 按时间戳命名，24小时制
 ```
 
@@ -123,4 +123,4 @@ PROJECT_ROOT/database/
 - [数据库DDL模板](references/database-ddl-template.md) - 建库建表语句模板（database-ddl.sql）
 
 ### 关联技能
-- [数据库设计评审技能](../201-database-design-review/SKILL.md) - PLAN-REVIEW循环调用的评审技能
+- [数据库设计评审技能](../201-database-design-review/SKILL.md) - REVIEW评审技能

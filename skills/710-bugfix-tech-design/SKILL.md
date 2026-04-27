@@ -128,9 +128,9 @@ version: "1.0.0"
 - 状态: 方案已设计
 ```
 
-## PLAN-REVIEW 循环（必须执行）
+## REVIEW评审
 
-修复方案设计完成后，调用 `711-bugfix-tech-design-review` 执行评审。
+修复方案设计完成后，**自动调用 `711-bugfix-tech-design-review`**，无需等待用户确认。
 
 ## 人工检查点 ★
 

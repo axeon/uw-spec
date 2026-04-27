@@ -103,7 +103,7 @@ version: "1.0.0"
 | 页面天然独立 | 各模块页面在不同文件，无文件级冲突 |
 | 共享组件串行 | 公共组件（components/）修改需串行 |
 | API层只读 | src/api/ 由代码生成器产出，并行时只读不改 |
-| review按模块 | 每个模块开发完成后独立进入 PLAN-REVIEW |
+| review按模块 | 每个模块开发完成后独立进入 REVIEW评审 |
 
 ## 开发流程
 
@@ -216,13 +216,13 @@ npm run dev
 - 单元测试
 - 编译验证通过
 
-## PLAN-REVIEW 循环（必须执行）
+## REVIEW评审
 
-Web前端开发完成后，调用 `321-admin-web-dev-review` 执行评审。
+Web前端开发完成后，**自动调用 `321-admin-web-dev-review`**，无需等待用户确认。
 
 ## 参考
 
 - [Web 开发规范](../220-admin-web-design/references/web-dev-standards.md) - Vue3+TS+Vite+Element Plus 后台管理规范
 - [220-admin-web-design](../220-admin-web-design/SKILL.md) - 上游原型设计阶段
-- [321-admin-web-dev-review](../321-admin-web-dev-review/SKILL.md) - PLAN-REVIEW循环评审
+- [321-admin-web-dev-review](../321-admin-web-dev-review/SKILL.md) - REVIEW评审技能
 - [开发模板](references/templates.md) - API对接、组件开发、状态管理示例

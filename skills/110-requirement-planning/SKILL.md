@@ -212,9 +212,9 @@ AskUserQuestion({
 
 按 [PRD模板](references/templates.md) 编写，聚焦**用户需求、功能范围、业务流程**，不涉及技术实现细节。
 
-## PLAN-REVIEW 循环（必须执行）
+## REVIEW评审
 
-PRD编写完成后，调用 `111-requirement-review` 执行评审。
+PRD编写完成后，**自动调用 `111-requirement-review`**，无需等待用户确认。
 
 ## 输出要求
 
@@ -228,4 +228,4 @@ PRD编写完成后，调用 `111-requirement-review` 执行评审。
 
 - [访谈指南](references/interview-guide.md) - 启发式提问策略、苏格拉底式追问和示例对话
 - [PRD模板](references/templates.md) - 需求文档模板
-- [需求评审技能](../111-requirement-review/SKILL.md) - PLAN-REVIEW循环调用的评审技能
+- [需求评审技能](../111-requirement-review/SKILL.md) - REVIEW评审技能

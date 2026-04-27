@@ -157,9 +157,9 @@ version: "1.0.0"
 | 测试数据独立 | 单独列出测试数据表，不内嵌在步骤中 |
 | 跨终端标注 | E2E用例涉及多终端协作时标注"涉及终端"和步骤中的"终端/角色"列 |
 
-## PLAN-REVIEW 循环（必须执行）
+## REVIEW评审
 
-测试用例设计完成后，调用 `231-test-case-design-review` 执行评审。
+测试用例设计完成后，**自动调用 `231-test-case-design-review`**，无需等待用户确认。
 
 ## 输出要求
 
@@ -171,7 +171,7 @@ PROJECT_ROOT/test/design/
 ├── e2e/README.md                     # E2E测试用例设计
 ├── load/README.md                    # 压测场景与SLA指标设计
 ├── security/README.md                # 安全测试场景设计
-└── reviews/                          # 评审报告（PLAN-REVIEW循环产出）
+└── reviews/                          # 评审报告（REVIEW评审产出）
     └── REVIEW-DESIGN-YYMMDDHHMM.md
 ```
 
@@ -182,4 +182,4 @@ PROJECT_ROOT/test/design/
 - [压测SLA指标模板](references/load-metrics.md) - 响应时间、容量、资源指标
 - [安全测试检查清单](references/security-checklist.md) - OWASP Top 10 检查项
 - [测试用例开发技能](../330-test-case-dev/SKILL.md) - 后期基于本文档编写自动化脚本
-- [测试设计评审技能](../231-test-case-design-review/SKILL.md) - PLAN-REVIEW循环调用的评审技能
+- [测试设计评审技能](../231-test-case-design-review/SKILL.md) - REVIEW评审技能
