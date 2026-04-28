@@ -56,7 +56,7 @@ version: "1.0.0"
 
 | 维度 | 检查要点 | 源技能章节 |
 |------|---------|-----------|
-| TDD实践 | `210-java-uniweb-design` Red骨架→`310-java-uniweb-dev` Green实现、覆盖率≥80%、@ExtendWith+MockedStatic、无fail()残留、无TODO残留 | `310-java-uniweb-dev` → 开发步骤 2.4 |
+| TDD实践 | `210-java-uniweb-design` Red骨架→`310-java-uniweb-dev` Green实现、覆盖率≥80%、继承BaseIntegrationTest+@SpringBootTest、无fail()残留、无TODO残留 | `310-java-uniweb-dev` → 开发步骤 2.4 |
 | UniWeb规范 | DaoManager/ResponseData/AuthQueryParam/FusionCache、禁用Lombok、static方法风格 | `310-java-uniweb-dev` → 开发步骤 2.3 + `210-java-uniweb-design` → 架构约定 |
 | 代码质量 | 单一职责、分层清晰、命名规范、复杂度 | `310-java-uniweb-dev` → 开发步骤 2.3 |
 | 安全性 | @Valid校验、QueryParam参数化、@MscPermDeclare、租户隔离 | `310-java-uniweb-dev` → 开发步骤 2.3 |

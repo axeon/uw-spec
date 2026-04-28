@@ -56,7 +56,7 @@ version: "1.0.0"
 | 代码可编译性 | mvn compile 通过、mvn test-compile 通过、mvn test 可运行（全红为预期）、Swagger 可用 | `210-java-uniweb-design` → Phase 2 Step 5 | 必须 |
 | Controller 质量 | 权限注解完整（含 guest 特殊规则）、Javadoc 完整、方法体有完整调用链路、URL 规范 | `210-java-uniweb-design` → Phase 2 Step 2 | 15分 |
 | Helper 质量 | Helper 三条件合理性、方法签名合理、Javadoc 含实现步骤、FusionCache 初始化完成、static 方法风格 | `210-java-uniweb-design` → Phase 2 Step 3 | 15分 |
-| 测试骨架质量 | 每个 Helper 有测试类、每个方法 ≥2 测试、@ExtendWith+MockedStatic、@DisplayName、fail("TDD Red: [Tn]") 与 TASKS.md ID 对应 | `210-java-uniweb-design` → Phase 2 Step 3.5 | 15分 |
+| 测试骨架质量 | 每个 Helper 有测试类、每个方法 ≥2 测试、继承 BaseIntegrationTest + @SpringBootTest、@DisplayName、fail("TDD Red: [Tn]") 与 TASKS.md ID 对应 | `210-java-uniweb-design` → Phase 2 Step 3.5 | 15分 |
 | DTO/VO 质量 | 搜索字段裁剪合理、校验注解完整 | `210-java-uniweb-design` → Phase 2 Step 1 | 10分 |
 | PRD 覆盖度 | 所有 PRD 功能点都有对应接口 | `210-java-uniweb-design` → Phase 1 PRD功能点映射 | 15分 |
 

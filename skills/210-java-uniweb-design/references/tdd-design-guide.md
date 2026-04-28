@@ -38,10 +38,11 @@
 
 | 原则 | 说明 |
 |------|------|
-| **全链路测试** | 使用 `@SpringBootTest` 启动完整 Spring 上下文，测试真实行为 |
-| **不 Mock 框架** | 不 Mock DaoManager/FusionCache，测试真实数据库交互 |
-| **单 Context** | 所有测试共享同一个 Spring Context，只启动一次 |
-| **数据隔离** | 使用测试数据前缀 + 手动清理，不用事务回滚 |
+| **全链路测试** | 使用 `@SpringBootTest` 启动完整 Spring 上下文，测试真实数据库交互 |
+| **单 Context** | 所有测试继承 `BaseIntegrationTest`，共享同一个 Spring Context，只启动一次 |
+| **数据隔离** | 使用测试数据前缀（`TEST_` + 时间戳）+ `@AfterEach` 手动清理，不用事务回滚 |
+| **测试用户** | 使用 `TestAuthUtils.setTestUser()` 设置测试用户（saasId=mchId=userId=666） |
+| **真实依赖** | DaoManager/FusionCache/GlobalLocker 均使用真实实例，测试真实数据库读写 |
 
 ### 测试分层
 

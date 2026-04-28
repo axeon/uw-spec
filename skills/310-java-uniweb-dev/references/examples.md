@@ -1,6 +1,6 @@
 # Java SaaS 开发示例（UniWeb 技术栈）
 
-> 基于 UniWeb + SaaS 技术栈的 TDD 开发示例。使用 `@SpringBootTest` 全链路测试，不 Mock DaoManager。
+> 基于 UniWeb + SaaS 技术栈的 TDD 开发示例。使用 `@SpringBootTest` 全链路测试，真实数据库交互。
 
 ## TDD 开发流程
 
@@ -659,8 +659,8 @@ class ProductControllerTest {
 
 | 要点 | 说明 |
 |------|------|
-| **全链路测试** | 使用 `@SpringBootTest` 启动完整 Spring 上下文，测试真实行为 |
-| **不 Mock 框架** | 不 Mock DaoManager/FusionCache，测试真实数据库交互 |
+| **全链路测试** | 使用 `@SpringBootTest` 启动完整 Spring 上下文，测试真实数据库交互 |
+| **真实依赖** | DaoManager/FusionCache/GlobalLocker 均使用真实实例，测试真实数据库读写 |
 | **单 Context** | 所有测试继承 `BaseIntegrationTest`，共享 Spring Context，只启动一次 |
 | **测试用户** | 使用 `TestAuthUtils.setTestUser()` 设置测试用户（saasId=mchId=userId=666） |
 | **数据隔离** | 使用 `TEST_时间戳_UUID` 前缀 + `@AfterEach` 手动清理，不用事务回滚 |

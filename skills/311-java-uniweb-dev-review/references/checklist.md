@@ -8,9 +8,9 @@
 |--------|------|-----------|
 | 测试先行 | 210 阶段有 Red 骨架，310 阶段实现变 Green | 310 → 开发步骤 2.4 |
 | 覆盖率 | 行覆盖≥80%，分支覆盖≥70% | 310 → 开发步骤 2.4 |
-| 测试结构 | @ExtendWith(MockitoExtension.class) + MockedStatic（DaoManager/FusionCache/GlobalLocker/AuthServiceHelper） | 310 → 开发步骤 2.4 Mock模式 |
+| 测试结构 | 继承 BaseIntegrationTest + @SpringBootTest，真实数据库交互 | 310 → 开发步骤 2.4 |
 | 断言质量 | 断言明确，边界测试完整，无 fail() 残留，无 TODO 残留 | 310 → 开发步骤 2.4 |
-| Mock 模式 | 所有依赖统一使用 MockedStatic + try-with-resources | 310 → 开发步骤 2.4 Mock模式 |
+| 全链路验证 | DaoManager/FusionCache/GlobalLocker 均使用真实实例 | 310 → 开发步骤 2.4 |
 | 命名规范 | test{Method}_{Scenario}_{ExpectedResult}，有 @DisplayName | 310 → 开发步骤 2.4 |
 | **TODO 清理** | **已实现的 Helper 方法上方 `// TODO: [Tn]` 行已删除** | 310 → 开发步骤 2.3 |
 

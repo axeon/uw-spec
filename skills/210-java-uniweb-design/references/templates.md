@@ -137,8 +137,8 @@ stateDiagram-v2
 
 | 测试层级 | 工具 | 覆盖范围 | 负责角色 |
 |---------|------|---------|---------|
-| 单元测试 | JUnit 5 + Mockito | Helper 所有公共方法 | 开发工程师 |
-| 集成测试 | Spring Boot Test | Controller → Helper → Dao 链路 | 开发工程师 |
+| 单元测试 | JUnit 5 + @SpringBootTest | Helper 所有公共方法（全链路） | 开发工程师 |
+| 集成测试 | Spring Boot Test + MockMvc | Controller → Helper → Dao 链路 | 开发工程师 |
 | API/E2E测试 | Playwright | 接口全量验证 + 端到端流程 | 测试工程师 |
 
 ### 覆盖率目标
@@ -149,14 +149,6 @@ stateDiagram-v2
 | 分支覆盖率 | ≥ 80% |
 | 核心 CRUD 方法 | 100%（每个 ≥ 2 个测试用例） |
 
-### Mock 策略
-
-| 被Mock组件 | Mock方式 | 说明 |
-|-----------|---------|------|
-| DaoManager | `MockedStatic` | 静态方法 `DaoManager.getInstance()` 隔离 |
-| FusionCache | `MockedStatic` | 静态方法隔离，验证 get/put/invalidate |
-| GlobalLocker | `MockedStatic` | 静态方法隔离，验证 tryLock/unlock |
-| AuthServiceHelper | `MockedStatic` | 静态方法隔离，模拟 getSaasId/getMchId |
 
 ### 关键测试场景
 
@@ -747,25 +739,21 @@ public class {Business}VO {
 
 ## 11. Helper 单元测试模板
 
-> 设计阶段（TDD Red）产出测试骨架，开发阶段实现 Mock 和断言逻辑。
+> 设计阶段（TDD Red）产出测试骨架，使用 `@SpringBootTest` 全链路测试。开发阶段实现 Helper 逻辑并让测试变绿。
 
 ### 简单模块测试模板
 
 ```java
 package {项目包路径}.service;
 
+import {项目包路径}.BaseIntegrationTest;
+import {项目包路径}.TestAuthUtils;
 import {项目包路径}.entity.{Entity};
 import uw.common.dto.ResponseData;
-import uw.dao.DaoManager;
-import uw.dao.DataList;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockedStatic;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 /**
  * {Module}HelperTest - {模块}复杂业务逻辑测试
@@ -774,28 +762,38 @@ import static org.mockito.Mockito.*;
  *
  * <p>测试策略：</p>
  * <ul>
- *   <li>MockedStatic DaoManager.getInstance() 隔离数据库</li>
+ *   <li>@SpringBootTest 启动完整 Spring 上下文，测试真实数据库交互</li>
+ *   <li>继承 BaseIntegrationTest，共享 Spring Context</li>
  *   <li>每个方法覆盖正常 + 边界/异常两个场景</li>
  * </ul>
  *
  * @author {author}
  * @since 1.0.0
  */
-@ExtendWith(MockitoExtension.class)
-class {Module}HelperTest {
+class {Module}HelperTest extends BaseIntegrationTest {
+
+    private final List<Long> createdIds = new ArrayList<>();
+
+    @Override
+    protected void cleanTestData() {
+        if (!createdIds.isEmpty()) {
+            String ids = createdIds.stream().map(String::valueOf).collect(Collectors.joining(","));
+            jdbcTemplate.execute("DELETE FROM {table_name} WHERE id IN (" + ids + ")");
+            createdIds.clear();
+        }
+    }
 
     // ==================== getXxx 测试 ====================
 
     /**
      * 测试查询{资源}详情 - 正常返回实体
      *
-     * <p>准备数据：构造存在的{资源}ID</p>
+     * <p>准备数据：插入测试{资源}记录</p>
      * <p>预期结果：返回ResponseData，isSuccess()=true，实体非null</p>
      */
     @Test
     @DisplayName("查询{资源}详情 - 正常返回实体")
     void testGet{Entity}_Found_ReturnEntity() {
-        // TODO: [Tn] 开发阶段实现 MockedStatic DaoManager 和断言
         fail("TDD Red: [Tn] Helper 方法尚未实现");
     }
 
@@ -818,16 +816,13 @@ class {Module}HelperTest {
 ```java
 package {项目包路径}.service;
 
+import {项目包路径}.BaseIntegrationTest;
+import {项目包路径}.TestAuthUtils;
 import {项目包路径}.entity.{Entity};
-import uw.cache.FusionCache;
-import uw.cache.GlobalLocker;
 import uw.common.dto.ResponseData;
 import uw.dao.DaoManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockedStatic;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -838,26 +833,37 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * <p>测试策略：</p>
  * <ul>
- *   <li>MockedStatic DaoManager.getInstance() 隔离数据库操作</li>
- *   <li>MockedStatic FusionCache / GlobalLocker 隔离缓存和锁</li>
- *   <li>MockedStatic AuthServiceHelper 隔离用户上下文</li>
+ *   <li>@SpringBootTest 启动完整 Spring 上下文，测试真实数据库交互</li>
+ *   <li>继承 BaseIntegrationTest，共享 Spring Context</li>
+ *   <li>FusionCache 使用真实实例，测试缓存读写一致性</li>
+ *   <li>GlobalLocker 使用真实实例，测试分布式锁获取/释放</li>
  *   <li>业务流程方法覆盖正常 + 每个分支 + 每个异常</li>
- *   <li>缓存方法验证 get/put/invalidate 调用链</li>
+ *   <li>缓存方法验证 get/put/invalidate 真实调用链</li>
  *   <li>分布式锁方法验证 tryLock/unlock 配对</li>
  * </ul>
  *
  * @author {author}
  * @since 1.0.0
  */
-@ExtendWith(MockitoExtension.class)
-class {Module}HelperTest {
+class {Module}HelperTest extends BaseIntegrationTest {
+
+    private final List<Long> createdIds = new ArrayList<>();
+
+    @Override
+    protected void cleanTestData() {
+        if (!createdIds.isEmpty()) {
+            String ids = createdIds.stream().map(String::valueOf).collect(Collectors.joining(","));
+            jdbcTemplate.execute("DELETE FROM {table_name} WHERE id IN (" + ids + ")");
+            createdIds.clear();
+        }
+    }
 
     // ==================== 业务流程测试 ====================
 
     /**
      * 测试{业务操作} - 正常流程
      *
-     * <p>准备数据：构造合法状态的{资源}ID</p>
+     * <p>准备数据：插入合法状态的{资源}记录</p>
      * <p>预期结果：成功执行，状态变更为目标状态</p>
      */
     @Test
@@ -869,7 +875,7 @@ class {Module}HelperTest {
     /**
      * 测试{业务操作} - 状态不允许
      *
-     * <p>准备数据：构造非法状态的{资源}ID</p>
+     * <p>准备数据：插入非法状态的{资源}记录</p>
      * <p>预期结果：返回错误，提示状态不允许操作</p>
      */
     @Test
@@ -881,8 +887,8 @@ class {Module}HelperTest {
     /**
      * 测试{业务操作} - 并发冲突
      *
-     * <p>准备数据：模拟 GlobalLocker.tryLock 返回 0（获取锁失败）</p>
-     * <p>预期结果：返回错误，提示操作正在处理中</p>
+     * <p>准备数据：插入{资源}记录，两个线程同时竞争锁</p>
+     * <p>预期结果：先获取锁的线程成功，后获取的线程返回锁失败错误</p>
      */
     @Test
     @DisplayName("{业务操作} - 并发冲突返回锁失败")
@@ -895,11 +901,11 @@ class {Module}HelperTest {
     /**
      * 测试缓存失效 - 修改后缓存被清除
      *
-     * <p>准备数据：Mock FusionCache 已有缓存数据</p>
-     * <p>预期结果：调用 update 后 FusionCache.invalidate 被调用</p>
+     * <p>准备数据：插入测试{资源}并写入 FusionCache</p>
+     * <p>预期结果：调用 update 后 FusionCache.getIfPresent 返回 null</p>
      */
     @Test
-    @DisplayName("缓存失效 - 修改后invalidate被调用")
+    @DisplayName("缓存失效 - 修改后缓存被清除")
     void testUpdate{Entity}_CacheInvalidated() {
         fail("TDD Red: [Tn] Helper 方法尚未实现");
     }
@@ -922,8 +928,10 @@ import uw.common.dto.ResponseData;
 import uw.dao.DataList;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -934,6 +942,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * <p>测试策略：</p>
  * <ul>
+ *   <li>@SpringBootTest + MockMvc 启动完整 Spring 上下文</li>
  *   <li>验证 HTTP 方法和路径映射（GET/POST）</li>
  *   <li>验证 @MscPermDeclare 权限注解正确性</li>
  *   <li>验证请求参数绑定（@RequestBody / @RequestParam）</li>
@@ -944,8 +953,12 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author {author}
  * @since 1.0.0
  */
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 class {Module}ControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
 
     // ==================== 列表查询测试 ====================
 
@@ -1029,14 +1042,10 @@ public class OrderHelper {
 }
 ```
 
-对应的测试类 Mock 声明：
+对应的测试类：
 
 ```java
-@ExtendWith(MockitoExtension.class)
-class OrderHelperTest {
-
-    // Helper 是静态类，测试时需要 MockedStatic
-    // 开发阶段补充 MockedStatic<OrderHelper> 等
+class OrderHelperTest extends BaseIntegrationTest {
 
     @Test
     @DisplayName("创建订单 - 正常流程")

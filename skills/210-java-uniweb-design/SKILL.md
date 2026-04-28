@@ -88,7 +88,7 @@ version: "1.0.0"
 | **横切关注点识别** | **识别跨模块的公共业务规则** | "PRD中哪些业务规则影响多个模块？（如敏感词检测、通知发送、权限校验、数据脱敏等）" |
 | 定制 API | 确定设计工作量 | "除标准CRUD+enable+disable外，各模块还有哪些接口？" |
 | 外部依赖 | 识别技术风险 | "需要对接哪些外部系统？saas-finance？第三方API？异步任务？" |
-| 测试策略 | 确定测试覆盖范围 | "哪些Helper方法需要Mock DaoManager/FusionCache？哪些需要并发测试？" |
+| 测试策略 | 确定测试覆盖范围 | "哪些Helper方法需要全链路测试？哪些需要并发测试？" |
 
 **横切关注点识别（重要）**：
 
@@ -222,7 +222,7 @@ version: "1.0.0"
 
 ##### Helper 单元测试
 
-测试类规范、注解、命名规范和 MockedStatic 策略详见 [references/tdd-design-guide.md](references/tdd-design-guide.md)。
+测试类规范、注解、命名规范详见 [references/tdd-design-guide.md](references/tdd-design-guide.md)。
 
 | 内容 | 说明 |
 |------|------|

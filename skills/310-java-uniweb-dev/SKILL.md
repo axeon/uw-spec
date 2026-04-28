@@ -172,12 +172,12 @@ grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 | 逐个变绿 | 每实现一个 Helper 方法，对应测试从红变绿 |
 
 **测试原则**：
-- 使用 `@SpringBootTest` 启动完整 Spring 上下文
-- 不 Mock DaoManager/FusionCache，测试真实数据库交互
+- 使用 `@SpringBootTest` 启动完整 Spring 上下文，测试真实数据库交互
 - 所有测试继承 `BaseIntegrationTest`，共享 Spring Context
 - 使用 `TestAuthUtil.setTestUser()` 设置测试用户（saasId=666）
 - 使用测试数据前缀 + `@AfterEach` 手动清理，不用事务回滚
 - 按 `saas_id = 666` 清理测试数据
+- DaoManager/FusionCache/GlobalLocker 均使用真实实例
 
 #### 2.5 模块验证
 

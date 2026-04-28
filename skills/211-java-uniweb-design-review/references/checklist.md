@@ -15,7 +15,7 @@
 | 外部依赖 | saas-finance、第三方接口、异步任务（如有） | 210 → Phase 1 按需章节 |
 | 全局错误码 | 业务错误码范围分配（如有） | 210 → Phase 1 按需章节 |
 | 状态机 | 有状态实体的状态流转图和操作映射（如有） | 210 → Phase 1 按需章节 |
-| 测试策略 | 测试分层（单元/集成）、覆盖率目标、Mock策略 | 210 → Phase 1 必须章节 |
+| 测试策略 | 测试分层（单元/集成）、覆盖率目标、全链路测试策略 | 210 → Phase 1 必须章节 |
 
 ## 2. TASKS.md 完整性
 
@@ -115,7 +115,7 @@
 |--------|------|-----------|
 | 测试类存在 | 每个 Helper 有对应 `{Module}HelperTest.java` | 210 → Phase 2 Step 3.5 Helper 单元测试 |
 | 测试类位置 | `src/test/java/{包}/service/{Module}HelperTest.java` | 210 → Phase 2 Step 3.5 |
-| Mockito 注解 | `@ExtendWith(MockitoExtension.class)` + `MockedStatic DaoManager/FusionCache` | 210 → Phase 2 Step 3.5 |
+| 测试基类 | 继承 `BaseIntegrationTest` + `@SpringBootTest` + 真实数据库交互 | 210 → Phase 2 Step 3.5 |
 | 测试方法数 | 每个 Helper 方法 ≥ 2 个测试方法（正常 + 边界/异常） | 210 → Phase 2 Step 3.5 |
 | @DisplayName | 每个测试方法有 `@DisplayName("...")` | 210 → Phase 2 Step 3.5 |
 | 测试方法 Javadoc | 包含测试意图、准备数据、预期结果 | 210 → Phase 2 Step 3.5 |
