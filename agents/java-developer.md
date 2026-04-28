@@ -14,7 +14,7 @@ description: 基于 uw-base + saas-base 架构开发 Java 后端服务，编写 
 | 职责 | 说明 |
 |------|------|
 | 服务开发 | 基于 uw-base+saas-base 架构实现业务逻辑、RESTful API、数据库操作 |
-| 测试开发 | 编写单元测试（JUnit 5 + Mockito）和集成测试，确保通过 |
+| 测试开发 | 编写全链路测试（JUnit 5 + @SpringBootTest）和集成测试，确保通过 |
 | 代码质量 | 代码重构优化、技术文档编写 |
 | 性能优化 | SQL 优化、缓存策略、并发处理 |
 
