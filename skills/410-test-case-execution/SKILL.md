@@ -10,7 +10,7 @@ version: "1.0.0"
 
 ## 项目环境检测
 
-从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 `0-init`。
 
 ## 角色职责
 
@@ -28,13 +28,13 @@ version: "1.0.0"
 | 测试脚本 | `PROJECT_ROOT/test/scripts/` | 330阶段产出的四类自动化脚本 |
 | API服务地址 | `API_BASE_URL` 环境变量 | 后端服务运行地址（如 `http://localhost:8080`） |
 | Web前端地址 | `WEB_BASE_URL` 环境变量 | 前端服务运行地址（如 `http://localhost:5173`） |
-| 测试设计文档 | `PROJECT_ROOT/test/design/` | 250阶段产出的测试设计（覆盖率基准） |
+| 测试设计文档 | `PROJECT_ROOT/test/design/` | `230-test-case-design` 阶段产出的测试设计（覆盖率基准） |
 
 ## 测试前提
 
 | 前提 | 验证方式 |
 |------|---------|
-| 330阶段脚本已完成 | `PROJECT_ROOT/test/scripts/` 目录存在且通过评审 |
+| `330-test-case-dev` 阶段脚本已完成 | `PROJECT_ROOT/test/scripts/` 目录存在且通过评审 |
 | 后端服务启动 | `curl {API_BASE_URL}/health` 返回200 |
 | 前端服务启动 | `curl {WEB_BASE_URL}` 返回200 |
 | JMeter已安装 | `jmeter --version` 可执行 |

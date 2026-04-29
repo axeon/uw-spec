@@ -10,7 +10,7 @@ version: "1.0.0"
 
 ## 项目环境检测
 
-从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 `0-init`。
 
 ## 角色职责
 
@@ -192,9 +192,9 @@ bash scripts/gencode.sh /Users/user/project "http://192.168.88.21/my-shop-app/v3
 
 ## 下一步
 
-代码生成完成后，提示用户进入 **220-admin-uniapp-design** 进行移动端原型设计（设计即代码，裁剪页面 + 配置路由）。
+代码生成完成后，提示用户进入 **`220-admin-uniapp-design`** 进行移动端原型设计（设计即代码，裁剪页面 + 配置路由）。
 
-**流程位置**：`220-admin-uniapp-init` → `220-admin-uniapp-gencode` → **220-admin-uniapp-design** (+ 221 review) → `320-admin-uniapp-dev`
+**流程位置**：`220-admin-uniapp-init` → `220-admin-uniapp-gencode` → **`220-admin-uniapp-design`** (+ `221-admin-uniapp-design-review`) → `320-admin-uniapp-dev`
 
 ## 参考
 

@@ -10,7 +10,7 @@ version: "1.0.0"
 
 ## 项目环境检测
 
-从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 `0-init`。
 
 ## 角色职责
 
@@ -38,7 +38,7 @@ ls -1 PROJECT_ROOT/backend/{项目名}-app/
 | 情况 | 操作 |
 |------|------|
 | 有后端项目 | 使用 `AskUserQuestion` 让用户选择目标项目 |
-| 没有后端项目 | 报错，提示先执行 210-java-uniweb-init |
+| 没有后端项目 | 报错，提示先执行 `210-java-uniweb-init` |
 
 ### 步骤2: 询问用户参数
 
@@ -191,9 +191,9 @@ controller/
 
 ## 下一步
 
-代码生成完成后，提示用户进入 **210-java-uniweb-design** 进行后端技术设计（TDD驱动，设计即代码）。
+代码生成完成后，提示用户进入 **`210-java-uniweb-design`** 进行后端技术设计（TDD驱动，设计即代码）。
 
-**流程位置**：`210-java-uniweb-init` → `210-java-uniweb-gencode` → **210-java-uniweb-design** → `310-java-uniweb-dev`
+**流程位置**：`210-java-uniweb-init` → `210-java-uniweb-gencode` → **`210-java-uniweb-design`** → `310-java-uniweb-dev`
 
 ## 参考
 
