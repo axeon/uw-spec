@@ -1,6 +1,6 @@
 ---
 name: 730-bugfix-guest-web
-description: Bug Web前端修复技能。当修复方案设计完成后触发：(1)基于修复方案修改Web前端代码, (2)编写回归测试, (3)调用731-bugfix-guest-web-review自动评审, (4)自动修复代码问题, (5)合并代码到主分支并更新CHANGELOG。请务必在用户提及Bug前端修复、Vue修复、Web问题修复时使用此技能。适用于guest（消费者）角色。
+description: Bug Web前端修复技能。当修复方案设计完成后触发：(1)基于修复方案修改Web前端代码, (2)编写回归测试, (3)调用731-bugfix-guest-web-review自动评审, (4)自动修复代码问题, (5)合并代码到主分支并更新CHANGELOG。请务必在用户提及Bug前端修复、Vue修复、Web问题修复时使用此技能。适用于guest（消费者）角色 ⚠️【强制】完成后必须调用 731-bugfix-guest-web-review，未通过前禁止声称完成。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
 version: "1.0.0"
@@ -90,14 +90,19 @@ version: "1.0.0"
 
 ### 4. 自动修复
 
-## REVIEW评审
+## ⚠️ 完成验证（强制）
+
+> 在声称"任务完成"之前，必须重新读取本节，逐项确认。
 
 Web前端修复完成后，调用 `731-bugfix-guest-web-review`。
 
+- [ ] 已重新读取本节全部内容
 - [ ] 已调用 `731-bugfix-guest-web-review`
 - [ ] 已收到评审通过确认（评分 ≥ 95）
 
 > 未收到通过确认前，禁止结束修复任务。
+> 以上检查项未全部勾选，禁止向用户报告"已完成"。
+
 
 ### 5. 生成修复文档
 

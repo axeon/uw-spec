@@ -1,6 +1,6 @@
 ---
 name: 640-feature-test-dev
-description: 功能测试脚本开发技能。当技术方案设计完成后触发：(1)基于技术方案生成自动化测试脚本, (2)编写API接口测试（Playwright）, (3)编写E2E界面测试（Playwright）, (4)编写回归测试用例, (5)调用641-feature-test-dev-review自动评审, (6)自动修复测试脚本, (7)执行测试并生成报告。请务必在用户提及测试脚本开发、自动化测试、Playwright测试时使用此技能。
+description: 功能测试脚本开发技能。当技术方案设计完成后触发：(1)基于技术方案生成自动化测试脚本, (2)编写API接口测试（Playwright）, (3)编写E2E界面测试（Playwright）, (4)编写回归测试用例, (5)调用641-feature-test-dev-review自动评审, (6)自动修复测试脚本, (7)执行测试并生成报告。请务必在用户提及测试脚本开发、自动化测试、Playwright测试时使用此技能 ⚠️【强制】完成后必须调用 641-feature-test-dev-review，未通过前禁止声称完成。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
 version: "1.0.0"
@@ -96,14 +96,19 @@ version: "1.0.0"
 
 ### 3. 自动修复
 
-## REVIEW评审
+## ⚠️ 完成验证（强制）
+
+> 在声称"任务完成"之前，必须重新读取本节，逐项确认。
 
 测试脚本开发完成后，调用 `641-feature-test-dev-review`。
 
+- [ ] 已重新读取本节全部内容
 - [ ] 已调用 `641-feature-test-dev-review`
 - [ ] 已收到评审通过确认（评分 ≥ 95）
 
 > 未收到通过确认前，禁止结束测试脚本开发任务。
+> 以上检查项未全部勾选，禁止向用户报告"已完成"。
+
 
 ### 4. 测试执行
 

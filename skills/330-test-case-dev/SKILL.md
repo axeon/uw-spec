@@ -1,6 +1,6 @@
 ---
 name: 330-test-case-dev
-description: 测试脚本开发技能。当需要开发自动化测试脚本时触发：(1)编写API接口测试脚本（Playwright request）, (2)编写E2E界面测试脚本（Playwright browser）, (3)编写跨终端协作测试脚本（多BrowserContext）, (4)编写JMeter压测脚本（.jmx）, (5)编写安全测试脚本（ZAP+Trivy+Playwright）, (6)编写执行bash脚本（bin/）, (7)指定类型开发或并行开发全部类型。当用户提及测试脚本开发、Playwright脚本、JMeter脚本、自动化测试开发、指定类型、并行开发时使用此技能。
+description: 测试脚本开发技能。当需要开发自动化测试脚本时触发：(1)编写API接口测试脚本（Playwright request）, (2)编写E2E界面测试脚本（Playwright browser）, (3)编写跨终端协作测试脚本（多BrowserContext）, (4)编写JMeter压测脚本（.jmx）, (5)编写安全测试脚本（ZAP+Trivy+Playwright）, (6)编写执行bash脚本（bin/）, (7)指定类型开发或并行开发全部类型。当用户提及测试脚本开发、Playwright脚本、JMeter脚本、自动化测试开发、指定类型、并行开发时使用此技能 ⚠️【强制】完成后必须调用 331-test-case-dev-review，未通过前禁止声称完成。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
 version: "1.0.0"
@@ -223,14 +223,19 @@ await page.locator('[name="phone"]').fill('13800138000')
 | `run-security.sh` | 执行安全扫描 |
 | `run-all.sh` | 按顺序执行全部测试 |
 
-## REVIEW评审
+## ⚠️ 完成验证（强制）
+
+> 在声称"任务完成"之前，必须重新读取本节，逐项确认。
 
 测试脚本开发完成后，调用 `331-test-case-dev-review`。
 
+- [ ] 已重新读取本节全部内容
 - [ ] 已调用 `331-test-case-dev-review`
 - [ ] 已收到评审通过确认（评分 ≥ 95）
 
 > 未收到通过确认前，禁止结束测试脚本开发任务。
+> 以上检查项未全部勾选，禁止向用户报告"已完成"。
+
 
 ## 参考
 

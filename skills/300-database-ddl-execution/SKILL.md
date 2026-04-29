@@ -1,6 +1,6 @@
 ---
 name: 300-database-ddl-execution
-description: 数据库DDL执行与验证技能。当用户需要执行数据库初始化或迁移时触发：(1)执行DDL建表语句, (2)执行增量迁移脚本, (3)验证表结构一致性, (4)执行初始数据脚本。支持从配置文件读取MySQL连接参数。
+description: 数据库DDL执行与验证技能。当用户需要执行数据库初始化或迁移时触发：(1)执行DDL建表语句, (2)执行增量迁移脚本, (3)验证表结构一致性, (4)执行初始数据脚本。支持从配置文件读取MySQL连接参数 ⚠️【强制】完成后必须调用 301-database-ddl-execution-review，未通过前禁止声称完成。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
 version: "1.0.0"
@@ -161,14 +161,19 @@ mysql -h {host} -P {port} -u {user} -p{pass} {db_name} < "{selected_file}"
 - 警告: {N}条
 ```
 
-## REVIEW评审
+## ⚠️ 完成验证（强制）
+
+> 在声称"任务完成"之前，必须重新读取本节，逐项确认。
 
 DDL执行完成后，调用 `301-database-ddl-execution-review`。
 
+- [ ] 已重新读取本节全部内容
 - [ ] 已调用 `301-database-ddl-execution-review`
 - [ ] 已收到评审通过确认（评分 ≥ 95）
 
 > 未收到通过确认前，禁止结束DDL执行任务。
+> 以上检查项未全部勾选，禁止向用户报告"已完成"。
+
 
 ## 输出要求
 

@@ -1,6 +1,6 @@
 ---
 name: 210-java-uniweb-design
-description: UniWeb后端技术设计（TDD驱动, 设计即代码）。当需要基于PRD和数据库设计进行后端技术设计时触发：(1)确认模块划分与定制API, (2)编写项目README.md总体设计（含测试策略）, (3)裁剪DTO和Controller, (4)新建Helper方法签名与缓存定义, (5)编写Helper单元测试骨架（TDD Red阶段）, (6)确保编译通过且测试可运行。当用户提及后端设计、接口设计、技术设计、生成脚手架时使用此技能。
+description: UniWeb后端技术设计（TDD驱动, 设计即代码）。当需要基于PRD和数据库设计进行后端技术设计时触发：(1)确认模块划分与定制API, (2)编写项目README.md总体设计（含测试策略）, (3)裁剪DTO和Controller, (4)新建Helper方法签名与缓存定义, (5)编写Helper单元测试骨架（TDD Red阶段）, (6)确保编译通过且测试可运行。当用户提及后端设计、接口设计、技术设计、生成脚手架时使用此技能 ⚠️【强制】完成后必须调用 211-java-uniweb-design-review，未通过前禁止声称完成。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
 version: "1.0.0"
@@ -281,14 +281,18 @@ version: "1.0.0"
 - [ ] Swagger UI 可展示所有接口
 - [ ] 前端可基于 Swagger 开始联调
 
-## REVIEW评审
+## ⚠️ 完成验证（强制）
+
+> 在声称"任务完成"之前，必须重新读取本节，逐项确认。
 
 以上标准全部满足后，调用 `211-java-uniweb-design-review`。
 
+- [ ] 已重新读取本节全部内容
 - [ ] 已调用 `211-java-uniweb-design-review`
 - [ ] 已收到评审通过确认（评分 ≥ 95）
 
 > 未收到通过确认前，禁止结束设计任务。
+> 以上检查项未全部勾选，禁止向用户报告"已完成"。
 
 ## 参考
 

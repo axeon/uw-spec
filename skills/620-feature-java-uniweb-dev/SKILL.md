@@ -1,6 +1,6 @@
 ---
 name: 620-feature-java-uniweb-dev
-description: 功能Java后端开发技能。当技术方案设计完成后触发：(1)基于技术方案生成Java后端代码, (2)实现Helper业务逻辑和Controller接口, (3)编写单元测试和集成测试, (4)调用621-feature-java-uniweb-dev-review自动评审, (5)自动修复代码问题, (6)合并代码到主分支并更新CHANGELOG。请务必在用户提及Java后端开发、实现后端功能、开发API接口时使用此技能。
+description: 功能Java后端开发技能。当技术方案设计完成后触发：(1)基于技术方案生成Java后端代码, (2)实现Helper业务逻辑和Controller接口, (3)编写单元测试和集成测试, (4)调用621-feature-java-uniweb-dev-review自动评审, (5)自动修复代码问题, (6)合并代码到主分支并更新CHANGELOG。请务必在用户提及Java后端开发、实现后端功能、开发API接口时使用此技能 ⚠️【强制】完成后必须调用 621-feature-java-uniweb-dev-review，未通过前禁止声称完成。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
 version: "1.0.0"
@@ -97,14 +97,19 @@ version: "1.0.0"
 | Major | 自动修复80%，剩余记录 |
 | Minor | 记录但不阻塞 |
 
-## REVIEW评审
+## ⚠️ 完成验证（强制）
+
+> 在声称"任务完成"之前，必须重新读取本节，逐项确认。
 
 Java后端开发完成后，调用 `621-feature-java-uniweb-dev-review`。
 
+- [ ] 已重新读取本节全部内容
 - [ ] 已调用 `621-feature-java-uniweb-dev-review`
 - [ ] 已收到评审通过确认（评分 ≥ 95）
 
 > 未收到通过确认前，禁止结束开发任务。
+> 以上检查项未全部勾选，禁止向用户报告"已完成"。
+
 
 ### 4. 测试执行
 

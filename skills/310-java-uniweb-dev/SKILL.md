@@ -1,6 +1,6 @@
 ---
 name: 310-java-uniweb-dev
-description: Java SaaS后端开发技能。当需要基于UniWeb+Saas技术栈开发Java后端服务时触发：(1)实现Helper业务逻辑, (2)开发RESTful API接口, (3)集成DaoManager/FusionCache, (4)对接AIP/AIS/saas-finance, (5)指定模块开发或并行开发全部模块, (6)TDD Green实现全链路测试。当用户提及Java后端开发、uw-base、SaaS开发、API开发、Helper实现、指定模块、并行开发时使用此技能。
+description: Java SaaS后端开发技能。当需要基于UniWeb+Saas技术栈开发Java后端服务时触发：(1)实现Helper业务逻辑, (2)开发RESTful API接口, (3)集成DaoManager/FusionCache, (4)对接AIP/AIS/saas-finance, (5)指定模块开发或并行开发全部模块, (6)TDD Green实现全链路测试。当用户提及Java后端开发、uw-base、SaaS开发、API开发、Helper实现、指定模块、并行开发时使用此技能 ⚠️【强制】完成后必须调用 311-java-uniweb-dev-review，未通过前禁止声称完成。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
 version: "1.1.0"
@@ -187,14 +187,18 @@ grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 | 无残留 TDD Red | `grep "TDD Red: \[Tn\]" {Test文件}` | 0 行 |
 | 模块测试通过 | `mvn test -pl {模块}` | 全绿 |
 
-#### 2.6 REVIEW评审
+#### ⚠️ 2.6 完成验证（强制）
+
+> 在声称"模块完成"之前，必须重新读取本节，逐项确认。
 
 模块开发完成后，调用 `311-java-uniweb-dev-review`，传入当前模块名。
 
+- [ ] 已重新读取本节全部内容
 - [ ] 已调用 `311-java-uniweb-dev-review`
 - [ ] 已收到评审通过确认（评分 ≥ 95）
 
 > 未收到通过确认前，禁止进入下一模块。
+> 以上检查项未全部勾选，禁止向用户报告"已完成"。
 
 ### 3. 联调验证（所有模块完成后）
 
@@ -212,14 +216,18 @@ grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 
 **失败处理**：任一项不通过，定位具体模块修复后重新验证。
 
-### 4. 全量 REVIEW评审
+### ⚠️ 4. 全量完成验证（强制）
+
+> 在声称"开发完成"之前，必须重新读取本节，逐项确认。
 
 联调验证通过后，调用 `311-java-uniweb-dev-review`（不传模块名，触发全量评审）。
 
+- [ ] 已重新读取本节全部内容
 - [ ] 已调用 `311-java-uniweb-dev-review`（全量模式）
 - [ ] 已收到评审通过确认（评分 ≥ 95）
 
 > 未收到通过确认前，禁止结束开发任务。
+> 以上检查项未全部勾选，禁止向用户报告"已完成"。
 
 ## 并行开发约束
 

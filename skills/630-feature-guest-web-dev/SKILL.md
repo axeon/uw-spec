@@ -1,6 +1,6 @@
 ---
 name: 630-feature-guest-web-dev
-description: 功能Web前端开发技能。当技术方案设计完成后触发：(1)基于技术方案生成Web前端代码, (2)实现Vue页面组件和交互逻辑, (3)对接后端API, (4)编写单元测试, (5)调用631-feature-guest-web-dev-review自动评审, (6)自动修复代码问题, (7)合并代码到主分支并更新CHANGELOG。请务必在用户提及Web前端开发、Vue开发、实现前端功能时使用此技能。适用于guest（消费者）角色。
+description: 功能Web前端开发技能。当技术方案设计完成后触发：(1)基于技术方案生成Web前端代码, (2)实现Vue页面组件和交互逻辑, (3)对接后端API, (4)编写单元测试, (5)调用631-feature-guest-web-dev-review自动评审, (6)自动修复代码问题, (7)合并代码到主分支并更新CHANGELOG。请务必在用户提及Web前端开发、Vue开发、实现前端功能时使用此技能。适用于guest（消费者）角色 ⚠️【强制】完成后必须调用 631-feature-guest-web-dev-review，未通过前禁止声称完成。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
 version: "1.0.0"
@@ -90,14 +90,19 @@ version: "1.0.0"
 
 ### 3. 自动修复
 
-## REVIEW评审
+## ⚠️ 完成验证（强制）
+
+> 在声称"任务完成"之前，必须重新读取本节，逐项确认。
 
 Web前端开发完成后，调用 `631-feature-guest-web-dev-review`。
 
+- [ ] 已重新读取本节全部内容
 - [ ] 已调用 `631-feature-guest-web-dev-review`
 - [ ] 已收到评审通过确认（评分 ≥ 95）
 
 > 未收到通过确认前，禁止结束开发任务。
+> 以上检查项未全部勾选，禁止向用户报告"已完成"。
+
 
 ### 4. 测试执行
 

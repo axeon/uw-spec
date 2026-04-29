@@ -1,6 +1,6 @@
 ---
 name: 410-test-case-execution
-description: 测试执行技能。当需要执行自动化测试时触发：(1)执行API接口测试, (2)执行E2E界面测试（单终端+跨终端）, (3)执行JMeter压力测试, (4)执行安全扫描（ZAP+Trivy）, (5)管理缺陷和Bug跟踪, (6)生成四类测试报告。当用户提及测试执行、运行测试、执行E2E测试、压力测试执行、安全扫描执行时使用此技能。
+description: 测试执行技能。当需要执行自动化测试时触发：(1)执行API接口测试, (2)执行E2E界面测试（单终端+跨终端）, (3)执行JMeter压力测试, (4)执行安全扫描（ZAP+Trivy）, (5)管理缺陷和Bug跟踪, (6)生成四类测试报告。当用户提及测试执行、运行测试、执行E2E测试、压力测试执行、安全扫描执行时使用此技能 ⚠️【强制】完成后必须调用 411-test-case-execution-review，未通过前禁止声称完成。
 alwaysApply: false
 author: "axeon(23231269@qq.com)"
 version: "1.0.0"
@@ -117,14 +117,19 @@ $PROJECT_ROOT/test/reports/
     └── summary-YYMMDDHHMM.md
 ```
 
-## REVIEW评审
+## ⚠️ 完成验证（强制）
+
+> 在声称"任务完成"之前，必须重新读取本节，逐项确认。
 
 测试执行完成后，调用 `411-test-case-execution-review`。
 
+- [ ] 已重新读取本节全部内容
 - [ ] 已调用 `411-test-case-execution-review`
 - [ ] 已收到评审通过确认（评分 ≥ 95）
 
 > 未收到通过确认前，禁止结束测试执行任务。
+> 以上检查项未全部勾选，禁止向用户报告"已完成"。
+
 
 ## 参考
 
