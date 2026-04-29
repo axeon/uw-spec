@@ -168,6 +168,5 @@ npx playwright test security/ --project=api \
 
 ## 结论
 - [x] 通过，可以发布
-- [ ] 有条件通过
 - [ ] 不通过
 ```
