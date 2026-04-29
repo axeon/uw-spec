@@ -29,10 +29,10 @@ version: "1.0.0"
 | 条件 | 操作 |
 |------|------|
 | `PROJECT_ROOT/project-info.md` 存在 | 读取文件内容，执行 Phase 1 需求访谈与澄清 |
-| `PROJECT_ROOT/project-info.md` 不存在 | **跳转执行 0-init**，初始化完成后自动回到 110 继续执行 |
+| `PROJECT_ROOT/project-info.md` 不存在 | **跳转执行 `0-init`**，初始化完成后自动回到 `110-requirement-planning` 继续执行 |
 
-**跳转 0-init 时的信息传递**：
-告知 0-init 当前是从 110 跳转而来，0-init 完成初始化后应自动触发回到 110。
+**跳转 `0-init` 时的信息传递**：
+告知 `0-init` 当前是从 `110-requirement-planning` 跳转而来，`0-init` 完成初始化后应自动触发回到 `110-requirement-planning`。
 
 ## 角色职责
 

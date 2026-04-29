@@ -123,18 +123,18 @@ version: "1.0.0"
 - [ ] 变更影响是否评估完整
 - [ ] 风险是否可接受
 
-**确认后流转**: 并行进入 720/730/731/740
+**确认后流转**: 并行进入 `720-bugfix-java-uniweb`/`730-bugfix-admin-web`/`730-bugfix-guest-web`/`730-bugfix-admin-uniapp`/`730-bugfix-guest-uniapp`/`740-bugfix-test`
 
-## 710→下游衔接协议
+## `710-bugfix-tech-design` → 下游衔接协议
 
-710 设计完成后，各下游技能从以下文件提取开发输入：
+`710-bugfix-tech-design` 设计完成后，各下游技能从以下文件提取开发输入：
 
 | 下游技能 | 提取文件 | 用途 |
 |---------|---------|------|
-| 720-bugfix-java-uniweb | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` + DDL文件（如有） | 修复方案 + 数据库变更 |
-| 730-bugfix-admin-web / 730-bugfix-guest-web | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 修复方案（前端部分） |
-| 730-bugfix-admin-uniapp / 730-bugfix-guest-uniapp | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 修复方案（移动端部分） |
-| 740-bugfix-test | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` + `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-*.md` | 修复方案 + Bug分析（回归测试） |
+| `720-bugfix-java-uniweb` | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` + DDL文件（如有） | 修复方案 + 数据库变更 |
+| `730-bugfix-admin-web` / `730-bugfix-guest-web` | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 修复方案（前端部分） |
+| `730-bugfix-admin-uniapp` / `730-bugfix-guest-uniapp` | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 修复方案（移动端部分） |
+| `740-bugfix-test` | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` + `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-*.md` | 修复方案 + Bug分析（回归测试） |
 
 **并行约束**：四端天然独立，可同时由不同Agent修复。DDL需先执行，后端修复依赖DDL。
 
@@ -157,5 +157,5 @@ AI自动评审
     ↓
 输出: 修复方案
     ↓
-并行进入: 720/730/740
+并行进入: `720-bugfix-java-uniweb`/`730-bugfix-admin-web`/`730-bugfix-guest-web`/`730-bugfix-admin-uniapp`/`730-bugfix-guest-uniapp`/`740-bugfix-test`
 ```

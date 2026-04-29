@@ -19,10 +19,10 @@ version: "1.0.0"
 | 条件 | 操作 |
 |------|------|
 | `PROJECT_ROOT/project-info.md` 存在 | 读取文件内容，基于 `project-desc` 和「项目概述」进行五维分析 |
-| `PROJECT_ROOT/project-info.md` 不存在 | **跳转执行 0-init**，初始化完成后自动回到 100 继续分析 |
+| `PROJECT_ROOT/project-info.md` 不存在 | **跳转执行 `0-init`**，初始化完成后自动回到 `100-rapid-idea-check` 继续分析 |
 
-**跳转 0-init 时的信息传递**：
-告知 0-init 当前是从 100 跳转而来，0-init 完成初始化后应自动触发回到 100。
+**跳转 `0-init` 时的信息传递**：
+告知 `0-init` 当前是从 `100-rapid-idea-check` 跳转而来，`0-init` 完成初始化后应自动触发回到 `100-rapid-idea-check`。
 
 ## 角色职责
 

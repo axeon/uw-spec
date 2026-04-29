@@ -40,9 +40,9 @@ version: "1.0.0"
 | 更新文档 | `PROJECT_ROOT/backend/{项目名}-app/README.md` | 合并后的主文档 |
 | 变更记录 | `PROJECT_ROOT/backend/{项目名}-app/CHANGELOG.md` | 代码变更历史 |
 
-## 610→620 衔接协议
+## `610-feature-tech-design` → `620-feature-java-uniweb-dev` 衔接协议
 
-610 设计完成后，620 从以下文件提取开发输入：
+`610-feature-tech-design` 设计完成后，`620-feature-java-uniweb-dev` 从以下文件提取开发输入：
 
 | 提取项 | 来源文件 | 用途 |
 |--------|---------|------|
@@ -50,7 +50,7 @@ version: "1.0.0"
 | DDL文件 | `PROJECT_ROOT/database/migrations/FEATURE-*.sql` | 数据库变更，需先执行 |
 | 现有架构 | `PROJECT_ROOT/backend/{项目名}-app/README.md` | 编码规范、模块结构 |
 
-**并行约束**：620 与 630/631/640 天然独立可并行。DDL需先执行完毕后才能开始 620。
+**并行约束**：`620-feature-java-uniweb-dev` 与 `630-feature-admin-web-dev`/`630-feature-guest-web-dev`/`630-feature-admin-uniapp-dev`/`630-feature-guest-uniapp-dev`/`640-feature-test-dev` 天然独立可并行。DDL需先执行完毕后才能开始。
 
 ## 执行流程
 
@@ -143,7 +143,7 @@ version: "1.0.0"
     ↓
 620-feature-java-uniweb-dev
     ↓
-AI生成代码 → AI评审(311) → 自动修复 → 测试执行
+AI生成代码 → AI评审(`621-feature-java-uniweb-dev-review`) → 自动修复 → 测试执行
     ↓
 输出: Java后端代码 + 测试代码
     ↓

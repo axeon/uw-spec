@@ -42,16 +42,16 @@ version: "1.0.0"
 | 更新文档 | `PROJECT_ROOT/frontend/{项目名}-guest-uniapp/README.md` | 合并后的主文档 |
 | 变更记录 | `PROJECT_ROOT/frontend/{项目名}-guest-uniapp/CHANGELOG.md` | 代码变更历史 |
 
-## 610→630 衔接协议
+## `610-feature-tech-design` → `630-feature-guest-uniapp-dev` 衔接协议
 
-610 设计完成后，630 从以下文件提取开发输入：
+`610-feature-tech-design` 设计完成后，`630-feature-guest-uniapp-dev` 从以下文件提取开发输入：
 
 | 提取项 | 来源文件 | 用途 |
 |--------|---------|------|
 | 移动端方案 | `PROJECT_ROOT/frontend/{项目名}-guest-uniapp/issues/FEATURE-DESIGN-*-tech-design.md` | 页面结构、平台适配、交互流程 |
 | 后端Swagger | `PROJECT_ROOT/backend/{项目名}-app/` | API接口定义 |
 
-**并行约束**：630 与 620/630/640 天然独立可并行。630 依赖后端 API 可访问。
+**并行约束**：`630-feature-guest-uniapp-dev` 与 `620-feature-java-uniweb-dev`/`630-feature-admin-web-dev`/`630-feature-guest-web-dev`/`630-feature-admin-uniapp-dev`/`640-feature-test-dev` 天然独立可并行。依赖后端 API 可访问。
 
 ## 执行流程
 
@@ -161,9 +161,9 @@ version: "1.0.0"
 ```
 输入: 技术方案
     ↓
-631-feature-guest-uniapp-dev
+630-feature-guest-uniapp-dev
     ↓
-AI生成代码 → 平台适配 → AI评审(321) → 自动修复 → 测试执行
+AI生成代码 → 平台适配 → AI评审(`631-feature-guest-uniapp-dev-review`) → 自动修复 → 测试执行
     ↓
 输出: UniApp移动端代码
     ↓

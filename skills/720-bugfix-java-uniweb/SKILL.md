@@ -39,9 +39,9 @@ version: "1.0.0"
 | 评审报告 | `PROJECT_ROOT/backend/{项目名}-app/reviews/` | AI评审报告 |
 | 变更记录 | `PROJECT_ROOT/backend/{项目名}-app/CHANGELOG.md` | 代码变更历史 |
 
-## 710→720 衔接协议
+## `710-bugfix-tech-design` → `720-bugfix-java-uniweb` 衔接协议
 
-710 设计完成后，720 从以下文件提取开发输入：
+`710-bugfix-tech-design` 设计完成后，`720-bugfix-java-uniweb` 从以下文件提取开发输入：
 
 | 提取项 | 来源文件 | 用途 |
 |--------|---------|------|
@@ -49,7 +49,7 @@ version: "1.0.0"
 | Bug分析报告 | `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-*.md` | Bug复现步骤、根因分析 |
 | DDL文件（如有） | `PROJECT_ROOT/database/migrations/BUGFIX-*.sql` | 数据库变更，需先执行 |
 
-**并行约束**：720 与 730/731/740 天然独立可并行。DDL需先执行完毕后才能开始 720。
+**并行约束**：`720-bugfix-java-uniweb` 与 `730-bugfix-admin-web`/`730-bugfix-guest-web`/`730-bugfix-admin-uniapp`/`730-bugfix-guest-uniapp`/`740-bugfix-test` 天然独立可并行。DDL需先执行完毕后才能开始。
 
 ## 执行流程
 
@@ -136,7 +136,7 @@ version: "1.0.0"
     ↓
 720-bugfix-java-uniweb
     ↓
-AI修复代码 → AI评审(311) → 自动修复 → 测试执行
+AI修复代码 → AI评审(`721-bugfix-java-uniweb-dev-review`) → 自动修复 → 测试执行
     ↓
 输出: 修复后的代码
     ↓

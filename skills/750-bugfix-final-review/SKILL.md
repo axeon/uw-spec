@@ -33,10 +33,10 @@ version: "1.0.0"
 
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| Bug分析报告 | `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-{简述}.md` | 700阶段输出 |
-| 修复方案 | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md` | 710阶段输出 |
-| 修复代码 | 各端src/ | 720/730/731阶段输出 |
-| 回归测试 | `PROJECT_ROOT/test/scripts/` | 740阶段输出 |
+| Bug分析报告 | `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-{简述}.md` | `700-bugfix-analysis` 阶段输出 |
+| 修复方案 | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md` | `710-bugfix-tech-design` 阶段输出 |
+| 修复代码 | 各端src/ | `720-bugfix-java-uniweb`/`730-bugfix-admin-web`/`730-bugfix-guest-web`/`730-bugfix-admin-uniapp`/`730-bugfix-guest-uniapp` 阶段输出 |
+| 回归测试 | `PROJECT_ROOT/test/scripts/` | `740-bugfix-test` 阶段输出 |
 
 ## 输出
 

@@ -39,16 +39,16 @@ version: "1.0.0"
 | 评审报告 | `PROJECT_ROOT/frontend/{项目名}-admin-web/reviews/` | AI评审报告 |
 | 变更记录 | `PROJECT_ROOT/frontend/{项目名}-admin-web/CHANGELOG.md` | 代码变更历史 |
 
-## 710→730 衔接协议
+## `710-bugfix-tech-design` → `730-bugfix-admin-web` 衔接协议
 
-710 设计完成后，730 从以下文件提取开发输入：
+`710-bugfix-tech-design` 设计完成后，`730-bugfix-admin-web` 从以下文件提取开发输入：
 
 | 提取项 | 来源文件 | 用途 |
 |--------|---------|------|
 | 修复方案 | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 修复思路、前端修改范围 |
 | Bug分析报告 | `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-*.md` | Bug复现步骤 |
 
-**并行约束**：730 与 720/731/740 天然独立可并行。
+**并行约束**：`730-bugfix-admin-web` 与 `720-bugfix-java-uniweb`/`730-bugfix-guest-web`/`730-bugfix-admin-uniapp`/`730-bugfix-guest-uniapp`/`740-bugfix-test` 天然独立可并行。
 
 ## 执行流程
 
@@ -135,7 +135,7 @@ version: "1.0.0"
     ↓
 730-bugfix-admin-web
     ↓
-AI修复代码 → AI评审(321) → 自动修复 → 测试执行
+AI修复代码 → AI评审(`731-bugfix-admin-web-review`) → 自动修复 → 测试执行
     ↓
 输出: 修复后的代码
     ↓

@@ -50,9 +50,9 @@ version: "1.0.0"
 
 | 前置技能 | 说明 |
 |---------|------|
-| 200-database-design | 数据库设计已完成并通过评审 |
-| 210-java-uniweb-init | 项目已通过模板初始化 |
-| 210-java-uniweb-gencode | entity/dto/controller 全量curd功能已由代码生成器生成在admin角色下，需定制裁剪 |
+| `200-database-design` | 数据库设计已完成并通过评审 |
+| `210-java-uniweb-init` | 项目已通过模板初始化 |
+| `210-java-uniweb-gencode` | entity/dto/controller 全量curd功能已由代码生成器生成在admin角色下，需定制裁剪 |
 
 **已生成代码**：代码生成器已产出 entity 实体类、dto 数据传输对象和标准 CRUD Controller，设计阶段在此基础上裁剪和补充。
 

@@ -10,7 +10,7 @@ version: "1.0.0"
 
 ## 项目环境检测
 
-从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 0-init。
+从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](../0-init/references/project-env-check.md)。**未找到** → 提示用户先执行 `0-init`。
 
 ## 角色职责
 
@@ -53,7 +53,7 @@ version: "1.0.0"
 | 前端表格列 | 与后端参数一致 | `userName`, `email`, `orderStatus` |
 | 测试选择器 | 基于字段名或语义属性定位 | `getByLabel('用户名')`, `getByRole('button', { name: '提交' })` |
 
-**核心结论**：由于全链路字段命名一致，E2E 测试无需额外添加 `data-testid`。330 阶段编写测试脚本时，直接使用元素自身属性（role、label、placeholder、text）定位即可。
+**核心结论**：由于全链路字段命名一致，E2E 测试无需额外添加 `data-testid`。`330-test-case-dev` 阶段编写测试脚本时，直接使用元素自身属性（role、label、placeholder、text）定位即可。
 
 ## 四类测试设计
 
@@ -142,7 +142,7 @@ version: "1.0.0"
 | 用例ID | 唯一标识，如 `TC-{类型}-{模块}-{序号}` | `test.describe()` / `test()` |
 | 前置条件 | 登录角色、初始数据 | `beforeEach()` 中准备 |
 | 测试步骤 | 操作序列（导航→操作→验证） | Playwright / JMeter 操作 |
-| 元素定位 | 目标元素描述（基于字段一致性原则，如"用户名输入框"、"提交按钮"） | 330阶段按实际代码选择最优选择器 |
+| 元素定位 | 目标元素描述（基于字段一致性原则，如"用户名输入框"、"提交按钮"） | `330-test-case-dev` 阶段按实际代码选择最优选择器 |
 | 预期结果 | 状态断言、数据变化断言 | `expect()` / Response Assertion |
 | 测试数据 | 输入值、预期值 | 测试数据JSON或fixture |
 | 优先级 | P0（冒烟）/ P1（核心）/ P2（扩展）/ P3（边界） | 测试分组标记 |

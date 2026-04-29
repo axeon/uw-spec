@@ -41,16 +41,16 @@ version: "1.0.0"
 | 评审报告 | `PROJECT_ROOT/test/reviews/` | AI评审报告 |
 | 变更记录 | `PROJECT_ROOT/test/scripts/CHANGELOG.md` | 测试变更历史 |
 
-## 710→740 衔接协议
+## `710-bugfix-tech-design` → `740-bugfix-test` 衔接协议
 
-710 设计完成后，740 从以下文件提取开发输入：
+`710-bugfix-tech-design` 设计完成后，`740-bugfix-test` 从以下文件提取开发输入：
 
 | 提取项 | 来源文件 | 用途 |
 |--------|---------|------|
 | 修复方案 | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-*.md` | 测试策略、回归范围 |
 | Bug分析报告 | `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-*.md` | Bug复现步骤、预期行为 |
 
-**并行约束**：740 与 720/730/731 天然独立可并行。E2E 测试依赖前端页面可访问。
+**并行约束**：`740-bugfix-test` 与 `720-bugfix-java-uniweb`/`730-bugfix-admin-web`/`730-bugfix-guest-web`/`730-bugfix-admin-uniapp`/`730-bugfix-guest-uniapp` 天然独立可并行。E2E 测试依赖前端页面可访问。
 
 ## 执行流程
 
@@ -132,7 +132,7 @@ version: "1.0.0"
     ↓
 740-bugfix-test
     ↓
-AI生成测试 → AI评审(331) → 自动修复 → 测试执行
+AI生成测试 → AI评审(`741-bugfix-test-review`) → 自动修复 → 测试执行
     ↓
 输出: 回归测试 + 测试报告
     ↓

@@ -234,18 +234,18 @@ CREATE INDEX idx_{name} ON {table_name}({column_list});
 - [ ] 测试方案是否覆盖所有需求点
 - [ ] 技术方案是否可实施
 
-**确认后流转**: 并行进入 620/630/640
+**确认后流转**: 并行进入 `620-feature-java-uniweb-dev`/`630-feature-admin-web-dev`/`630-feature-guest-web-dev`/`630-feature-admin-uniapp-dev`/`630-feature-guest-uniapp-dev`/`640-feature-test-dev`
 
-## 610→下游衔接协议
+## `610-feature-tech-design` → 下游衔接协议
 
-610 设计完成后，各下游技能从以下文件提取开发输入：
+`610-feature-tech-design` 设计完成后，各下游技能从以下文件提取开发输入：
 
 | 下游技能 | 提取文件 | 用途 |
 |---------|---------|------|
-| 620-feature-java-uniweb-dev | `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-*-tech-design.md` | 后端技术方案 |
-| 630-feature-admin-web-dev / 630-feature-guest-web-dev | `PROJECT_ROOT/frontend/{项目名}-{用户角色}-web/issues/FEATURE-DESIGN-{YYMMDD}-*-tech-design.md` | Web前端方案 |
-| 630-feature-admin-uniapp-dev / 630-feature-guest-uniapp-dev | `PROJECT_ROOT/frontend/{项目名}-{用户角色}-uniapp/issues/FEATURE-DESIGN-{YYMMDD}-*-tech-design.md` | 移动端方案 |
-| 640-feature-test-dev | `PROJECT_ROOT/test/issues/FEATURE-DESIGN-{YYMMDD}-*-test-design.md` | 测试方案 |
+| `620-feature-java-uniweb-dev` | `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-*-tech-design.md` | 后端技术方案 |
+| `630-feature-admin-web-dev` / `630-feature-guest-web-dev` | `PROJECT_ROOT/frontend/{项目名}-{用户角色}-web/issues/FEATURE-DESIGN-{YYMMDD}-*-tech-design.md` | Web前端方案 |
+| `630-feature-admin-uniapp-dev` / `630-feature-guest-uniapp-dev` | `PROJECT_ROOT/frontend/{项目名}-{用户角色}-uniapp/issues/FEATURE-DESIGN-{YYMMDD}-*-tech-design.md` | 移动端方案 |
+| `640-feature-test-dev` | `PROJECT_ROOT/test/issues/FEATURE-DESIGN-{YYMMDD}-*-test-design.md` | 测试方案 |
 
 **并行约束**：四端天然独立，可同时由不同Agent开发。DDL需先执行，后端开发依赖DDL。
 

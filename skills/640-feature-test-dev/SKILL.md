@@ -42,16 +42,16 @@ version: "1.0.0"
 | 测试报告 | `PROJECT_ROOT/test/reports/` | 测试执行报告 |
 | 变更记录 | `PROJECT_ROOT/test/scripts/CHANGELOG.md` | 测试变更历史 |
 
-## 610→640 衔接协议
+## `610-feature-tech-design` → `640-feature-test-dev` 衔接协议
 
-610 设计完成后，640 从以下文件提取开发输入：
+`610-feature-tech-design` 设计完成后，`640-feature-test-dev` 从以下文件提取开发输入：
 
 | 提取项 | 来源文件 | 用途 |
 |--------|---------|------|
 | 测试方案 | `PROJECT_ROOT/test/issues/FEATURE-DESIGN-*-test-design.md` | 测试范围、场景、策略 |
 | 功能需求 | `PROJECT_ROOT/issue/features/FEATURE-{YYMMDD}-*.md` | 验收标准 |
 
-**并行约束**：640 与 620/630/631 天然独立可并行。640 的 E2E 测试依赖前端页面可访问。
+**并行约束**：`640-feature-test-dev` 与 `620-feature-java-uniweb-dev`/`630-feature-admin-web-dev`/`630-feature-guest-web-dev`/`630-feature-admin-uniapp-dev`/`630-feature-guest-uniapp-dev` 天然独立可并行。E2E 测试依赖前端页面可访问。
 
 ## 执行流程
 
@@ -152,7 +152,7 @@ version: "1.0.0"
     ↓
 640-feature-test-dev
     ↓
-AI生成测试 → AI评审(331) → 自动修复 → 测试执行
+AI生成测试 → AI评审(`641-feature-test-dev-review`) → 自动修复 → 测试执行
     ↓
 输出: 测试脚本 + 测试报告
     ↓
