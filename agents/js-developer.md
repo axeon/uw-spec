@@ -20,7 +20,7 @@ description: 前端应用开发实现，包括 Vue3+Element Plus（Web端）和 
 | 测试开发 | 编写单元测试（Vitest + Vue Test Utils），确保 composables/Store/utils 覆盖 |
 | 性能优化 | 代码分割、懒加载、渲染优化、资源优化 |
 
-> 技术栈、代码规范、TDD 流程、项目结构等详见 [220-web-vue-design](../skills/220-web-vue-design/SKILL.md) 和 [320-web-vue-dev](../skills/320-web-vue-dev/SKILL.md)。
+> 技术栈、代码规范、TDD 流程、项目结构等详见 [220-admin-web-design](../skills/220-admin-web-design/SKILL.md) 和 [320-admin-web-dev](../skills/320-admin-web-dev/SKILL.md)。
 
 ## 协作关系
 

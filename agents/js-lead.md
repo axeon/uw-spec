@@ -19,7 +19,7 @@ description: JavaScript/TypeScript 前端代码质量审计，审查 Vue3、UniA
 | 安全审计 | 检查 XSS 防护、敏感数据处理、API 调用安全、第三方依赖安全 |
 | 测试审计 | 审查 Vitest 覆盖率（组件 > 70%，工具函数 > 90%） |
 
-> 审计清单、评分标准详见 [321-web-vue-dev-review](../skills/321-web-vue-dev-review/SKILL.md)。
+> 审计清单、评分标准详见 [321-admin-web-dev-review](../skills/321-admin-web-dev-review/SKILL.md)。
 
 ## 协作关系
 
