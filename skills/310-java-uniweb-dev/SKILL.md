@@ -27,11 +27,11 @@ version: "1.1.0"
 |--------|----------|------|
 | PRD | `PROJECT_ROOT/requirement/prds/*` | 产品需求文档，功能模块及验收标准 |
 | 数据库设计文档 | `PROJECT_ROOT/database/database-design.md` | 表结构、实体关系 |
-| 后端设计文档 | `PROJECT_ROOT/backend/{项目名}-app/README.md` | 模块划分、接口设计、角色权限映射、缓存策略 |
-| Controller代码 | `PROJECT_ROOT/backend/{项目名}-app/src/main/java/{包路径}/controller/` | `210-java-uniweb-design` 裁剪后的Controller |
-| Helper代码 | `PROJECT_ROOT/backend/{项目名}-app/src/main/java/{包路径}/service/` | `210-java-uniweb-design` 新建的Helper方法签名 |
-| DTO代码 | `PROJECT_ROOT/backend/{项目名}-app/src/main/java/{包路径}/dto/` | `210-java-uniweb-design` 裁剪后的DTO |
-| 测试骨架代码 | `PROJECT_ROOT/backend/{项目名}-app/src/test/java/{包路径}/service/` | `210-java-uniweb-design` 产出的 Helper 测试骨架（TDD Red） |
+| 后端设计文档 | `PROJECT_ROOT/backend/{项目名}/README.md` | 模块划分、接口设计、角色权限映射、缓存策略 |
+| Controller代码 | `PROJECT_ROOT/backend/{项目名}/src/main/java/{包路径}/controller/` | `210-java-uniweb-design` 裁剪后的Controller |
+| Helper代码 | `PROJECT_ROOT/backend/{项目名}/src/main/java/{包路径}/service/` | `210-java-uniweb-design` 新建的Helper方法签名 |
+| DTO代码 | `PROJECT_ROOT/backend/{项目名}/src/main/java/{包路径}/dto/` | `210-java-uniweb-design` 裁剪后的DTO |
+| 测试骨架代码 | `PROJECT_ROOT/backend/{项目名}/src/test/java/{包路径}/service/` | `210-java-uniweb-design` 产出的 Helper 测试骨架（TDD Red） |
 | 测试用例设计 | `PROJECT_ROOT/test/design/` | 测试场景和用例覆盖（API/E2E/压测/安全） |
 
 ## 技术栈
@@ -108,7 +108,7 @@ version: "1.1.0"
 
 **前置条件**：`300-database-ddl-execution` 已完成且 `301-database-ddl-execution-review` 评审通过（数据库表已就绪）。
 
-1. 读取 `PROJECT_ROOT/backend/{项目名}-app/TASKS.md` 提取并行分组表和任务卡片列表
+1. 读取 `PROJECT_ROOT/backend/{项目名}/TASKS.md` 提取并行分组表和任务卡片列表
 3. 读取 [dev-standards.md](../210-java-uniweb-design/references/backend/uniweb/dev-standards.md) 了解编码规范
 4. **依赖拓扑确认**：按分组表确定执行顺序，禁止循环依赖
 
@@ -237,8 +237,8 @@ grep "// TODO: \[Tn\]" src/main/java/**/service/{Module}Helper.java
 
 ## 输出要求
 
-- **代码位置**: `PROJECT_ROOT/backend/{项目名}-app/src/main/java/{包路径}/`
-- **测试位置**: `PROJECT_ROOT/backend/{项目名}-app/src/test/java/{包路径}/service/`
+- **代码位置**: `PROJECT_ROOT/backend/{项目名}/src/main/java/{包路径}/`
+- **测试位置**: `PROJECT_ROOT/backend/{项目名}/src/test/java/{包路径}/service/`
 - **包含内容**: Helper实现代码、Controller业务调用、全链路测试全绿、编译验证通过
 
 ## 参考

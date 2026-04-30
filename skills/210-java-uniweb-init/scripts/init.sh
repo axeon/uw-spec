@@ -53,7 +53,7 @@ PACKAGE_NAME=$(echo "$PROJECT_NAME" | tr '-' '.')
 PACKAGE_PATH=$(echo "$PROJECT_NAME" | tr '-' '/')
 # 驼峰命名: my-shop → MyShop
 PROJECT_NAME_CAMEL=$(echo "$PROJECT_NAME" | awk -F'-' '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) substr($i,2)} 1' OFS='')
-OUTPUT_DIR="${TARGET_DIR}/backend/${PROJECT_NAME}-app"
+OUTPUT_DIR="${TARGET_DIR}/backend/${PROJECT_NAME}"
 
 if [ ! -f "$TEMPLATE_ZIP" ]; then
     echo "ERROR: 模板文件不存在: $TEMPLATE_ZIP"

@@ -26,7 +26,7 @@ version: "1.0.0"
 |--------|------|------|
 | 修复方案 | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md` | 710阶段输出 |
 | Bug分析报告 | `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-{简述}.md` | 700阶段输出 |
-| 后端Swagger | `PROJECT_ROOT/backend/{项目名}-app/` | API接口定义（API测试参考） |
+| 后端Swagger | `PROJECT_ROOT/backend/{项目名}/` | API接口定义（API测试参考） |
 | 前端代码 | `{项目名}-{role}-{platform}/src/` | 页面组件、表单字段（E2E测试参考） |
 | 现有测试 | `PROJECT_ROOT/test/scripts/` | 现有测试基线 |
 

@@ -28,7 +28,7 @@ version: "1.0.0"
 | E2E测试设计 | `PROJECT_ROOT/test/design/e2e/README.md` | E2E界面测试用例 |
 | 压测设计 | `PROJECT_ROOT/test/design/load/README.md` | 压测场景与SLA指标 |
 | 安全测试设计 | `PROJECT_ROOT/test/design/security/README.md` | 安全测试场景 |
-| Controller代码 | `PROJECT_ROOT/backend/{项目名}-app/src/main/java/{包路径}/controller/` | 接口路径、请求/响应格式 |
+| Controller代码 | `PROJECT_ROOT/backend/{项目名}/src/main/java/{包路径}/controller/` | 接口路径、请求/响应格式 |
 | 前端代码 | `{项目名}-{role}-{platform}/src/` | 页面组件、表单字段 |
 
 ## 技术栈

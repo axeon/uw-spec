@@ -779,7 +779,7 @@ project/
 │   ├── interviews/
 │   └── reviews/
 ├── backend/                  # 后端项目
-│   └── {项目名}-app/
+│   └── {项目名}/
 │       ├── database/
 │       ├── issues/
 │       ├── reviews/

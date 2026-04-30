@@ -44,7 +44,7 @@ version: "1.0.0"
 |--------|----------|------|
 | PRD | `PROJECT_ROOT/requirement/prds/*` | 产品需求文档，功能模块及各终端详细需求 |
 | 数据库设计文档 | `PROJECT_ROOT/database/database-design.md` | 表结构设计、实体关系、索引策略 |
-| 项目目录 | `PROJECT_ROOT/backend/{项目名}-app/` | 210阶段项目代码以及产出的entity/dto/controller |
+| 项目目录 | `PROJECT_ROOT/backend/{项目名}/` | 210阶段项目代码以及产出的entity/dto/controller |
 
 ## 前置条件
 

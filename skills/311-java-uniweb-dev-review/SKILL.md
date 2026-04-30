@@ -37,16 +37,16 @@ version: "1.0.0"
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
 | **目标模块** | 调用方传入 | 指定评审的模块名（如 `Product`、`Order`）。不传则评审全部模块 |
-| Java后端代码 | `PROJECT_ROOT/backend/{项目名}-app/src/` | 开发完成的代码 |
-| 测试代码 | `PROJECT_ROOT/backend/{项目名}-app/src/test/` | 单元测试和集成测试 |
-| 覆盖率报告 | `PROJECT_ROOT/backend/{项目名}-app/target/site/jacoco/` | 测试覆盖率数据 |
-| 架构设计 | `PROJECT_ROOT/backend/{项目名}-app/README.md` | `210-java-uniweb-design` 产出的总体设计文档 |
-| 开发任务 | `PROJECT_ROOT/backend/{项目名}-app/TASKS.md` | `210-java-uniweb-design` 产出的任务卡片和联调验证清单 |
+| Java后端代码 | `PROJECT_ROOT/backend/{项目名}/src/` | 开发完成的代码 |
+| 测试代码 | `PROJECT_ROOT/backend/{项目名}/src/test/` | 单元测试和集成测试 |
+| 覆盖率报告 | `PROJECT_ROOT/backend/{项目名}/target/site/jacoco/` | 测试覆盖率数据 |
+| 架构设计 | `PROJECT_ROOT/backend/{项目名}/README.md` | `210-java-uniweb-design` 产出的总体设计文档 |
+| 开发任务 | `PROJECT_ROOT/backend/{项目名}/TASKS.md` | `210-java-uniweb-design` 产出的任务卡片和联调验证清单 |
 
 ## 输出
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| Java开发评审报告 | `PROJECT_ROOT/backend/{项目名}-app/reviews/REVIEW-CODE-{模块名}-YYMMDDHHMM.md` | 按模块独立输出，含评审结论和问题清单 |
+| Java开发评审报告 | `PROJECT_ROOT/backend/{项目名}/reviews/REVIEW-CODE-{模块名}-YYMMDDHHMM.md` | 按模块独立输出，含评审结论和问题清单 |
 
 报告格式详见 [评审报告模板](../0-init/references/review-report-template.md)。
 
@@ -89,7 +89,7 @@ version: "1.0.0"
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
 
 **维度**: TDD/uw-base/代码质量/安全性
-**评审对象**: PROJECT_ROOT/backend/{项目名}-app/（仅目标模块范围）
+**评审对象**: PROJECT_ROOT/backend/{项目名}/（仅目标模块范围）
 **参与人员**: @java-lead @system-architect @java-developer
 
 ### 2. 输出评审报告

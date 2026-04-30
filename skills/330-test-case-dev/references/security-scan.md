@@ -38,7 +38,7 @@ TIMESTAMP=$(date +%y%m%d%H%M)
 
 echo "Scanning backend dependencies..."
 trivy fs --format json --output "$REPORT_DIR/trivy-backend-$TIMESTAMP.json" \
-  backend/{project}-app/
+  backend/{project}/
 
 echo "Scanning frontend dependencies..."
 trivy fs --format json --output "$REPORT_DIR/trivy-frontend-$TIMESTAMP.json" \
@@ -46,10 +46,10 @@ trivy fs --format json --output "$REPORT_DIR/trivy-frontend-$TIMESTAMP.json" \
 
 echo "Scanning Docker image..."
 trivy image --format json --output "$REPORT_DIR/trivy-image-$TIMESTAMP.json" \
-  {project}-app:latest
+  {project}:latest
 
 echo "Generating summary..."
-trivy fs --format table backend/{project}-app/ > "$REPORT_DIR/trivy-summary-$TIMESTAMP.txt"
+trivy fs --format table backend/{project}/ > "$REPORT_DIR/trivy-summary-$TIMESTAMP.txt"
 
 echo "Trivy scan complete."
 ```

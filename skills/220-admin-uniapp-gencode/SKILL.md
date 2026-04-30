@@ -52,9 +52,9 @@ PN=$(grep 'project-name' project-info.md | head -1 | awk '{print $2}'); ls -1d P
 
 **Swagger地址构建规则**：
 - 从 `project-info.md` 读取 `project-server` 和 `project-name`
-- 选择角色时：构建 `http://{project-server}/{project-name}-app/v3/api-docs/{role}Api`
-  - 例如选择 `guest` → `http://192.168.88.21/my-shop-app/v3/api-docs/guestApi`
-  - 例如选择 `admin` → `http://192.168.88.21/my-shop-app/v3/api-docs/adminApi`
+- 选择角色时：构建 `http://{project-server}/{project-name}/v3/api-docs/{role}Api`
+  - 例如选择 `guest` → `http://192.168.88.21/my-shop/v3/api-docs/guestApi`
+  - 例如选择 `admin` → `http://192.168.88.21/my-shop/v3/api-docs/adminApi`
 - 选择"自定义地址"时：让用户输入完整的 Swagger URL
 
 ### 步骤3: 用户确认
@@ -90,20 +90,20 @@ bash scripts/gencode.sh [目标目录] [Swagger地址] [生成类型] [前端项
 | 前端项目名 | 指定具体的移动端项目目录名 | 否 | 自动查找 |
 
 **Swagger地址格式**：
-- 标准格式：`http://{project-server}/{project-name}-app/v3/api-docs/{role}Api`
-- 示例：`http://192.168.88.21/my-shop-app/v3/api-docs/guestApi`
+- 标准格式：`http://{project-server}/{project-name}/v3/api-docs/{role}Api`
+- 示例：`http://192.168.88.21/my-shop/v3/api-docs/guestApi`
 
 **执行示例**：
 
 ```bash
 # 自动查找唯一的移动端项目，使用指定 Swagger 地址
-bash scripts/gencode.sh /Users/user/project "http://192.168.88.21/my-shop-app/v3/api-docs/guestApi"
+bash scripts/gencode.sh /Users/user/project "http://192.168.88.21/my-shop/v3/api-docs/guestApi"
 
 # 指定 Swagger 地址和生成类型
-bash scripts/gencode.sh /Users/user/project "http://192.168.88.21/my-shop-app/v3/api-docs/guestApi" "page,i18n"
+bash scripts/gencode.sh /Users/user/project "http://192.168.88.21/my-shop/v3/api-docs/guestApi" "page,i18n"
 
 # 指定移动端项目名（多个项目时）
-bash scripts/gencode.sh /Users/user/project "http://192.168.88.21/my-shop-app/v3/api-docs/mchApi" "api,page" "my-shop-mch-uniapp"
+bash scripts/gencode.sh /Users/user/project "http://192.168.88.21/my-shop/v3/api-docs/mchApi" "api,page" "my-shop-mch-uniapp"
 ```
 
 **脚本输出说明**：
@@ -143,7 +143,7 @@ bash scripts/gencode.sh /Users/user/project "http://192.168.88.21/my-shop-app/v3
 
 **Swagger地址**:
 - **必填参数**，执行时必须提供
-- 标准格式：`http://{project-server}/{project-name}-app/v3/api-docs/{role}Api`
+- 标准格式：`http://{project-server}/{project-name}/v3/api-docs/{role}Api`
 - 地址会被自动 URL 编码后传递给代码生成服务
 
 ## 输出结构

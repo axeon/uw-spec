@@ -35,7 +35,7 @@ version: "1.0.0"
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
 | 功能需求 | `PROJECT_ROOT/issue/features/FEATURE-{YYMMDD}-{简述}.md` | 600阶段输出 |
-| Java后端代码 | `PROJECT_ROOT/backend/{项目名}-app/src/` | `620-feature-java-uniweb-dev` 阶段输出 |
+| Java后端代码 | `PROJECT_ROOT/backend/{项目名}/src/` | `620-feature-java-uniweb-dev` 阶段输出 |
 | Web前端代码 | `PROJECT_ROOT/frontend/{项目名}-{用户角色}-{终端类型}/src/` | `630-feature-admin-web-dev`/`630-feature-guest-web-dev` 阶段输出 |
 | 移动端代码 | `PROJECT_ROOT/frontend/{项目名}-{用户角色}-{终端类型}/src/` | `630-feature-admin-uniapp-dev`/`630-feature-guest-uniapp-dev` 阶段输出 |
 | 测试脚本 | `PROJECT_ROOT/test/scripts/` | `640-feature-test-dev` 阶段输出 |

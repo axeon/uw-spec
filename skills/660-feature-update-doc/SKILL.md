@@ -26,7 +26,7 @@ version: "1.0.0"
 |--------|------|------|
 | 验收报告 | `PROJECT_ROOT/issue/reviews/REVIEW-FEATURE-{YYMMDDHHMM}.md` | 650阶段输出 |
 | 功能需求 | `PROJECT_ROOT/issue/features/FEATURE-{YYMMDD}-{简述}.md` | 600阶段输出 |
-| 技术方案 | `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | 610阶段输出 |
+| 技术方案 | `PROJECT_ROOT/backend/{项目名}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | 610阶段输出 |
 | 现有5xx文档 | `manual/` | 现有交付文档 |
 
 ## 输出

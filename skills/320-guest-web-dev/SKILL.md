@@ -37,7 +37,7 @@ version: "1.0.0"
 | PRD | `PROJECT_ROOT/requirement/prds/*` | 产品需求文档，功能验收标准 |
 | 原型README | `PROJECT_ROOT/frontend/{项目名}-guest-web/README.md` | 220设计阶段产出的页面清单和路由设计 |
 | 原型页面 | `PROJECT_ROOT/frontend/{项目名}-guest-web/src/pages/` | 220设计阶段裁剪后的页面代码 |
-| 后端Swagger | `PROJECT_ROOT/backend/{项目名}-app/` 启动后 | API接口定义 |
+| 后端Swagger | `PROJECT_ROOT/backend/{项目名}/` 启动后 | API接口定义 |
 | API/types | `PROJECT_ROOT/frontend/{项目名}-guest-web/src/api/`, `src/types/` | 230-gencode生成的代码 |
 
 ## 前置条件

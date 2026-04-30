@@ -22,13 +22,13 @@ if [ ! -f "$INFO_FILE" ]; then
     echo "  目标目录      项目根目录（包含 project-info.md），默认为当前目录"
     echo "  表名列表      要生成的表名，多个用逗号分隔，空表示全部"
     echo "  生成类型      entity,dto,controller 的组合，默认全部"
-    echo "  后端项目名    可选，指定具体的后端项目目录名（如 my-shop-app）"
+    echo "  后端项目名    可选，指定具体的后端项目目录名（如 my-shop）"
     echo ""
     echo "示例:"
     echo "  $0 /Users/user/project                    # 生成全部表的全部类型"
     echo "  $0 /Users/user/project 'user,order'       # 只生成 user 和 order 表"
     echo "  $0 /Users/user/project '' 'entity,dto'    # 全部表，只生成 entity 和 dto"
-    echo "  $0 /Users/user/project '' 'entity' 'my-shop-app'  # 指定后端项目"
+    echo "  $0 /Users/user/project '' 'entity' 'my-shop'  # 指定后端项目"
     exit 1
 fi
 
@@ -80,10 +80,10 @@ if [ -n "$BACKEND_PROJECT_NAME_PARAM" ]; then
     echo "  使用指定的后端项目: $BACKEND_PROJECT_NAME_PARAM"
 else
     # 查找所有匹配的后端项目目录
-    AVAILABLE_BACKEND_DIRS=$(find "$BACKEND_DIR" -maxdepth 1 -type d -name "${PROJECT_NAME}-app" 2>/dev/null | sort)
+    AVAILABLE_BACKEND_DIRS=$(find "$BACKEND_DIR" -maxdepth 1 -type d -name "${PROJECT_NAME}" 2>/dev/null | sort)
 
     if [ -z "$AVAILABLE_BACKEND_DIRS" ]; then
-        echo "ERROR: 未找到后端项目目录: $BACKEND_DIR/${PROJECT_NAME}-app"
+        echo "ERROR: 未找到后端项目目录: $BACKEND_DIR/${PROJECT_NAME}"
         echo "请确保已执行 210-java-uniweb-init 初始化后端项目"
         exit 1
     fi
@@ -104,7 +104,7 @@ else
         echo ""
         echo "ERROR: 存在多个后端项目，请通过命令行参数指定目标项目"
         echo "用法: bash scripts/gencode.sh [目标目录] [表名列表] [生成类型] [后端项目名]"
-        echo "示例: bash scripts/gencode.sh /Users/user/project '' 'entity,dto' my-shop-app"
+        echo "示例: bash scripts/gencode.sh /Users/user/project '' 'entity,dto' my-shop"
         exit 1
     fi
 fi

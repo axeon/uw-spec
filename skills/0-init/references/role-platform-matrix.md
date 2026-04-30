@@ -33,11 +33,11 @@
 
 | 用途 | 格式 | 示例（name=nova） |
 |------|------|-------------------|
-| 后端项目 | `{name}-app` | `nova-app` |
+| 后端项目 | `{name}` | `nova` |
 | 前端项目 | `{name}-{role}-{platform}` | `nova-mch-web`、`nova-guest-uniapp` |
 | 数据库名 | `{name}_db` | `nova_db` |
 | Git仓库 | `{name}` | `nova` |
-| Docker镜像 | `{name}-app` | `nova-app` |
+| Docker镜像 | `{name}` | `nova` |
 
 **一个角色可对应多个平台**：`guest-uniapp` + `guest-web` = 两套前端需求。
 

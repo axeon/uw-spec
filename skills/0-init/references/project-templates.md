@@ -55,7 +55,7 @@ project/
 │       ├── REVIEW-DB-{YYMMDDHHMM}.md
 │       └── REVIEW-DDL-EXECUTION-{YYMMDDHHMM}.md
 ├── backend/                  # 后端项目（Java + uw-base）
-│   └── {项目名}-app/
+│   └── {项目名}/
 │       ├── README.md     # 后端架构文档
 │       ├── CHANGELOG.md  # 代码变更历史
 │       ├── issues/     # 功能级技术文档（6xx/7xx阶段）
@@ -218,14 +218,14 @@ project/
 
 | 完成流程 | 更新内容 | 示例 |
 |----------|----------|------|
-| 0-init | 确认项目根目录结构 | `project-name: my-shop` → `backend/my-shop-app/` |
+| 0-init | 确认项目根目录结构 | `project-name: my-shop` → `backend/my-shop/` |
 | 110-requirement | 添加PRD文档路径 | `requirement/prds/guest-web/README.md` |
 | 200-database-design | 添加数据库文档路径 | `database/database-design.md` |
-| 210-java-uniweb-init | 确认后端项目路径 | `backend/my-shop-app/`（已初始化） |
+| 210-java-uniweb-init | 确认后端项目路径 | `backend/my-shop/`（已初始化） |
 | 220-admin-web-init | 确认前端项目路径 | `frontend/my-shop-admin-web/`（已初始化） |
 | 600-feature-clarify | 添加功能需求文档 | `requirement/prds/{角色}-{终端}/20240115-FEATURE-订单导出.md` |
-| 610-feature-tech-design | 添加技术方案文档 | `backend/my-shop-app/issues/FEATURE-DESIGN-240115-订单导出-tech-design.md` |
-| 620-feature-java-uniweb-dev | 添加后端开发文档 | `backend/my-shop-app/issues/FEATURE-DESIGN-240115-订单导出-java-uniweb.md` |
+| 610-feature-tech-design | 添加技术方案文档 | `backend/my-shop/issues/FEATURE-DESIGN-240115-订单导出-tech-design.md` |
+| 620-feature-java-uniweb-dev | 添加后端开发文档 | `backend/my-shop/issues/FEATURE-DESIGN-240115-订单导出-java-uniweb.md` |
 | 700-bugfix-analysis | 添加Bug分析报告 | `issue/bugs/BUGFIX-240115-登录失败.md` |
 
 ### 更新示例
@@ -239,7 +239,7 @@ my-shop/
 ├── project-info.md
 ├── requirement/
 └── backend/
-    └── my-shop-app/          # 待初始化
+    └── my-shop/          # 待初始化
 ```
 ```
 
@@ -265,7 +265,7 @@ my-shop/
 │   │       └── INTERVIEW-2401011430-初始需求.md
 │   └── reviews/
 └── backend/
-    └── my-shop-app/          # 待初始化
+    └── my-shop/          # 待初始化
 ```
 ```
 
@@ -280,7 +280,7 @@ my-shop/
 │   └── prds/
 │       └── ...
 └── backend/
-    └── my-shop-app/          # 已初始化
+    └── my-shop/          # 已初始化
         ├── pom.xml
         ├── README.md
         ├── CHANGELOG.md
@@ -311,7 +311,7 @@ my-shop/
 │   └── migrations/
 │       └── FEATURE-240115-订单导出.sql
 ├── backend/
-│   └── my-shop-app/
+│   └── my-shop/
 │       ├── issues/
 │       │   └── FEATURE-DESIGN-240115-订单导出-tech-design.md
 │       ├── reviews/

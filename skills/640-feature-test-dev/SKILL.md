@@ -24,9 +24,9 @@ version: "1.0.0"
 
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 技术方案 | `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | 610阶段输出 |
+| 技术方案 | `PROJECT_ROOT/backend/{项目名}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | 610阶段输出 |
 | 功能需求 | `PROJECT_ROOT/issue/features/FEATURE-{YYMMDD}-{简述}.md` | 600阶段输出 |
-| 后端Swagger | `PROJECT_ROOT/backend/{项目名}-app/` | API接口定义 |
+| 后端Swagger | `PROJECT_ROOT/backend/{项目名}/` | API接口定义 |
 | 前端代码 | `{项目名}-{role}-{platform}/src/` | 页面组件、表单字段（E2E测试参考） |
 | 现有测试 | `PROJECT_ROOT/test/scripts/` | 现有测试基线 |
 

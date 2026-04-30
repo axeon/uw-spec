@@ -201,7 +201,7 @@ flowchart TD
 sequenceDiagram
     actor 用户
     participant 前端 as {角色名}{平台名}端
-    participant 后端 as {项目名}-app
+    participant 后端 as {项目名}
     participant 服务 as 第三方服务
 
     用户->>前端: {操作}
@@ -218,7 +218,7 @@ sequenceDiagram
 sequenceDiagram
     actor 用户
     participant 前端 as {角色名}{平台名}端
-    participant 后端 as {项目名}-app
+    participant 后端 as {项目名}
 
     用户->>前端: {操作}
     前端->>后端: GET /api/xxx

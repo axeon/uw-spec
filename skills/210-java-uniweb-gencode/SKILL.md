@@ -30,7 +30,7 @@ version: "1.0.0"
 扫描 `PROJECT_ROOT/backend/` 目录，列出所有可用的后端项目：
 
 ```bash
-ls -1 PROJECT_ROOT/backend/{项目名}-app/
+ls -1 PROJECT_ROOT/backend/{项目名}/
 ```
 
 **情况处理**：
@@ -46,7 +46,7 @@ ls -1 PROJECT_ROOT/backend/{项目名}-app/
 
 | # | header | question | 参考选项 | multiSelect |
 |---|--------|----------|----------|-------------|
-| 1 | 目标后端项目 | 要为哪个后端项目生成代码？ | 列出所有 {项目名}-app 目录 | false |
+| 1 | 目标后端项目 | 要为哪个后端项目生成代码？ | 列出所有 {项目名} 目录 | false |
 | 2 | 表名列表 | 要生成的表名（多个用逗号分隔，空表示全部）？ | 全部表, user, order, product | false |
 | 3 | 生成类型 | 需要生成哪些类型？(entity:实体类, dto:传输对象, controller:控制器) | entity, dto, controller | true |
 
@@ -98,7 +98,7 @@ bash scripts/gencode.sh /Users/user/project "" "entity,dto"
 bash scripts/gencode.sh /Users/user/project "user" "entity"
 
 # 指定后端项目名（多个项目时）
-bash scripts/gencode.sh /Users/user/project "" "entity,dto" "my-shop-app"
+bash scripts/gencode.sh /Users/user/project "" "entity,dto" "my-shop"
 ```
 
 **脚本输出说明**：
@@ -144,7 +144,7 @@ bash scripts/gencode.sh /Users/user/project "" "entity,dto" "my-shop-app"
 项目根目录/
 ├── project-info.md
 └── PROJECT_ROOT/backend/
-    └── {项目名}-app/
+    └── {项目名}/
         ├── .gencode-backup/              # 增量更新时自动创建
         │   └── {时间戳}/
         │       ├── entity/

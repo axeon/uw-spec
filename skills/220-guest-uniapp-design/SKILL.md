@@ -35,7 +35,7 @@ version: "1.0.0"
 |--------|----------|------|
 | PRD | `PROJECT_ROOT/requirement/prds/*` | 产品需求文档，功能模块及页面需求 |
 | 数据库设计 | `PROJECT_ROOT/database/database-design.md` | 表结构、字段名（字段一致性参考） |
-| 后端Swagger | `PROJECT_ROOT/backend/{项目名}-app/` 启动后 | API接口定义 |
+| 后端Swagger | `PROJECT_ROOT/backend/{项目名}/` 启动后 | API接口定义 |
 | 前端项目 | `PROJECT_ROOT/frontend/{项目名}-guest-uniapp/` | 230-init初始化 + 230-gencode生成的代码 |
 
 ## 前置条件

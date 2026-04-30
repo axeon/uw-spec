@@ -34,8 +34,8 @@ version: "1.0.0"
 
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 修复代码 | `PROJECT_ROOT/backend/{项目名}-app/src/` | 修复后的代码 |
-| 回归测试代码 | `PROJECT_ROOT/backend/{项目名}-app/src/test/` | 回归测试 |
+| 修复代码 | `PROJECT_ROOT/backend/{项目名}/src/` | 修复后的代码 |
+| 回归测试代码 | `PROJECT_ROOT/backend/{项目名}/src/test/` | 回归测试 |
 | 修复方案 | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md` | 710阶段输出 |
 | Bug分析报告 | `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-{简述}.md` | 700阶段输出 |
 
@@ -74,7 +74,7 @@ version: "1.0.0"
 按维度检查, 记录问题。评审发现记录格式和评审报告结构详见 [评审报告模板](../0-init/references/review-report-template.md)。
 
 **维度**: 修复正确性/彻底性/回归测试/uw-base/代码质量/副作用/安全性
-**评审对象**: PROJECT_ROOT/backend/{项目名}-app/src/（仅修复变更部分）
+**评审对象**: PROJECT_ROOT/backend/{项目名}/src/（仅修复变更部分）
 **参与人员**: @java-lead @system-architect
 
 详细的评审检查清单见 [checklist.md](references/checklist.md)。

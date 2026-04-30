@@ -25,20 +25,20 @@ version: "1.0.0"
 
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 技术方案 | `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | 610阶段输出 |
-| 现有代码 | `PROJECT_ROOT/backend/{项目名}-app/src/` | 现有代码基线 |
-| 技术规范 | `PROJECT_ROOT/backend/{项目名}-app/README.md` | 编码规范 |
+| 技术方案 | `PROJECT_ROOT/backend/{项目名}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | 610阶段输出 |
+| 现有代码 | `PROJECT_ROOT/backend/{项目名}/src/` | 现有代码基线 |
+| 技术规范 | `PROJECT_ROOT/backend/{项目名}/README.md` | 编码规范 |
 
 ## 输出
 
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 功能代码 | `PROJECT_ROOT/backend/{项目名}-app/src/` | Java后端代码 |
-| 测试代码 | `PROJECT_ROOT/backend/{项目名}-app/src/test/` | 单元测试和集成测试 |
-| 开发文档 | `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-java-uniweb.md` | 开发记录 |
-| 评审报告 | `PROJECT_ROOT/backend/{项目名}-app/reviews/` | AI评审报告 |
-| 更新文档 | `PROJECT_ROOT/backend/{项目名}-app/README.md` | 合并后的主文档 |
-| 变更记录 | `PROJECT_ROOT/backend/{项目名}-app/CHANGELOG.md` | 代码变更历史 |
+| 功能代码 | `PROJECT_ROOT/backend/{项目名}/src/` | Java后端代码 |
+| 测试代码 | `PROJECT_ROOT/backend/{项目名}/src/test/` | 单元测试和集成测试 |
+| 开发文档 | `PROJECT_ROOT/backend/{项目名}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-java-uniweb.md` | 开发记录 |
+| 评审报告 | `PROJECT_ROOT/backend/{项目名}/reviews/` | AI评审报告 |
+| 更新文档 | `PROJECT_ROOT/backend/{项目名}/README.md` | 合并后的主文档 |
+| 变更记录 | `PROJECT_ROOT/backend/{项目名}/CHANGELOG.md` | 代码变更历史 |
 
 ## `610-feature-tech-design` → `620-feature-java-uniweb-dev` 衔接协议
 
@@ -46,9 +46,9 @@ version: "1.0.0"
 
 | 提取项 | 来源文件 | 用途 |
 |--------|---------|------|
-| 后端技术方案 | `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-*-tech-design.md` | 接口设计、数据模型、实现要点 |
+| 后端技术方案 | `PROJECT_ROOT/backend/{项目名}/issues/FEATURE-DESIGN-*-tech-design.md` | 接口设计、数据模型、实现要点 |
 | DDL文件 | `PROJECT_ROOT/database/migrations/FEATURE-*.sql` | 数据库变更，需先执行 |
-| 现有架构 | `PROJECT_ROOT/backend/{项目名}-app/README.md` | 编码规范、模块结构 |
+| 现有架构 | `PROJECT_ROOT/backend/{项目名}/README.md` | 编码规范、模块结构 |
 
 **并行约束**：`620-feature-java-uniweb-dev` 与 `630-feature-admin-web-dev`/`630-feature-guest-web-dev`/`630-feature-admin-uniapp-dev`/`630-feature-guest-uniapp-dev`/`640-feature-test-dev` 天然独立可并行。DDL需先执行完毕后才能开始。
 
@@ -115,8 +115,8 @@ version: "1.0.0"
 ### 6. 文档合并
 
 **合并内容**:
-- 更新 `PROJECT_ROOT/backend/{项目名}-app/README.md`（接口文档、架构说明）
-- 追加 `PROJECT_ROOT/backend/{项目名}-app/CHANGELOG.md`
+- 更新 `PROJECT_ROOT/backend/{项目名}/README.md`（接口文档、架构说明）
+- 追加 `PROJECT_ROOT/backend/{项目名}/CHANGELOG.md`
 
 **CHANGELOG格式**:
 ```markdown
@@ -130,11 +130,11 @@ version: "1.0.0"
 
 ## 输出要求
 
-**代码位置**: `PROJECT_ROOT/backend/{项目名}-app/src/`
+**代码位置**: `PROJECT_ROOT/backend/{项目名}/src/`
 
-**开发文档**: `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-java-uniweb.md`
+**开发文档**: `PROJECT_ROOT/backend/{项目名}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-java-uniweb.md`
 
-**评审报告**: `PROJECT_ROOT/backend/{项目名}-app/reviews/REVIEW-CODE-{YYMMDDHHMM}.md`
+**评审报告**: `PROJECT_ROOT/backend/{项目名}/reviews/REVIEW-CODE-{YYMMDDHHMM}.md`
 
 ## 流转关系
 

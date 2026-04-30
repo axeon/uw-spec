@@ -28,7 +28,7 @@ version: "1.0.0"
 |--------|------|------|
 | 功能需求文档 | `PROJECT_ROOT/issue/features/FEATURE-{YYMMDD}-{简述}.md` | 600阶段输出 |
 | 现有数据库设计 | `PROJECT_ROOT/database/database-design.md` | 现有DB设计 |
-| 现有后端架构 | `PROJECT_ROOT/backend/{项目名}-app/README.md` | 现有架构文档 |
+| 现有后端架构 | `PROJECT_ROOT/backend/{项目名}/README.md` | 现有架构文档 |
 | 现有前端架构 | `PROJECT_ROOT/frontend/{项目名}-{用户角色}-{终端类型}/README.md` | 现有Web架构 |
 | 现有移动端架构 | `PROJECT_ROOT/frontend/{项目名}-{用户角色}-{终端类型}/README.md` | 现有移动端架构 |
 | 现有测试设计 | `PROJECT_ROOT/test/design/` | 现有测试设计文档 |
@@ -38,7 +38,7 @@ version: "1.0.0"
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
 | DDL文件 | `PROJECT_ROOT/database/migrations/FEATURE-{YYMMDD}-{简述}.sql` | 数据库变更DDL |
-| 后端技术方案 | `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | Java后端方案 |
+| 后端技术方案 | `PROJECT_ROOT/backend/{项目名}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | Java后端方案 |
 | Web前端方案 | `PROJECT_ROOT/frontend/{项目名}-{用户角色}-{终端类型}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | Web前端方案 |
 | 移动端方案 | `PROJECT_ROOT/frontend/{项目名}-{用户角色}-{终端类型}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md` | 移动端方案 |
 | 测试方案 | `PROJECT_ROOT/test/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-test-design.md` | 本功能的测试策略（供 640 参考，非 230 全量测试设计） |
@@ -99,7 +99,7 @@ CREATE INDEX idx_{name} ON {table_name}({column_list});
 
 **生成后端技术方案文档**:
 
-**文件位置**: `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md`
+**文件位置**: `PROJECT_ROOT/backend/{项目名}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md`
 
 **文档内容**:
 ```markdown
@@ -207,7 +207,7 @@ CREATE INDEX idx_{name} ON {table_name}({column_list});
 | 文档 | 合并位置 | 方式 |
 |------|---------|------|
 | DDL | database-design.md + database-ddl.sql | 追加 |
-| 后端方案 | $PROJECT_ROOT/backend/{项目名}-app/README.md | 更新架构章节 |
+| 后端方案 | $PROJECT_ROOT/backend/{项目名}/README.md | 更新架构章节 |
 | Web方案 | $PROJECT_ROOT/frontend/{项目名}-{用户角色}-{终端类型}/README.md | 更新架构章节 |
 | 移动端方案 | $PROJECT_ROOT/frontend/{项目名}-{用户角色}-{终端类型}/README.md | 更新架构章节 |
 | 测试方案 | $PROJECT_ROOT/test/CHANGELOG.md | 追加 |
@@ -242,7 +242,7 @@ CREATE INDEX idx_{name} ON {table_name}({column_list});
 
 | 下游技能 | 提取文件 | 用途 |
 |---------|---------|------|
-| `620-feature-java-uniweb-dev` | `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-*-tech-design.md` | 后端技术方案 |
+| `620-feature-java-uniweb-dev` | `PROJECT_ROOT/backend/{项目名}/issues/FEATURE-DESIGN-{YYMMDD}-*-tech-design.md` | 后端技术方案 |
 | `630-feature-admin-web-dev` / `630-feature-guest-web-dev` | `PROJECT_ROOT/frontend/{项目名}-{用户角色}-web/issues/FEATURE-DESIGN-{YYMMDD}-*-tech-design.md` | Web前端方案 |
 | `630-feature-admin-uniapp-dev` / `630-feature-guest-uniapp-dev` | `PROJECT_ROOT/frontend/{项目名}-{用户角色}-uniapp/issues/FEATURE-DESIGN-{YYMMDD}-*-tech-design.md` | 移动端方案 |
 | `640-feature-test-dev` | `PROJECT_ROOT/test/issues/FEATURE-DESIGN-{YYMMDD}-*-test-design.md` | 测试方案 |
@@ -253,7 +253,7 @@ CREATE INDEX idx_{name} ON {table_name}({column_list});
 
 **DDL文件**: `PROJECT_ROOT/database/migrations/FEATURE-{YYMMDD}-{简述}.sql`
 
-**后端方案**: `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md`
+**后端方案**: `PROJECT_ROOT/backend/{项目名}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md`
 
 **Web方案**: `PROJECT_ROOT/frontend/{项目名}-{用户角色}-{终端类型}/issues/FEATURE-DESIGN-{YYMMDD}-{简述}-tech-design.md`
 

@@ -30,8 +30,8 @@ if [ ! -f "$INFO_FILE" ]; then
     echo "  前端项目名    可选，指定具体的前端项目目录名（如 my-shop-guest-uniapp）"
     echo ""
     echo "示例:"
-    echo "  $0 /Users/user/project 'http://192.168.88.21/my-shop-app/v3/api-docs/guestApi'"
-    echo "  $0 /Users/user/project 'http://192.168.88.21/my-shop-app/v3/api-docs/guestApi' 'api'"
+    echo "  $0 /Users/user/project 'http://192.168.88.21/my-shop/v3/api-docs/guestApi'"
+    echo "  $0 /Users/user/project 'http://192.168.88.21/my-shop/v3/api-docs/guestApi' 'api'"
     exit 1
 fi
 
@@ -182,7 +182,7 @@ echo "[2/6] 下载UniApp代码生成文件..."
 if [ -z "$SWAGGER_URL_PARAM" ]; then
     echo "ERROR: Swagger URL 必须提供"
     echo "用法: bash scripts/gencode.sh [目标目录] [Swagger地址] [生成类型] [前端项目名]"
-    echo "示例: bash scripts/gencode.sh /Users/user/project 'http://192.168.88.21/my-shop-app/v3/api-docs/guestApi'"
+    echo "示例: bash scripts/gencode.sh /Users/user/project 'http://192.168.88.21/my-shop/v3/api-docs/guestApi'"
     exit 1
 fi
 

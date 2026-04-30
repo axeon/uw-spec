@@ -27,17 +27,17 @@ version: "1.0.0"
 |--------|------|------|
 | 修复方案 | `PROJECT_ROOT/issue/bugs/BUGFIX-DESIGN-{YYMMDD}-{简述}.md` | 710阶段输出 |
 | Bug分析报告 | `PROJECT_ROOT/issue/bugs/BUGFIX-{YYMMDD}-{简述}.md` | 700阶段输出 |
-| 现有代码 | `PROJECT_ROOT/backend/{项目名}-app/src/` | 现有代码基线 |
+| 现有代码 | `PROJECT_ROOT/backend/{项目名}/src/` | 现有代码基线 |
 
 ## 输出
 
 | 输出项 | 位置 | 说明 |
 |--------|------|------|
-| 修复代码 | `PROJECT_ROOT/backend/{项目名}-app/src/` | 修复后的代码 |
-| 回归测试 | `PROJECT_ROOT/backend/{项目名}-app/src/test/` | 回归测试代码 |
-| 修复文档 | `PROJECT_ROOT/backend/{项目名}-app/issues/BUGFIX-DESIGN-{YYMMDD}-{简述}-java-uniweb.md` | 修复记录 |
-| 评审报告 | `PROJECT_ROOT/backend/{项目名}-app/reviews/` | AI评审报告 |
-| 变更记录 | `PROJECT_ROOT/backend/{项目名}-app/CHANGELOG.md` | 代码变更历史 |
+| 修复代码 | `PROJECT_ROOT/backend/{项目名}/src/` | 修复后的代码 |
+| 回归测试 | `PROJECT_ROOT/backend/{项目名}/src/test/` | 回归测试代码 |
+| 修复文档 | `PROJECT_ROOT/backend/{项目名}/issues/BUGFIX-DESIGN-{YYMMDD}-{简述}-java-uniweb.md` | 修复记录 |
+| 评审报告 | `PROJECT_ROOT/backend/{项目名}/reviews/` | AI评审报告 |
+| 变更记录 | `PROJECT_ROOT/backend/{项目名}/CHANGELOG.md` | 代码变更历史 |
 
 ## `710-bugfix-tech-design` → `720-bugfix-java-uniweb` 衔接协议
 
@@ -123,11 +123,11 @@ version: "1.0.0"
 
 ## 输出要求
 
-**修复代码**: `PROJECT_ROOT/backend/{项目名}-app/src/`
+**修复代码**: `PROJECT_ROOT/backend/{项目名}/src/`
 
-**修复文档**: `PROJECT_ROOT/backend/{项目名}-app/issues/BUGFIX-DESIGN-{YYMMDD}-{简述}-java-uniweb.md`
+**修复文档**: `PROJECT_ROOT/backend/{项目名}/issues/BUGFIX-DESIGN-{YYMMDD}-{简述}-java-uniweb.md`
 
-**评审报告**: `PROJECT_ROOT/backend/{项目名}-app/reviews/REVIEW-CODE-{YYMMDDHHMM}.md`
+**评审报告**: `PROJECT_ROOT/backend/{项目名}/reviews/REVIEW-CODE-{YYMMDDHHMM}.md`
 
 ## 流转关系
 

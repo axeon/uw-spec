@@ -101,7 +101,7 @@ version: "1.0.0"
 
 ## 输出
 
-**报告位置**：`PROJECT_ROOT/backend/{项目名}-app/reviews/REVIEW-DESIGN-YYMMDDHHMM.md`
+**报告位置**：`PROJECT_ROOT/backend/{项目名}/reviews/REVIEW-DESIGN-YYMMDDHHMM.md`
 
 **必须包含**：
 - 评审信息（日期、人员、对象）

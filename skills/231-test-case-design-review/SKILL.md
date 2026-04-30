@@ -39,7 +39,7 @@ version: "1.0.0"
 | 压测设计 | `PROJECT_ROOT/test/design/load/README.md` | 压测场景与SLA指标 |
 | 安全测试设计 | `PROJECT_ROOT/test/design/security/README.md` | 安全测试场景 |
 | PRD | `PROJECT_ROOT/requirement/prds/*` | 需求覆盖参考 |
-| 后端设计文档 | `PROJECT_ROOT/backend/{项目名}-app/README.md` | 接口设计参考 |
+| 后端设计文档 | `PROJECT_ROOT/backend/{项目名}/README.md` | 接口设计参考 |
 
 ## 输出
 | 输出项 | 位置 | 说明 |

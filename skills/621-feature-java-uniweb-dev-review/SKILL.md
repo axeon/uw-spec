@@ -34,10 +34,10 @@ version: "1.0.0"
 
 | 输入项 | 来源 | 说明 |
 |--------|------|------|
-| 功能代码 | `PROJECT_ROOT/backend/{项目名}-app/src/` | 功能开发产出的代码 |
-| 测试代码 | `PROJECT_ROOT/backend/{项目名}-app/src/test/` | 单元测试 |
-| 覆盖率报告 | `PROJECT_ROOT/backend/{项目名}-app/target/site/jacoco/` | 测试覆盖率数据 |
-| 技术方案 | `PROJECT_ROOT/backend/{项目名}-app/issues/FEATURE-DESIGN-*-tech-design.md` | 610阶段技术方案 |
+| 功能代码 | `PROJECT_ROOT/backend/{项目名}/src/` | 功能开发产出的代码 |
+| 测试代码 | `PROJECT_ROOT/backend/{项目名}/src/test/` | 单元测试 |
+| 覆盖率报告 | `PROJECT_ROOT/backend/{项目名}/target/site/jacoco/` | 测试覆盖率数据 |
+| 技术方案 | `PROJECT_ROOT/backend/{项目名}/issues/FEATURE-DESIGN-*-tech-design.md` | 610阶段技术方案 |
 | 功能需求 | `PROJECT_ROOT/issue/features/FEATURE-{YYMMDD}-{简述}.md` | 600阶段需求文档 |
 
 ## 输出
@@ -74,7 +74,7 @@ version: "1.0.0"
 按维度检查, 记录问题。评审发现记录格式和评审报告结构详见 [评审报告模板](../0-init/references/review-report-template.md)。
 
 **维度**: 方案一致性/TDD/uw-base/代码质量/安全性/影响范围
-**评审对象**: PROJECT_ROOT/backend/{项目名}-app/src/（仅功能变更部分）
+**评审对象**: PROJECT_ROOT/backend/{项目名}/src/（仅功能变更部分）
 **参与人员**: @java-lead @system-architect
 
 详细的评审检查清单见 [checklist.md](references/checklist.md)。
