@@ -135,7 +135,7 @@ bash scripts/gencode.sh /Users/user/project "http://192.168.88.21/my-shop/v3/api
 | `project-name` | 项目英文名（短横线分隔） | `my-shop` |
 | `project-server` | 开发服务器地址 | `192.168.88.21` |
 
-**从 ~/.uniweb/project-server.config 读取**：
+**从 ~/.uniweb/uniweb-system.config 读取**：
 
 | 配置项 | 说明 | 示例 |
 |--------|------|------|

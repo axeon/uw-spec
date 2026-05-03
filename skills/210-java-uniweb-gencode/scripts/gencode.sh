@@ -14,7 +14,7 @@ GENERATE_TYPES="${3:-entity,dto,controller}"  # 生成类型，默认全部
 BACKEND_PROJECT_NAME_PARAM="${4:-}"  # 后端项目名，可选
 
 INFO_FILE="${TARGET_DIR}/project-info.md"
-SERVER_CONFIG="${HOME}/.uniweb/project-server.config"
+SERVER_CONFIG="${HOME}/.uniweb/uniweb-system.config"
 
 if [ ! -f "$INFO_FILE" ]; then
     echo "ERROR: 未找到项目信息文件: $INFO_FILE"
@@ -54,7 +54,7 @@ fi
 
 if [ -z "$OPS_PASSWORD" ]; then
     echo "ERROR: 未找到 ops 密码"
-    echo "请在 ~/.uniweb/project-server.config 中添加: MSC_OPS_PASSWORD=your_password"
+    echo "请在 ~/.uniweb/uniweb-system.config 中添加: MSC_OPS_PASSWORD=your_password"
     exit 1
 fi
 
@@ -167,7 +167,7 @@ if [ -z "$TOKEN" ]; then
     echo "  ✗ 登录失败，无法获取token"
     echo "  请检查:"
     echo "    1. 服务器地址是否正确: $PROJECT_SERVER"
-    echo "    2. ops密码是否正确配置在 ~/.uniweb/project-server.config"
+    echo "    2. ops密码是否正确配置在 ~/.uniweb/uniweb-system.config"
     echo "    3. 服务器是否可访问"
     exit 1
 fi

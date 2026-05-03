@@ -49,7 +49,7 @@ version: "1.0.0"
 
 #### 2.1 读取配置文件
 
-尝试从 `~/.uniweb/project-server.config` 读取 MySQL 连接参数：
+尝试从 `~/.uniweb/uniweb-system.config` 读取 MySQL 连接参数：
 
 | 参数 | 配置项 | 说明 |
 |------|--------|------|
