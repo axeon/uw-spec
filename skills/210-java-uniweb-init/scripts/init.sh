@@ -150,29 +150,30 @@ find "$WORK_DIR" -type f \( \
 done
 echo "  基础替换完成"
 
-APP_DEBUG_YML="${WORK_DIR}/src/main/resources/application-debug.yml"
+RESOURCES_DIR="${WORK_DIR}/src/main/resources"
+CONFIG_FILE="${HOME}/.uniweb/uniweb-system.config"
 
-if [ -f "$APP_DEBUG_YML" ]; then
-    echo "  处理 application-debug.yml 系统配置替换..."
+if [ -d "$RESOURCES_DIR" ] && [ -f "$CONFIG_FILE" ]; then
+    echo "  处理 resources 目录系统配置替换..."
 
-    sed -i '' \
-        -e "s|#{PROJECT_NAME}|${PROJECT_NAME}|g" \
-        -e "s|#{PROJECT_LABEL}|${PROJECT_LABEL}|g" \
-        "$APP_DEBUG_YML"
+    find "$RESOURCES_DIR" -type f | while read -r res_file; do
+        sed -i '' \
+            -e "s|#{PROJECT_NAME}|${PROJECT_NAME}|g" \
+            -e "s|#{PROJECT_LABEL}|${PROJECT_LABEL}|g" \
+            "$res_file"
 
-    CONFIG_FILE="${HOME}/.uniweb/uniweb-system.config"
-    if [ -f "$CONFIG_FILE" ]; then
         while IFS='=' read -r key value; do
             [[ "$key" =~ ^[[:space:]]*# || -z "$key" ]] && continue
             [[ "$key" == "PROJECT_NAME" || "$key" == "PROJECT_LABEL" ]] && continue
-            sed -i '' "s|#{${key}}|${value}|g" "$APP_DEBUG_YML"
+            sed -i '' "s|#{${key}}|${value}|g" "$res_file"
         done < "$CONFIG_FILE"
-        echo "  application-debug.yml 配置替换完成"
-    else
-        echo "  ⚠ 未找到系统配置文件: ${CONFIG_FILE}"
-    fi
+    done
+
+    echo "  resources 目录配置替换完成"
+elif [ -d "$RESOURCES_DIR" ]; then
+    echo "  ⚠ 未找到系统配置文件: ${CONFIG_FILE}，跳过 resources 配置替换"
 else
-    echo "  未找到 application-debug.yml，跳过系统配置替换"
+    echo "  未找到 resources 目录，跳过系统配置替换"
 fi
 
 echo "[5/6] 验证..."
@@ -226,11 +227,11 @@ if [ -n "$CONTENT_RESIDUAL" ]; then
     ERRORS=$((ERRORS + 1))
 fi
 
-# 检查 application-debug.yml 占位符残留
-if [ -f "$APP_DEBUG_YML" ]; then
-    RESIDUAL_PLACEHOLDERS=$(grep -o '#{[A-Z_][A-Z0-9_]*}' "$APP_DEBUG_YML" | sort -u | head -5) || true
+# 检查 resources 目录占位符残留
+if [ -d "$RESOURCES_DIR" ]; then
+    RESIDUAL_PLACEHOLDERS=$(grep -ro '#{[A-Z_][A-Z0-9_]*}' "$RESOURCES_DIR" | sort -u | head -5) || true
     if [ -n "$RESIDUAL_PLACEHOLDERS" ]; then
-        echo "  ⚠ application-debug.yml 仍有未替换的占位符:"
+        echo "  ⚠ resources 目录仍有未替换的占位符:"
         echo "$RESIDUAL_PLACEHOLDERS"
         ERRORS=$((ERRORS + 1))
     fi
