@@ -148,7 +148,32 @@ find "$WORK_DIR" -type f \( \
         -e "s/127\.0\.0\.1/${PROJECT_SERVER}/g" \
         "$file" 2>/dev/null || true
 done
-echo "  完成"
+echo "  基础替换完成"
+
+APP_DEBUG_YML="${WORK_DIR}/src/main/resources/application-debug.yml"
+
+if [ -f "$APP_DEBUG_YML" ]; then
+    echo "  处理 application-debug.yml 系统配置替换..."
+
+    sed -i '' \
+        -e "s|#{PROJECT_NAME}|${PROJECT_NAME}|g" \
+        -e "s|#{PROJECT_LABEL}|${PROJECT_LABEL}|g" \
+        "$APP_DEBUG_YML"
+
+    CONFIG_FILE="${HOME}/.uniweb/uniweb-system.config"
+    if [ -f "$CONFIG_FILE" ]; then
+        while IFS='=' read -r key value; do
+            [[ "$key" =~ ^[[:space:]]*# || -z "$key" ]] && continue
+            [[ "$key" == "PROJECT_NAME" || "$key" == "PROJECT_LABEL" ]] && continue
+            sed -i '' "s|#{${key}}|${value}|g" "$APP_DEBUG_YML"
+        done < "$CONFIG_FILE"
+        echo "  application-debug.yml 配置替换完成"
+    else
+        echo "  ⚠ 未找到系统配置文件: ${CONFIG_FILE}"
+    fi
+else
+    echo "  未找到 application-debug.yml，跳过系统配置替换"
+fi
 
 echo "[5/6] 验证..."
 ERRORS=0
@@ -199,6 +224,16 @@ if [ -n "$CONTENT_RESIDUAL" ]; then
     echo "  ⚠ 文件内容仍有 127.0.0.1 残留:"
     echo "$CONTENT_RESIDUAL"
     ERRORS=$((ERRORS + 1))
+fi
+
+# 检查 application-debug.yml 占位符残留
+if [ -f "$APP_DEBUG_YML" ]; then
+    RESIDUAL_PLACEHOLDERS=$(grep -o '#{[A-Z_][A-Z0-9_]*}' "$APP_DEBUG_YML" | sort -u | head -5) || true
+    if [ -n "$RESIDUAL_PLACEHOLDERS" ]; then
+        echo "  ⚠ application-debug.yml 仍有未替换的占位符:"
+        echo "$RESIDUAL_PLACEHOLDERS"
+        ERRORS=$((ERRORS + 1))
+    fi
 fi
 
 # 检查 uw/app 目录是否还存在
