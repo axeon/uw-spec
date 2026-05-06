@@ -3,7 +3,7 @@
 ## 标准项目骨架
 
 ```
-demo-app/
+demo/
 ├── .gitea/
 │   └── workflows/
 │       └── build.yml               # CI/CD 流水线
@@ -36,7 +36,7 @@ demo-app/
 
 ## 参考实现
 
-demo-app使用的基本功能
+demo使用的基本功能
 - uw-dao 的多数据源配置和 CRUD 操作
 - uw-auth-service 的权限声明和鉴权
 - uw-cache 的缓存使用
