@@ -54,7 +54,7 @@ fi
 
 if [ -z "$OPS_PASSWORD" ]; then
     echo "ERROR: 未找到 ops 密码"
-    echo "请在 ~/.uniweb/uniweb-system.config 中添加: MSC_OPS_PASSWORD=your_password"
+    echo "请在 ~/uniweb/uniweb-system.config 中添加: MSC_OPS_PASSWORD=your_password"
     exit 1
 fi
 
@@ -167,7 +167,7 @@ if [ -z "$TOKEN" ]; then
     echo "  ✗ 登录失败，无法获取token"
     echo "  请检查:"
     echo "    1. 服务器地址是否正确: $PROJECT_SERVER"
-    echo "    2. ops密码是否正确配置在 ~/.uniweb/uniweb-system.config"
+    echo "    2. ops密码是否正确配置在 ~/uniweb/uniweb-system.config"
     echo "    3. 服务器是否可访问"
     exit 1
 fi

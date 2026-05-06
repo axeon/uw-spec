@@ -57,7 +57,7 @@ AskUserQuestion({
 
 ## 项目环境检测
 
-从当前目录向上查找 `project-info.md`，最多 3 层，找到后记为 `PROJECT_ROOT`。详见 [检测方法与前置检查](references/project-env-check.md)。**未找到** → 使用当前工作目录作为 `PROJECT_ROOT`（新项目场景）。
+执行 [project-env-check.md](references/project-env-check.md) 中的前置检查流程。未通过时暂停执行，引导用户修复。
 
 ## 八阶段模型
 

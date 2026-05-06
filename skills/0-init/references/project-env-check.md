@@ -4,6 +4,29 @@
 
 AI Coding 工具可能从项目任意子目录启动（如 `frontend/my-shop-admin-web/`），但 skill 中的项目文件路径（`project-info.md`、`database/`、`backend/`、`frontend/`）都是相对于项目根目录的。
 
+## 第零步：uniweb system 环境检测
+
+### 检测方法
+
+| 命令 | 判定 |
+|------|------|
+| `test -f ~/uniweb/uniweb-system.config` | 文件存在 → 环境已就绪，进入第一步；不存在 → 输出引导话术，暂停执行 |
+
+### 引导话术
+
+```
+未检测到 uniweb system 开发环境配置信息。
+
+请先阅读项目信息：https://github.com/axeon/uw-system-init
+
+请将已搭建的服务器/root/uniweb/uniweb-system.config文件复制到本机当前用户的~/uniweb/目录下。
+
+或使用以下命令先完成开发环境搭建：
+  curl -fsSL https://raw.githubusercontent.com/axeon/uw-system-init/main/install.sh | sudo bash
+
+最后，重新触发 0-init 继续项目初始化。
+```
+
 ## 第一步：定位项目根目录
 
 从当前目录向上逐层查找 `project-info.md`，最多查找 3 层。
