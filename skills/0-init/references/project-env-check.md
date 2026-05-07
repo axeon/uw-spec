@@ -17,7 +17,7 @@ AI Coding 工具可能从项目任意子目录启动（如 `frontend/my-shop-adm
 ```
 未检测到 uniweb system 开发环境配置信息。
 
-请先阅读项目信息：https://github.com/axeon/uw-system-init
+请先阅读开发环境搭建说明：https://github.com/axeon/uw-system-init
 
 请将已搭建的服务器/root/uniweb/uniweb-system.config文件复制到本机当前用户的~/uniweb/目录下。
 
