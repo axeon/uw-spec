@@ -68,7 +68,7 @@
 
 ### 第一层：角色级通用规则
 
-> 基于角色和 CRUD 标准方法组合判断，不需要看具体业务。代码生成器产出的标准方法：list / liteList / load / listDataHistory / listCritLog / save / update / enable / disable / delete。
+> 基于角色和 CRUD 标准方法组合判断，不需要看具体业务。代码生成器产出的标准方法：list / listLite / load / listDataHistory / listCritLog / save / update / enable / disable / delete。
 
 #### 1.1 Guest 角色通用删除
 
@@ -79,7 +79,7 @@
 | `listDataHistory` | 后台数据历史审计，Guest 不需要 |
 | `listCritLog` | 后台操作日志审计，Guest 不需要 |
 
-`liteList` 方法选择性删除，根据业务场景判断是否需要Select下拉列表。
+`listLite` 方法选择性删除，根据业务场景判断是否需要Select下拉列表。
 
 #### 1.2 SAAS 只读模块通用删除
 
@@ -189,7 +189,7 @@
 | 检查项 | 验证方法 |
 |--------|---------|
 | Guest 无 listDataHistory / listCritLog | `grep -r "listDataHistory\|listCritLog" controller/guest/` 结果为空 |
-| Guest liteList 合理性 | Guest Controller 中如保留 liteList，需在 README PRD 映射表中有对应功能点 |
+| Guest listLite 合理性 | Guest Controller 中如保留 listLite，需在 README PRD 映射表中有对应功能点 |
 | SAAS 只读模块无写入方法 | 对照 README 权限映射表 R 标记，检查无 save/update/delete/enable/disable/listDataHistory/listCritLog |
 | PRD 每个接口都有对应实现 | README PRD 功能点映射表逐条核对 Controller 方法 |
 | 无多余方法 | Controller 中每个方法都能在 PRD 或第一二层规则中找到保留理由 |
