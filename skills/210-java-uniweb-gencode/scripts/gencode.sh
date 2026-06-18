@@ -74,7 +74,7 @@ fi
 
 SCHEMA_NAME=$(echo "$PROJECT_NAME" | tr '-' '_')
 AUTH_URL="http://${PROJECT_SERVER}/uw-auth-center/auth/login"
-GENCODE_URL="http://${PROJECT_SERVER}/uw-code-center/ops/codegen/databaseGenCode/downloadCode"
+GENCODE_URL="http://${PROJECT_SERVER}/uw-code-center/ops/codegen/database/downloadCode"
 
 TEMP_DIR=$(mktemp -d)
 trap "rm -rf $TEMP_DIR" EXIT

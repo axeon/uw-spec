@@ -76,7 +76,7 @@ if [ -z "$OPS_PASSWORD" ]; then
 fi
 
 AUTH_URL="http://${PROJECT_SERVER}/uw-auth-center/auth/login"
-GENCODE_URL="http://${PROJECT_SERVER}/uw-code-center/ops/codegen/swaggerGenCode/downloadCodeForVue3"
+GENCODE_URL="http://${PROJECT_SERVER}/uw-code-center/ops/codegen/swagger/downloadCodeForVue3"
 
 TEMP_DIR=$(mktemp -d)
 trap "rm -rf $TEMP_DIR" EXIT
