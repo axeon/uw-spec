@@ -17,7 +17,7 @@
 | 数据校验 | `ValidateUtils.isXxx(value)` | 覆盖字符串/整数/身份证/手机号等 |
 | 数据脱敏 | `MaskUtils.maskXxx(value)` | 所有方法 mask 前缀；null 返回 null；手机/身份证用 `maskChinaMobile/maskChinaIdCard` |
 | JSON序列化 | `JsonUtils.toString(object)` | — |
-| JSON反序列化 | `JsonUtils.parse(json, Class)` 或 `parse(json, new TypeReference<List<T>>(){})` | — |
+| JSON反序列化 | `JsonUtils.parse(json, Class)` 或 `parse(json, new TypeReference<List<T>>(){})` | parse 失败抛 RuntimeException 且 message **含原始数据**，对外边界必须 catch + 固定文案，禁止回传 `e.getMessage()` |
 | AES加密 | `AESUtils.encryptString(key, data)` | 推荐自动IV版本（密文自带IV） |
 | 当前时间 | `SystemClock.nowDate()` / `SystemClock.now()` | **不要用 `new Date()` / `System.currentTimeMillis()`**，createDate/modifyDate 赋值必用此 |
 | 日期格式化 | `DateUtils.dateToString(date, DateUtils.DATE_TIME)` | 方法名是 `dateToString` 不是 `format` |
@@ -497,6 +497,40 @@ user.setMobile(MaskUtils.maskChinaMobile(user.getMobile()));
 | `parse(String, TypeReference<T>)` | JSON → 泛型对象（如 List<User>） |
 | `parseTree(String)` | JSON → JsonNode 树模型 |
 | `convert(Object, Class<T>)` | 对象类型转换（如 Map → POJO） |
+
+> ⚠️ **parse/convert 失败会抛 `RuntimeException`，且 message 拼接了原始数据**
+>
+> 所有 `parse`/`convert` 方法在解析失败时抛 `RuntimeException`，其 message 形如 `"<Jackson错误消息>! data: <原始JSON>"` —— **同时包含 Jackson 内部解析细节和原始输入数据**。
+>
+> 这带来两类风险：
+> 1. **原始数据泄露**：原始 JSON（可能含用户敏感输入：密码、token、个人信息）被拼进异常 message，沿调用栈传播，任何一层的日志/响应若不脱敏都会泄露。
+> 2. **框架细节泄露**：Jackson 错误消息暴露服务端使用的 JSON 序列化实现。
+>
+> **强制规范**（与 KryoUtils 同等约束，见下方「KryoUtils」章节）：
+> - 面向外部的边界（Controller / RPC / 对外响应）调用 `parse`/`convert` 时**必须 try-catch**，对外用**固定文案**（如 `"invalid request data."`），**禁止把异常 message 回传客户端**（会泄露原始数据 + Jackson 细节）。
+> - 需要排查时，在 catch 块内自行决定如何记录原始数据（建议脱敏后记录），不要依赖异常 message。
+> - 反面教材（禁止）：`return ResponseData.errorCode("parse failed: " + e.getMessage())` —— 直接把原始 JSON 数据回传给客户端。
+
+## KryoUtils
+
+> **包路径**：`uw.common.util.KryoUtils`
+
+高性能二进制序列化，四种路径：整对象反射（`serialize(Object)`）、lambda 手工（`serialize(Consumer)`）、BiFunction 完整版（`serialize(BiConsumer)`）、KryoData 接口式（`serializeData/deserializeData`）。
+
+> ⚠️ Kryo 反序列化要求**具体实现类**，不能用接口类型（List/Map/Set 要用 ArrayList/LinkedHashMap/HashSet）；`CacheDataLoader<V>` 的 V 必须是具体类。
+
+> ⚠️ **异常策略与对外报错安全（强制）**
+>
+> `KryoUtils` 的所有方法**不吞异常**：反序列化失败（字段错位、类型不符、数据损坏，典型如版本升级后旧协议 token 残留 Redis/MQ）时，直接抛 `KryoException` / `KryoBufferUnderflowException`，由**调用方** catch。
+>
+> 此类异常的 message 携带序列化框架内部关键字（`kryo`、`Buffer underflow`、字段读取位置等），**禁止出现在对外响应**——否则暴露服务端序列化实现与协议结构，成为攻击者构造畸形 payload 探测/绕过鉴权的信息泄露面。
+>
+> **强制规范**：
+> 1. 面向外部的边界（Controller / RPC / 对外响应）必须 catch `KryoException`，不得让其冒泡到 `GlobalExceptionAdvice` 后原样回传客户端。
+> 2. 对外响应消息用**固定文案**（如 `"token invalid or corrupted."`），**禁止拼接 `e.getMessage()` / `e.toString()`**；详细原因（含 kryo 关键字）只写服务端日志。
+> 3. 缓存 / MQ 批量读取（`GlobalHashSet` / `GlobalSortedSet` / `GlobalCache`）**逐条 catch 跳过**脏数据降级 WARN，单条损坏不得拖垮整批；单元素读取保持抛异常由调用方决策。
+>
+> 参考实现：`MscTokenService.verifyAuthToken` / `parseRefreshToken` / `loadAuthTokenData` / `getInvalidTokenList`、`GlobalCache.get`、`GlobalHashSet` / `GlobalSortedSet` 批量方法。完整说明见 `KryoUtils` 类注释与 [dev-standards.md](dev-standards.md)「缓存使用规范」。
 
 ## DateUtils
 
