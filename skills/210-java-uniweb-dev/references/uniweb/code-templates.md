@@ -19,6 +19,9 @@
 │   ├── service/                      # 新建 Helper
 │   │   ├── {ModuleA}Helper.java
 │   │   └── {ModuleB}Helper.java
+│   ├── task/                         # 定时/队列任务（TaskCroner/TaskRunner，需 @Component）
+│   │   ├── {Module}CronerTask.java
+│   │   └── {Module}RunnerTask.java
 │   ├── constant/                     # 业务枚举（状态/类型/响应码）+ ResponseCode i18n
 │   ├── entity/                       # 保留不动
 │   ├── dto/                          # 裁剪后
@@ -58,6 +61,62 @@
 > - **非Guest 角色**：父级 Controller `@RequestMapping` 为**3级**（`/{role}/{1st-menu}/{2nd-menu}`）；1:N子集 Controller `@RequestMapping` 为**4级**（`/{role}/{1st-menu}/{2nd-menu}/{subset}`），4级路径必须存在对应的3级父路径定义（Controller 或 `$PackageInfo$`）
 > - **路径命名**：禁止 `-`（短横线）和 `_`（下划线），仅允许驼峰命名
 > - **Guest 角色说明**：`AuthType.USER` 仅验证用户类型（已登录），不验证权限菜单。Guest 无后台菜单系统，不适用 `AuthType.PERM`。`$PackageInfo$` 仅用于标准角色（saas/mch/admin/root/ops/rpc），guest 不适用
+
+## Entity 实体类模板
+
+> 规范约束见 [dev-standards.md](dev-standards.md)「实体类规范」。
+> Entity 由代码生成器产出，**保留不动，不手动修改**。本模板仅用于理解差量更新机制。
+
+```java
+package {package}.entity;
+
+import uw.dao.DataEntity;
+import uw.dao.DataUpdateInfo;
+import uw.dao.annotation.ColumnMeta;
+import uw.dao.annotation.TableMeta;
+import java.io.Serializable;
+import java.util.Date;
+
+@TableMeta(tableName = "{entity_table_name}", tableType = "table")
+public class {Entity} implements DataEntity {
+
+    // 框架 load 后置 true，触发差量更新；勿手动改
+    private transient boolean _IS_LOADED;
+    // 变更追踪，transient 防止序列化
+    private transient DataUpdateInfo _UPDATED_INFO;
+
+    @ColumnMeta(columnName = "id", primaryKey = true)
+    private long id;
+
+    @ColumnMeta(columnName = "name", dataSize = 50, nullable = false)
+    private String name;
+
+    @ColumnMeta(columnName = "state")
+    private int state;
+
+    @ColumnMeta(columnName = "create_date")
+    private Date createDate;
+
+    @ColumnMeta(columnName = "modify_date")
+    private Date modifyDate;
+
+    @Override public String ENTITY_TABLE() { return "{entity_table_name}"; }
+    @Override public String ENTITY_NAME() { return "{实体名}"; }
+    @Override public Serializable ENTITY_ID() { return id; }
+    @Override public DataUpdateInfo GET_UPDATED_INFO() { return _UPDATED_INFO; }
+    @Override public void CLEAR_UPDATED_INFO() { _UPDATED_INFO = null; }
+
+    // setter 必须返回 this（链式），并在内部调用 addUpdateInfo 记录变更
+    public {Entity} setName(String name) {
+        this._UPDATED_INFO = DataUpdateInfo.addUpdateInfo(_UPDATED_INFO, "name", this.name, name, _IS_LOADED);
+        this.name = name;
+        return this;
+    }
+    // 其他 getter/setter 同理
+}
+```
+
+> `@ColumnMeta.columnName` 大小写不敏感（框架内部统一用小写匹配）。
 
 ## Vo 模板
 
@@ -270,7 +329,8 @@ public ResponseData<PageList<{Entity}>> list(AuthQueryParam param) {
 
 ## 链式调用模式模板
 
-> 规范约束见 [dev-standards.md](dev-standards.md)「链式调用规范」。核心设计：DaoManager 所有方法返回 `ResponseData<T>`，配合 `onSuccess` / `onError` 链式回调实现零中间变量代码。
+> 规范约束见 [dev-standards.md](dev-standards.md)「链式调用规范」。核心设计：DaoManager 所有方法返回 `ResponseData<T>`，配合 `onSuccess` / `onError` / `onWarn` / `onNotSuccess` 链式回调实现零中间变量代码。
+> 每个回调都有 3 种重载：**Function 版（转换，返回新 ResponseData）**、**Consumer 版（副作用，返回自身）**、**Runnable 版（无参，返回自身）**。
 
 ### 直接返回模式（简单 CRUD）
 
@@ -335,6 +395,8 @@ public ResponseData<Integer> delete(long id) {
 
 ### 状态变更模式（enable / disable）
 
+> 此模式使用 **Function 版 `onSuccess`**：lambda 内 `return dao.update(product)`，链式返回的是 update 的 ResponseData（类型转换 Product→Integer）。
+
 ```java
 @PostMapping("/enable")
 @MscPermDeclare(name = "启用", auth = AuthType.PERM, log = ActionLog.ALL)
@@ -378,6 +440,32 @@ public ResponseData<PageList<OrderEx>> listEx(AuthQueryParam param) {
             orders.forEach(o -> o.setItemList(itemMap.getOrDefault(o.getId(), List.of())));
         });
     });
+}
+```
+
+### 状态分支模式（onWarn / onError / onNotSuccess）
+
+> 区分"数据未找到（WARN）"、"系统异常（ERROR）"和"成功（SUCCESS）"三种状态，用对应 onXxx 回调，而非嵌套 if-else 判断。
+
+```java
+// 数据未找到走 WARN 分支（dao.load 查无结果框架自动返回 WARN）
+@GetMapping("/load")
+@MscPermDeclare(name = "详情", auth = AuthType.PERM, log = ActionLog.BASE)
+public ResponseData<Product> load(long id) {
+    return dao.queryForObject(Product.class, new AuthIdQueryParam(getSaasId(), id))
+        .onWarn(w -> log.warn("产品未找到, id={}", id))
+        .onError(e -> log.error("加载产品异常, id={}", id, e.getData()));
+}
+
+// 通用失败兜底（WARN/ERROR/FATAL 都触发 onNotSuccess）
+@PostMapping("/delete")
+@MscPermDeclare(name = "删除", auth = AuthType.PERM, log = ActionLog.ALL)
+public ResponseData<Integer> delete(long id) {
+    AuthServiceHelper.logRef(Product.class, id);
+    return dao.queryForObject(Product.class, new AuthIdQueryParam(getSaasId(), id))
+        .onSuccess(product -> dao.delete(product))              // Function 版：返回 delete 的 ResponseData
+        .onNotSuccess(r -> log.warn("删除失败, id={}, code={}", id, r.getCode()))  // Consumer 版：副作用
+        .onSuccess(deleted -> FusionCache.invalidate(Product.class, id));          // Consumer 版：清缓存
 }
 ```
 
@@ -834,18 +922,55 @@ ResponseData<{Entity}> result = FusionCache.get({Entity}.class, id);
 FusionCache.invalidate({Entity}.class, id);
 ```
 
-**GlobalCache（列表/临时数据缓存）**：行内 CacheDataLoader，不需要 static 初始化。
+**GlobalCache（列表/临时数据缓存）**：行内 CacheDataLoader，不需要 static 初始化。注意 V 必须是**具体实现类**（Kryo 序列化要求），用 `ArrayList` 而非 `List`。
 
 ```java
-GlobalCache.get("{cacheName}", key, new CacheDataLoader<String, List<{Entity}>>() {
+GlobalCache.get("{cacheName}", key, new CacheDataLoader<Long, ArrayList<{Entity}>>() {
     @Override
-    public List<{Entity}> load(String key) {
-        return dao.list({Entity}.class, sql, params).getData();
+    public ArrayList<{Entity}> load(Long key) {
+        return new ArrayList<>(dao.list({Entity}.class, sql, params).getData());
     }
 }, expireMillis);
 
 // 失效
 GlobalCache.invalidate("{cacheName}", key);
+```
+
+**GlobalLocker（分布式锁）**：基于 Redis setnx，stamp 为 SnowflakeId（跨 JVM 唯一），unlock/keepLock 为 Lua CAS 原子操作。
+
+```java
+public static ResponseData<Void> processOrder(long orderId) {
+    long stamp = GlobalLocker.tryLock(Order.class, orderId, 30_000L);
+    if (stamp <= 0) {
+        return ResponseData.warnCode(OrderResponseCode.ORDER_LOCKED);
+    }
+    try {
+        // 业务逻辑（执行较久时周期性 keepLock 续期，执行时间不可超过 lockTimeMillis）
+        doProcess(orderId);
+        GlobalLocker.keepLock(Order.class, orderId, stamp, 30_000L);
+        return ResponseData.success(null);
+    } finally {
+        GlobalLocker.unlock(Order.class, orderId, stamp);
+    }
+}
+```
+
+**FusionCounter（高性能计数器，本地+Redis 融合）**：必须 `static {}` config；本地与 Redis 有 syncGlobalMillis 级延迟，强一致读用 `get(Class, id, true)`。
+
+```java
+static {
+    // 基本计数器：每 60 秒同步到 Redis
+    FusionCounter.config(Order.class, 60_000L);
+
+    // 带回写的计数器：每 60 秒同步 Redis，每 300 秒回写数据库
+    FusionCounter.config(Product.class, 60_000L, 300_000L, (productId, count) -> {
+        dao.execute("UPDATE product SET view_count=? WHERE id=?", new Object[]{count, productId});
+    });
+}
+
+// 使用
+FusionCounter.increment(Order.class, orderId);
+long count = FusionCounter.get(Product.class, productId, true);  // forceSync 强制同步
 ```
 
 ## 认证授权模板
@@ -862,6 +987,308 @@ private RestClient authRestClient;
 // Token 自动管理（自动 login/refresh/重试），无需手动设置 Authorization 请求头
 ResponseData<Result> result = authRestClient.postForObject(url, request, ResponseData.class);
 ```
+
+## 任务框架模板
+
+> 规范约束见 [dev-standards.md](dev-standards.md)「任务框架规范」。
+> **关键区别**：`TaskCroner` / `TaskRunner` 是 **Spring Bean**（必须加 `@Component`），与 Helper（纯静态工具类，禁止 `@Component`）不同。
+> 放在 `task/` 包下，按 `task-project` 包名前缀扫描。API 细节见 [uw-task.md](uw-task.md)。
+
+### TaskCroner 定时任务
+
+```java
+package {package}.task;
+
+import org.springframework.stereotype.Component;
+import uw.task.TaskCroner;
+import uw.task.TaskCronerLog;
+import uw.task.conf.TaskCronerConfig;
+import uw.task.contact.TaskContact;
+
+/**
+ * {TaskName} - {任务描述}
+ *
+ * <p>设计思路：{定时触发的业务场景，如超时检查、数据同步、定期清理}</p>
+ *
+ * <p>多实例：通过 taskParam 区分（同一 taskClass 不同 taskParam = 不同实例）</p>
+ *
+ * @author {author}
+ * @since 1.0.0
+ */
+@Component
+public class {Module}TimeoutCheckTask extends TaskCroner {
+
+    @Override
+    public String runTask(TaskCronerLog taskCronerLog) throws Exception {
+        String taskParam = taskCronerLog.getTaskParam();  // 多实例参数（可空）
+        int count = {Module}Helper.checkTimeout();
+        return "检查完成，处理: " + count + " 条";
+    }
+
+    @Override
+    public TaskCronerConfig initConfig() {
+        TaskCronerConfig config = new TaskCronerConfig();
+        config.setTaskName("{模块}超时检查");
+        config.setTaskDesc("每5分钟检查一次超时数据");
+        config.setTaskCron("0 */5 * * * ?");
+        config.setRunType(TaskCronerConfig.RUN_TYPE_SINGLETON);  // 全局单例
+        config.setLogLevel(TaskCronerConfig.TASK_LOG_TYPE_RECORD_ALL);
+        config.setAlertRunTimeout(300);
+        return config;
+    }
+
+    @Override
+    public TaskContact initContact() {
+        return TaskContact.builder("运维负责人")
+            .email("ops@example.com")
+            .mobile("13800138000")
+            .build();
+    }
+}
+```
+
+### TaskRunner 队列任务
+
+```java
+package {package}.task;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import uw.task.TaskRunner;
+import uw.task.TaskData;
+import uw.task.conf.TaskRunnerConfig;
+import uw.task.contact.TaskContact;
+import uw.task.exception.TaskDataException;
+import uw.task.exception.TaskPartnerException;
+
+/**
+ * {TaskName} - {任务描述}
+ *
+ * <p>设计思路：{异步队列消费的业务场景，如发通知、第三方调用}</p>
+ *
+ * <p>注意：TaskRunner 是单例，多消费者线程并发调用，勿使用非线程安全实例变量</p>
+ *
+ * @author {author}
+ * @since 1.0.0
+ */
+@Component
+public class {Module}NotifyTask extends TaskRunner<{Module}NotifyParam, NotifyResult> {
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @Override
+    public NotifyResult runTask(TaskData<{Module}NotifyParam, NotifyResult> taskData) throws Exception {
+        {Module}NotifyParam param = taskData.getTaskParam();
+        try {
+            boolean success = notificationService.send(param.getUserId());
+            return new NotifyResult(success, success ? "成功" : "失败");
+        } catch (IOException e) {
+            throw new TaskPartnerException("网络异常", e);  // 按 retryTimesByPartner 重试
+        }
+    }
+
+    @Override
+    public TaskRunnerConfig initConfig() {
+        TaskRunnerConfig config = new TaskRunnerConfig();
+        config.setTaskName("{模块}通知任务");
+        config.setQueueType(TaskRunnerConfig.TYPE_QUEUE_PROJECT);
+        config.setConsumerNum(5);
+        config.setPrefetchNum(1);
+        config.setRateLimitType(TaskRunnerConfig.RATE_LIMIT_GLOBAL_TASK);  // 全局按任务隔离
+        config.setRateLimitValue(100);
+        config.setRateLimitTime(60);
+        config.setRetryTimesByPartner(3);  // 第三方错误：总计执行 4 次（1+3）
+        return config;
+    }
+
+    @Override
+    public TaskContact initContact() {
+        return TaskContact.builder("通知负责人").email("notify@example.com").build();
+    }
+}
+```
+
+### TaskFactory 调用
+
+> `TaskFactory` 获取：`@Autowired private TaskFactory taskFactory;` 或 `TaskFactory.getInstance()` 静态获取。
+> **禁止复用 taskData**：run 系列方法会写入运行期字段，每次必须新建。
+
+```java
+public class {Module}Helper {
+    @Autowired
+    private TaskFactory taskFactory;  // 注入（也可 TaskFactory.getInstance()）
+
+    // 异步入队（不关心结果）
+    public void sendNotify(long bizId, long userId) {
+        {Module}NotifyParam param = new {Module}NotifyParam();
+        param.setBizId(bizId);
+        param.setUserId(userId);
+        TaskData<{Module}NotifyParam, NotifyResult> taskData = TaskData
+            .builder({Module}NotifyTask.class, param)
+            .refId(bizId)
+            .refTag("MODULE_NOTIFY")
+            .taskDelay(5000)          // 延迟5秒（需 delayType=ON）
+            .build();
+        taskFactory.sendToQueue(taskData);  // 异步入队
+    }
+
+    // 同步执行（需立即拿结果）
+    public NotifyResult syncNotify(long bizId, long userId) {
+        {Module}NotifyParam param = new {Module}NotifyParam();
+        param.setBizId(bizId);
+        param.setUserId(userId);
+        TaskData<{Module}NotifyParam, NotifyResult> taskData = TaskData
+            .builder({Module}NotifyTask.class, param)
+            .runType(TaskData.RUN_TYPE_AUTO_RPC)
+            .build();
+        TaskData<{Module}NotifyParam, NotifyResult> result = taskFactory.runTask(taskData);
+        if (result.getState() == TaskData.STATE_SUCCESS) {
+            return result.getResultData();
+        }
+        throw new RuntimeException("通知失败: " + result.getErrorInfo());
+    }
+}
+```
+
+## AI 集成模板
+
+> 规范约束见 [dev-standards.md](dev-standards.md)「AI 集成规范」。
+> `AiClientHelper` 全部静态方法。统一约定：`configId` 与 `configCode` 二选一定位配置（推荐 `configCode`）；认证信息通过 `bindAuthInfo()` 绑定，禁止手动 setSaasId。API 细节见 [uw-ai.md](uw-ai.md)。
+
+```java
+package {package}.service;
+
+import uw.ai.AiClientHelper;
+import uw.ai.dto.AiChatGenerateParam;
+import uw.ai.dto.AiImageGenerateParam;
+import uw.ai.dto.AiImageResultData;
+import uw.ai.dto.AiTranslateListParam;
+import uw.ai.dto.AiTranslateMapParam;
+import uw.ai.dto.AiTranslateResultData;
+import uw.common.response.ResponseData;
+import reactor.core.publisher.Flux;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+public class {Module}AiHelper {
+
+    // 同步对话
+    public static String chat(String message) {
+        AiChatGenerateParam param = AiChatGenerateParam.builder()
+            .configCode("default-chat")
+            .userPrompt(message)
+            .bindAuthInfo()           // 自动绑定当前用户认证四元组
+            .build();
+        return AiClientHelper.generate(param).getData();
+    }
+
+    // 流式对话（SSE）— 对话场景必须用流式，禁止用同步方式
+    public static Flux<String> streamChat(String message) {
+        AiChatGenerateParam param = AiChatGenerateParam.builder()
+            .configCode("default-chat")
+            .userPrompt(message)
+            .bindAuthInfo()
+            .build();
+        return AiClientHelper.chatGenerate(param);
+    }
+
+    // 结构化输出（生成 Java 对象）
+    public static UserIntent analyzeIntent(String message) {
+        AiChatGenerateParam param = AiChatGenerateParam.builder()
+            .configCode("default-chat")
+            .systemPrompt("分析用户意图")
+            .userPrompt(message)
+            .bindAuthInfo()
+            .build();
+        return AiClientHelper.generateEntity(param, UserIntent.class).getData();
+    }
+
+    // 批量翻译（数组）：每目标语言返回一条 AiTranslateResultData，注意返回是数组
+    public static Map<String, String> translateList(List<String> texts) {
+        AiTranslateListParam param = AiTranslateListParam.builder()
+            .configCode("default-translate")
+            .textList(texts)
+            .langList(List.of("en"))
+            .bindAuthInfo()
+            .build();
+        ResponseData<AiTranslateResultData[]> resp = AiClientHelper.translateList(param);
+        if (resp.isNotSuccess() || resp.getData() == null || resp.getData().length == 0) {
+            return Collections.emptyMap();  // 降级
+        }
+        return resp.getData()[0].getResultMap();  // 取目标语言 en 的结果
+    }
+
+    // Map 翻译（key 保留，value 翻译）；textMap 必须用 LinkedHashMap
+    public static Map<String, String> translateMap(LinkedHashMap<String, String> contentMap) {
+        AiTranslateMapParam param = AiTranslateMapParam.builder()
+            .configCode("default-translate")
+            .textMap(contentMap)
+            .langList(List.of("en"))
+            .bindAuthInfo()
+            .build();
+        ResponseData<AiTranslateResultData[]> resp = AiClientHelper.translateMap(param);
+        if (resp.isNotSuccess() || resp.getData() == null || resp.getData().length == 0) {
+            return Collections.emptyMap();
+        }
+        return resp.getData()[0].getResultMap();
+    }
+
+    // 图片生成（Builder 用 .prompt(...) 设置提示词，不是 .userPrompt）
+    public static AiImageResultData genImage(String prompt) {
+        AiImageGenerateParam param = AiImageGenerateParam.builder()
+            .configCode("default-image")
+            .prompt(prompt)
+            .bindAuthInfo()
+            .build();
+        return AiClientHelper.generateImage(param).getData();
+    }
+
+    // 带降级的调用 — 必须检查结果，不可用时写降级逻辑（不能省略或退化为 DB 查询）
+    public static String chatWithFallback(String message) {
+        AiChatGenerateParam param = AiChatGenerateParam.builder()
+            .configCode("default-chat")
+            .userPrompt(message)
+            .bindAuthInfo()
+            .build();
+        ResponseData<String> aiResult = AiClientHelper.generate(param);
+        if (aiResult.isNotSuccess()) {
+            return "AI 服务暂不可用，请稍后重试";  // 降级处理
+        }
+        return aiResult.getData();
+    }
+}
+```
+
+**自定义 AI 工具**（实现 `AiTool<P,R>` + `@Component`，P 继承 `AiToolParam`）：
+
+```java
+@Component
+public class WeatherTool implements AiTool<WeatherTool.Param, ResponseData<String>> {
+
+    @Override public String toolName() { return "天气查询工具"; }
+    @Override public String toolDesc() { return "查询指定城市的当前天气"; }
+    @Override public String toolVersion() { return "1.0.0"; }  // 升级时递增，框架据此同步元数据
+
+    @Override
+    public ResponseData<String> apply(Param param) {
+        // 注入业务 Service（@Autowired weatherService）后查询，此处仅示意
+        return ResponseData.success("晴,25℃");
+    }
+
+    public static class Param extends AiToolParam {
+        @io.swagger.v3.oas.annotations.media.Schema(
+            title = "城市名称", description = "城市名称", requiredMode = Schema.RequiredMode.REQUIRED)
+        private String city;
+        public String getCity() { return city; }
+        public void setCity(String city) { this.city = city; }
+    }
+}
+```
+
+> ⚠️ `AiToolCallInfo` 的 `toolCode` 对应工具类的**类名**（`Class.getSimpleName()`），不是 `toolName()` 也不是 `toolVersion`。
 
 ## 单元测试模板
 
@@ -1111,3 +1538,5 @@ groupId：`com.umtone`（以下标注 ★ 的为 `saas`）
 | 浏览器自动化（WebotManager） | uw-webot |
 | ★ SaaS基础（SaasInfoHelper/MsgHelper/SysOssHelper） | saas-base-common |
 | ★ SaaS财务（FinPaymentHelper/FinBalanceHelper） | saas-finance-client |
+| ★ SaaS AIP授权计费（AipHelper/AipVendor） | saas-aip-module |
+| ★ SaaS AIS接口服务（AisHelper/BaseAisLinker） | saas-ais-module |

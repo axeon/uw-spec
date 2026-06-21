@@ -1,366 +1,320 @@
-# uw-webot — Web自动化框架
+# uw-webot — Web 自动化框架
 
-**Maven 坐标**: `com.umtone:uw-webot`
+**Maven 坐标**：`com.umtone:uw-webot`　**配置前缀**：`uw.webot`
 
-基于 Microsoft Playwright 的高性能 Web 自动化框架，采用 Hybrid 混合模式设计，支持浏览器实例复用和页签级隔离，提供验证码识别、反检测、代理池等企业级功能。
+基于 Microsoft Playwright 的 Web 自动化框架。采用 **Hybrid 混合模式**：Browser 进程级别复用（同一个 BrowserInstance 可承载多个 BrowserTab），BrowserTab 级别的一次性 Context（每次新建 BrowserContext + Page，`close()` 后销毁、**不复用**，因为 Playwright Context 池化复用经实测不稳定）。
 
-**配置前缀**: `uw.webot`
+> ⚠️ **重要事实**：BrowserTab 的 `close()` 是**销毁**而非归还复用。不要在文档或注释里写"归还到池中复用"。只有 Browser 进程本身由池持有并跨 Tab 共享。
+
+## AI 决策速查
+
+| 我要做什么 | 用什么 | 关键约束 |
+|-----------|--------|---------|
+| 获取管理器 | Spring 注入 `WebotManager`（或 `WebotManager.getInstance()`） | getInstance 在 enabled=false 时返回 null |
+| 创建会话 | `webotManager.createSession(SessionConfig)` | 不传参则用默认配置 |
+| 关闭会话 | `webotManager.destroySession(sessionId)` | — |
+| 打开页签（一次性 Context） | `webotManager.openBrowserTab(session)` | **必须** try-with-resources，close 会销毁 Context |
+| 执行操作（推荐） | `webotManager.execute(session, tab -> {...})` | 自动 try-with-resources |
+| 导航 | `tab.navigate(url)` | 返回 Response |
+| 等待加载 | `tab.waitForLoadState(LoadState)` | — |
+| 取当前 URL/标题/HTML | `tab.url()` / `tab.title()` / `tab.content()` | — |
+| 执行 JS | `tab.evaluate(expr)` 或 `tab.evaluate(expr, arg)` | — |
+| 截图 | `tab.screenshot(Page.ScreenshotOptions)` | 返回 byte[] |
+| 存储状态 | `tab.getStorageStateJson()` | 返回 cookies+localStorage JSON |
+| 自定义操作 | `tab.execute((ctx, page) -> {...})` / `tab.consume(...)` | 直接拿 Playwright 原生 Page/Context |
+| 注册初始化脚本 | `tab.addInitScript(script)` | 必须在 navigate 前；反检测自动调用 |
+| 识别验证码 | `webotManager.getCaptchaManager().getCaptchaService("key").recognizeImageCaptcha(bytes)` | — |
+| 应用反检测 | 会话配 `stealthConfigKey`，openBrowserTab 自动应用 | 通过 addInitScript 注入 |
+
+## 架构
+
+```
+WebotManager (Spring Bean / 静态单例)
+    ├── BrowserBotPool               (按 BrowserConfig 标签分组)
+    │       └── BrowserGroup         (组内 BrowserInstance 轮询负载均衡)
+    │              └── BrowserInstance (专属单线程 executor，Playwright+Browser)
+    │                     └── BrowserTab (一次性 Context + Page)
+    ├── SessionService               (GlobalSessionServiceImpl, 基于 FusionCache)
+    ├── CaptchaManager               (Map<String, CaptchaService>: OCR/2Captcha/Capsolver)
+    ├── StealthManager               (Map<String, StealthService>)
+    └── ProxyManager                 (Map<String, ProxyService>: LocalProxyPoolImpl)
+```
+
+资源模型：
+- `BrowserInstance` 持有一个单线程 `ExecutorService`，**所有 Playwright 操作**都通过 `submitAndWait` 串行提交到该线程，保证 Playwright 线程安全。
+- `selectBrowserInstance()` 轮询组内实例，选中第一个 `isActive() && activeTabCount < maxTabsPerBrowser` 的；都不满则按需新建至上限 `maxBrowsersPerGroup`。
+
+## 配置（application.yml）
+
+字段严格以 `uw.webot.conf.WebotProperties` 及各 `*Config` 类为准：
 
 ```yaml
 uw:
   webot:
     enabled: true
     bot-pool:
-      max-browsers-per-group: 5      # 每种浏览器类型最大实例数
-      max-tabs-per-browser: 20       # 每个浏览器实例最大页签数
+      max-browsers-per-group: 5     # 每个 BrowserGroup 最大 Browser 数 (1-20)
+      max-tabs-per-browser: 20      # 每个 Browser 最大 Tab 数 (1-50)
     session:
-      distributed: false             # 是否启用分布式会话
+      distributed: false            # true 则 FusionCache 走分布式
       default-session:
-        expire-time: P30D            # 会话默认过期时间（ISO-8601格式）
-    # 验证码配置
+        expire-time: P30D           # ISO-8601 duration
+        browser-config:
+          browser-type: chromium    # chromium | firefox | webkit
+          headless: true
+          viewport-width: 1920
+          viewport-height: 1080
+          java-script-enabled: true
+          # user-agent / locale / timezone / args 可选
+    # 验证码/代理/反检测 均为 Map<String, XxxConfig>，key 由 SessionConfig.*ConfigKey 引用
+    captcha: {}                      # 示例见下
+    stealth: {}
+    proxy: {}
+```
+
+多服务配置示例（key 即业务方在 SessionConfig 引用的名称）：
+
+```yaml
     captcha:
       default:
-        service-type: OCR            # OCR/TWOCAPTCHA/CAPSOLVER
-        api-key: ""                  # 第三方服务API密钥
-    # 代理配置
-    proxy:
-      default:
-        type: HTTP                   # HTTP/HTTPS/SOCKS4/SOCKS5
-        servers:
-          - host: 127.0.0.1
-            port: 8080
-            username: ""             # 可选认证
-            password: ""
-    # 反检测配置
+        service-type: capsolver      # ocr | twocaptcha | capsolver
+        api-key: ${CAPSOLVER_KEY}
+        max-timeout: PT2M
     stealth:
       default:
-        enabled: true
-        webdriver-hide: true
-        webgl-spoof: true
-        canvas-noise: true
+        hide-web-driver: true
+        webgl-spoofing: true
+        plugin-spoofing: true
+        font-spoofing: true
+        fingerprint-randomization: false
+    proxy:
+      default:
+        max-failures: 3
+        health-check-interval: PT5M
+        servers:
+          - type: HTTPS              # http | https | socks4 | socks5
+            host: proxy.example.com
+            port: 8080
+            username: ""
+            password: ""
 ```
 
-## AI 决策速查
+## WebotManager（`uw.webot.WebotManager`）
 
-| 我要做什么 | 用什么 | 关键约束 |
-|-----------|--------|---------|
-| 获取实例 | `WebotManager.getInstance()` | 静态单例 |
-| 创建会话 | `webotManager.createSession(SessionConfig)` | Builder 模式构建配置 |
-| 关闭会话 | `webotManager.closeSession(session)` | — |
-| 打开页签 | `webotManager.openBrowserTab(session)` | try-with-resources 自动关闭 |
-| 执行操作（推荐） | `webotManager.execute(session, tab -> {...})` | 自动管理资源 |
-| 导航 | `tab.navigate(url)` | — |
-| 获取文本 | `tab.getInnerText(selector)` | — |
-| 填写表单 | `tab.fill(selector, value)` | — |
-| 点击 | `tab.click(selector)` | — |
-| 截图 | `tab.screenshot()` | 返回 byte[] |
-| 执行JS | `tab.evaluate(expression)` | — |
-| 下拉框选择 | `tab.selectOption(selector, values)` | values 为 String[] |
-| 复选框 | `tab.check(selector)` / `tab.uncheck(selector)` | — |
-| 鼠标悬停 | `tab.hover(selector)` | — |
-| 文件上传 | `tab.fileInput(selector, files)` | files 为 String[] 路径 |
-| 下载文件 | `tab.download(url)` | 返回 byte[] |
-| 生成PDF | `tab.pdf()` | 返回 byte[] |
-| 识别验证码 | `webotManager.getCaptchaService("default").recognizeBase64Captcha(base64)` | — |
-
-## 架构
-
-```
-WebotManager (单例)
-    ├── BrowserBotPool
-    │       ├── BrowserGroup (chromium) → BrowserInstance → BrowserTab
-    │       ├── BrowserGroup (firefox)
-    │       └── BrowserGroup (webkit)
-    ├── CaptchaManager
-    ├── StealthManager
-    └── ProxyManager
-```
-
-## WebotManager 方法签名
-
-> **包路径**：`uw.webot.WebotManager`
-
-构造：`WebotManager.getInstance()` 静态单例
+构造：由 `WebotAutoConfiguration` 装配为 Spring Bean；也提供 `WebotManager.getInstance()` 静态访问（enabled=false 时为 null）。
 
 | 方法 | 返回类型 | 说明 |
 |------|---------|------|
-| `createSession(SessionConfig)` | WebotSession | 创建会话 |
-| `getSession(sessionId)` | WebotSession | 获取会话 |
-| `closeSession(WebotSession)` | void | 关闭会话并释放资源 |
-| `listSessions()` | `List<WebotSession>` | 列出所有活跃会话 |
-| `openBrowserTab(session)` | BrowserTab | 打开页签（需手动关闭） |
-| `execute(session, WebotFunction)` | T | 执行操作（推荐，自动管理资源） |
-| `getCaptchaService(configName)` | CaptchaService | 获取验证码服务 |
-| `getProxyService(configName)` | ProxyService | 获取代理服务 |
-| `getStealthService(configName)` | StealthService | 获取反检测服务 |
-| `getBrowserBotPool()` | BrowserBotPool | 获取浏览器池 |
-| `getConfig()` | WebotConfig | 获取全局配置 |
+| `createSession()` | WebotSession | 用默认 SessionConfig 创建会话 |
+| `createSession(SessionConfig)` | WebotSession | 创建会话（自动绑定 proxy/stealth/captcha key） |
+| `getSession(sessionId)` | WebotSession | 取会话 |
+| `updateSession(WebotSession, Duration ttl)` | void | 续期 |
+| `destroySession(sessionId)` | void | 销毁会话 |
+| `openBrowserTab(WebotSession)` | BrowserTab | **新建**一次性 Context+Page；若配了 stealthConfigKey 自动注入反检测 initScript |
+| `execute(WebotSession, WebotFunction<T>)` | T | 自动 openBrowserTab + try-with-resources |
+| `execute(WebotSession, WebotConsumer)` | void | 无返回值版本 |
+| `getCaptchaManager()` | CaptchaManager | — |
+| `getStealthManager()` | StealthManager | — |
+| `getProxyManager()` | ProxyManager | — |
+| `getSessionManager()` | SessionService | — |
+| `getStats()` | BrowserBotPool.PoolStats | 池统计 |
+| `getProperties()` | WebotProperties | — |
 
-## WebotSession
+## WebotSession（`uw.webot.WebotSession`）
 
-> **包路径**：`uw.webot.WebotSession`
-
-构造：由 `createSession()` 返回，不直接构造。
-
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| sessionId | String | 会话唯一标识 |
-| state | int | 会话状态（0=活跃，1=过期，2=关闭） |
-| createDate | Date | 创建时间 |
-| lastAccessDate | Date | 最后访问时间 |
-| expireDate | Date | 过期时间 |
-| browserConfig | BrowserConfig | 浏览器配置 |
-| captchaConfigKey | String | 验证码配置key |
-| stealthConfigKey | String | 反检测配置key |
-| proxyConfigKey | String | 代理配置key |
-
-## SessionConfig
-
-> **包路径**：`uw.webot.SessionConfig`
-
-构造：`SessionConfig.builder().browserConfig(...).stealthConfigKey("default").build()` — Builder 模式。也支持 `new SessionConfig()` + setter
+由 `createSession()` 返回，不直接构造（有 Builder 但一般无需手建）。
 
 | 字段 | 类型 | 说明 |
 |------|------|------|
+| sessionId | String | 雪花 ID |
+| createTime | long | 创建时间戳 |
+| lastAccessTime | long | 最后访问时间戳（volatile） |
+| expirationTime | long | 过期时间戳（volatile；实际过期由 FusionCache TTL 控制） |
 | browserConfig | BrowserConfig | 浏览器配置 |
-| captchaConfigKey | String | 验证码配置key |
-| stealthConfigKey | String | 反检测配置key |
-| proxyConfigKey | String | 代理配置key |
+| captchaConfigKey | String | 验证码服务 key |
+| stealthConfigKey | String | 反检测服务 key |
+| proxyServer | ProxyConfig.ProxyServer | 解析后的代理（由 proxyConfigKey 填充） |
+| storageStateJson | String | 上下文存储状态 JSON（用于恢复登录态） |
+| extParam | `Map<String,Object>` | 业务扩展参数（ConcurrentHashMap） |
 
-## BrowserConfig
+## SessionConfig（`uw.webot.session.SessionConfig`）
 
-> **包路径**：`uw.webot.BrowserConfig`
+`SessionConfig.builder().browserConfig(...).stealthConfigKey("default").build()`。
 
-构造：`BrowserConfig.builder().browserType(CHROMIUM).headless(true).build()` — Builder 模式。也支持 `new BrowserConfig()` + setter
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| expireTime | Duration | 会话过期时间，默认 30 天 |
+| browserConfig | BrowserConfig | 浏览器配置，默认 chromium+headless |
+| captchaConfigKey | String | 引用 `uw.webot.captcha.<key>` |
+| stealthConfigKey | String | 引用 `uw.webot.stealth.<key>` |
+| proxyConfigKey | String | 引用 `uw.webot.proxy.<key>` |
+| extParam | `Map<String,Object>` | 初始扩展参数 |
+
+## BrowserConfig（`uw.webot.core.BrowserConfig`）
+
+`BrowserConfig.builder().browserType(CHROMIUM).headless(true).build()`。注意 Builder 的 `javaScriptEnabled` 默认与字段一致（true）。
 
 | 属性 | 类型 | 说明 |
 |------|------|------|
-| browserType | BrowserType | CHROMIUM / FIREFOX / WEBKIT |
-| headless | boolean | 无头模式，默认 true |
-| viewportWidth | int | 视口宽度，默认 1920 |
-| viewportHeight | int | 视口高度，默认 1080 |
+| browserType | BrowserType | CHROMIUM / FIREFOX / WEBKIT，默认 CHROMIUM |
+| headless | boolean | 默认 true |
+| viewportWidth | int | 默认 1920 |
+| viewportHeight | int | 默认 1080 |
 | userAgent | String | 自定义 UA |
-| locale | String | 语言设置 |
+| locale | String | 语言 |
 | timezone | String | 时区 |
-| args | List<String> | 启动参数 |
-| ignoreHTTPSErrors | boolean | 忽略HTTPS错误 |
-| javaScriptEnabled | boolean | 是否启用JS，默认 true |
-| slowMo | double | 操作减速（毫秒，调试用） |
+| args | `List<String>` | 浏览器启动参数 |
+| javaScriptEnabled | boolean | 默认 true |
+| executablePath | String | 自定义浏览器可执行路径 |
 
-## LoadState 枚举
+`getBrowserGroupTag()` 生成 Group 标签：`browserType[:headless][:executablePath]`，不同标签会落到不同 Group（各有独立 Browser 进程）。
 
-| 值 | 说明 |
-|------|------|
-| LOAD | DOMContentLoaded 触发 |
-| DOMCONTENTLOADED | DOM 解析完成 |
-| NETWORKIDLE | 500ms 无网络请求（推荐等待） |
+## BrowserTab（`uw.webot.core.BrowserTab`）
 
-## BrowserTab
-
-构造：由 `openBrowserTab()` 或 `execute()` 返回，实现 Closeable。
-
-**导航与加载**：
+由 `openBrowserTab()` / `execute()` 返回，实现 `Closeable`。所有方法内部 submit 到 BrowserInstance 单线程。
 
 | 方法 | 返回类型 | 说明 |
 |------|---------|------|
-| `navigate(url)` | void | 导航到URL |
-| `waitForLoadState(LoadState)` | void | 等待加载完成 |
-| `waitForNavigation()` | void | 等待导航完成 |
-| `waitForTimeout(timeout)` | void | 等待指定时间（毫秒） |
-| `goBack()` | void | 后退 |
-| `goForward()` | void | 前进 |
-| `reload()` | void | 刷新页面 |
-| `getUrl()` | String | 获取当前URL |
-| `getTitle()` | String | 获取页面标题 |
+| `navigate(url)` | Response | 导航 |
+| `navigate(url, Page.NavigateOptions)` | Response | 带选项导航 |
+| `waitForLoadState(LoadState)` | void | 等待加载状态 |
+| `url()` | String | 当前 URL |
+| `title()` | String | 页面标题 |
+| `content()` | String | 完整 HTML |
+| `reload()` / `reload(options)` | Response | 刷新 |
+| `screenshot(Page.ScreenshotOptions)` | byte[] | 截图 |
+| `evaluate(expr)` | Object | 执行 JS |
+| `evaluate(expr, arg)` | Object | 执行 JS（带参） |
+| `getStorageStateJson()` | String | 取 cookies+localStorage JSON |
+| `addInitScript(script)` | void | 注册初始化脚本（navigate 前；反检测内部用） |
+| `consume(BiConsumer<BrowserContext,Page>)` | void | 直接操作原生 Page/Context |
+| `execute(BiFunction<BrowserContext,Page,T>)` | T | 直接操作并返回结果 |
+| `executeAsync(BiFunction<...>)` | Future<T> | 异步 |
+| `close()` | void | **销毁** Context+Page，从 instance 注销 |
 
-**元素操作**：
+> BrowserTab **没有**元素操作方法（click/fill/getInnerText 等）。需要元素操作时，用 `tab.execute((ctx, page) -> page.querySelector(...).fill(...))` 直接走 Playwright 原生 Page API。
 
-| 方法 | 返回类型 | 说明 |
-|------|---------|------|
-| `click(selector)` | void | 点击元素 |
-| `dblclick(selector)` | void | 双击元素 |
-| `fill(selector, value)` | void | 填写表单（清空后输入） |
-| `type(selector, text)` | void | 输入文本（追加模式） |
-| `press(key)` | void | 按键（如 Enter/Tab/Escape） |
-| `selectOption(selector, String[])` | void | 下拉框选择 |
-| `check(selector)` | void | 勾选复选框 |
-| `uncheck(selector)` | void | 取消勾选 |
-| `hover(selector)` | void | 鼠标悬停 |
-| `fileInput(selector, String[])` | void | 文件上传（参数为文件路径数组） |
+## CaptchaService（`uw.webot.captcha.CaptchaService`）
 
-**元素查询与等待**：
+通过 `webotManager.getCaptchaManager().getCaptchaService(key)` 获取。实现：`LocalOcrCaptchaServiceImpl`（OCR，**未集成真实引擎，直接返回失败**）、`TwoCaptchaServiceImpl`、`CapsolverServiceImpl`。
 
 | 方法 | 返回类型 | 说明 |
 |------|---------|------|
-| `querySelector(selector)` | ElementHandle | 查找单个元素 |
-| `querySelectorAll(selector)` | List<ElementHandle> | 查找所有元素 |
-| `waitForSelector(selector)` | void | 等待元素出现 |
-| `waitForFunction(expression)` | void | 等待JS函数返回true |
-| `isVisible(selector)` | boolean | 元素是否可见 |
-| `isEnabled(selector)` | boolean | 元素是否可用 |
+| `recognizeImageCaptcha(byte[])` | CaptchaResult | 图片验证码 |
+| `recognizeImageCaptcha(byte[], CaptchaOptions)` | CaptchaResult | 带选项 |
+| `recognizeBase64Captcha(base64[, options])` | CaptchaResult | Base64 图片 |
+| `solveReCaptchaV2(siteKey, pageUrl)` | CaptchaResult | — |
+| `solveReCaptchaV3(siteKey, pageUrl, action, minScore)` | CaptchaResult | — |
+| `solveHCaptcha(siteKey, pageUrl)` | CaptchaResult | — |
+| `solveGeeTest(gt, challenge, apiServer, pageUrl)` | CaptchaResult | — |
+| `isAvailable()` | boolean | API key 是否配置 |
+| `getBalance()` | double | 账户余额 |
+| `getServiceType()` | String | "ocr" / "2captcha" / "capsolver" |
 
-**内容获取**：
+`CaptchaResult` record：`success` / `code` / `errorMessage` / `solveTimeMillis` / `cost`，工厂 `success(...)` / `failure(msg)`。
 
-| 方法 | 返回类型 | 说明 |
-|------|---------|------|
-| `getInnerText(selector)` | String | 获取文本 |
-| `getTextContent(selector)` | String | 获取textContent |
-| `getInnerHTML(selector)` | String | 获取内部HTML |
-| `getOuterHTML(selector)` | String | 获取外部HTML |
-| `getAttribute(selector, name)` | String | 获取属性 |
+## ProxyService（`uw.webot.proxy.ProxyService`）
 
-**页面操作**：
+通过 `webotManager.getProxyManager().getProxyService(key)` 获取，实现 `LocalProxyPoolImpl`。
 
 | 方法 | 返回类型 | 说明 |
 |------|---------|------|
-| `screenshot()` | byte[] | 全页截图 |
-| `screenshot(selector)` | byte[] | 元素截图 |
-| `download(url)` | byte[] | 下载文件 |
-| `pdf()` | byte[] | 生成PDF |
-| `evaluate(expression)` | Object | 执行JS表达式 |
-| `setContent(html)` | void | 设置页面内容 |
-| `addScriptTag(url)` | void | 注入脚本 |
-| `addStyleTag(url)` | void | 注入样式 |
-| `setExtraHTTPHeaders(Map)` | void | 设置额外请求头 |
-| `close()` | void | 归还到连接池 |
+| `getProxy(ProxyType)` | ProxyInfo | 轮询取代理（**命中代理也保留在池中循环复用**） |
+| `releaseProxy(ProxyInfo)` | void | 本实现 no-op（getProxy 不取出代理） |
+| `markProxyFailed(ProxyInfo)` | void | 累加 failureCount |
+| `checkProxyHealth(ProxyInfo)` | boolean | 同步健康检查（HTTP GET httpbin，10s 超时） |
+| `getStatistics()` | ProxyPoolStatistics | 统计 |
+| `shutdown()` | void | 清空池 |
 
-## ElementHandle
+`ProxyInfo`：`proxyServer` / `weight` / `failureCount` / `lastUsedTime` / `lastHealthCheckTime` / `lastHealthCheckResult`。
 
-构造：由 `querySelector()` / `querySelectorAll()` 返回。
+## StealthService（`uw.webot.stealth.StealthService`）
 
-| 方法 | 返回类型 | 说明 |
-|------|---------|------|
-| `click()` | void | 点击此元素 |
-| `fill(value)` | void | 填写值 |
-| `type(text)` | void | 输入文本 |
-| `getInnerText()` | String | 获取文本 |
-| `getTextContent()` | String | 获取textContent |
-| `getAttribute(name)` | String | 获取属性 |
-| `isVisible()` | boolean | 是否可见 |
-| `isEnabled()` | boolean | 是否可用 |
-| `isChecked()` | boolean | 是否勾选 |
-| `screenshot()` | byte[] | 元素截图 |
-| `evaluate(expression)` | Object | 在元素上执行JS |
-| `querySelector(selector)` | ElementHandle | 在子树中查找 |
-| `querySelectorAll(selector)` | List<ElementHandle> | 在子树中查找所有 |
+通过 `WebotManager` 自动应用（会话配 stealthConfigKey 即可），也可 `stealthManager.apply(tab, key)` 手动调。
 
-## CaptchaService
+反检测脚本通过 **`BrowserTab.addInitScript`** 注入，在每个新页面任何站点脚本前执行：
+- `hideWebDriver`：删除 `navigator.webdriver`、伪装 languages/chrome/permissions/Notification
+- `webglSpoofing`：覆盖 `WebGLRenderingContext.getParameter`（vendor/renderer 指纹）
+- `fingerprintRandomization`：随机 UA / 屏幕分辨率 / 时区 / 覆盖 `Intl.DateTimeFormat`、`Date`
+- `pluginSpoofing`：伪造 navigator.plugins / mimeTypes
+- `fontSpoofing`：canvas measureText / getImageData 加噪
 
-| 方法 | 返回类型 | 说明 |
-|------|---------|------|
-| `recognizeImageCaptcha(byte[])` | CaptchaResult | 识别图片验证码 |
-| `recognizeBase64Captcha(base64)` | CaptchaResult | 识别Base64图片 |
-| `solveRecaptchaV2(siteKey, url)` | CaptchaResult | ReCaptcha V2 |
-| `solveRecaptchaV3(siteKey, url, minScore)` | CaptchaResult | ReCaptcha V3 |
-| `solveHCaptcha(siteKey, url)` | CaptchaResult | hCaptcha |
-| `solveFuncaptcha(publicKey, url)` | CaptchaResult | FunCaptcha |
-| `solveGeeTest(gt, challenge, url)` | CaptchaResult | 极验验证码 |
-
-服务类型：OCR(本地) / TWOCAPTCHA / CAPSOLVER
-
-## CaptchaResult
-
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| text | String | 识别结果文本 |
-| code | String | 验证码解决方案（ReCaptcha等） |
-| isValid | boolean | 是否识别成功 |
-| cost | long | 耗时（毫秒） |
-
-## ProxyService
-
-| 方法 | 返回类型 | 说明 |
-|------|---------|------|
-| `getProxy()` | ProxyInfo | 获取一个代理 |
-| `getProxy(ProxyType)` | ProxyInfo | 获取指定类型代理 |
-| `getProxyList()` | `List<ProxyInfo>` | 获取代理列表 |
-| `getProxyStats()` | ProxyStats | 获取代理统计 |
-| `reportFailure(ProxyInfo)` | void | 报告代理失败 |
-| `reportSuccess(ProxyInfo)` | void | 报告代理成功 |
-
-**ProxyInfo**：host / port / username / password / type / alive / failCount / successCount
-
-## StealthService
-
-| 方法 | 说明 |
-|------|------|
-| `applyStealth(BrowserTab)` | 应用默认反检测脚本 |
-| `applyStealth(BrowserTab, String configKey)` | 指定配置应用反检测 |
-
-反检测功能：webdriver隐藏 / navigator伪装 / WebGL欺骗 / Canvas噪音 / Chrome插件伪装 / 语言/时区伪装
+> 反检测是"尽力而为"，高级反爬仍可能识别。指纹数据需与 UA 平台自洽，否则更可疑。
 
 ## Helper 使用示例
 
 ```java
 public class WebCrawlerHelper {
-    private static final WebotManager webotManager = WebotManager.getInstance();
 
-    // 基础爬取
-    public static String crawlPage(String url) throws Exception {
+    @Autowired
+    private WebotManager webotManager;   // 推荐注入；静态场景可用 WebotManager.getInstance()
+
+    /** 基础爬取：用 execute 自动管理 BrowserTab 生命周期 */
+    public String crawlPage(String url) throws Exception {
         SessionConfig config = SessionConfig.builder()
-            .browserConfig(BrowserConfig.builder()
-                .browserType(BrowserType.CHROMIUM)
-                .headless(true).build())
-            .stealthConfigKey("default")
-            .build();
+                .browserConfig(BrowserConfig.builder()
+                        .browserType(BrowserType.CHROMIUM)
+                        .headless(true).build())
+                .stealthConfigKey("default")
+                .build();
         WebotSession session = webotManager.createSession(config);
-        return webotManager.execute(session, tab -> {
-            tab.navigate(url);
-            tab.waitForLoadState(LoadState.NETWORKIDLE);
-            return tab.getInnerText("article");
-        });
+        try {
+            return webotManager.execute(session, tab -> {
+                tab.navigate(url);
+                tab.waitForLoadState(LoadState.NETWORKIDLE);
+                return tab.content();
+            });
+        } finally {
+            webotManager.destroySession(session.getSessionId());
+        }
     }
 
-    // 截图（手动管理页签）
-    public static byte[] takeScreenshot(String url) throws Exception {
+    /** 截图：手动 try-with-resources 管理 BrowserTab */
+    public byte[] takeScreenshot(String url) throws Exception {
         WebotSession session = webotManager.createSession(SessionConfig.builder().build());
         try (BrowserTab tab = webotManager.openBrowserTab(session)) {
             tab.navigate(url);
             tab.waitForLoadState(LoadState.NETWORKIDLE);
-            return tab.screenshot();
+            return tab.screenshot(new Page.ScreenshotOptions().setFullPage(true));
+        } finally {
+            webotManager.destroySession(session.getSessionId());
         }
     }
 
-    // 表单填写 + 下拉框 + 文件上传
-    public static void submitForm(String url, String name, String email, String filePath) throws Exception {
-        SessionConfig config = SessionConfig.builder()
-            .browserConfig(BrowserConfig.builder().browserType(BrowserType.CHROMIUM).build())
-            .build();
-        WebotSession session = webotManager.createSession(config);
-        webotManager.execute(session, tab -> {
-            tab.navigate(url);
-            tab.waitForLoadState(LoadState.NETWORKIDLE);
-            tab.fill("#name", name);
-            tab.fill("#email", email);
-            tab.selectOption("#country", new String[]{"CN"});
-            tab.fileInput("#avatar", new String[]{filePath});
-            tab.click("#submit");
-            tab.waitForLoadState(LoadState.NETWORKIDLE);
-            return null;
-        });
+    /** 元素操作：通过 execute 拿原生 Page 走 Playwright API */
+    public void submitForm(String url, String name) throws Exception {
+        WebotSession session = webotManager.createSession();
+        try {
+            webotManager.execute(session, tab -> {
+                tab.navigate(url);
+                tab.waitForLoadState(LoadState.NETWORKIDLE);
+                tab.execute((ctx, page) -> {
+                    page.fill("#name", name);
+                    page.click("#submit");
+                    return null;
+                });
+                return null;
+            });
+        } finally {
+            webotManager.destroySession(session.getSessionId());
+        }
     }
 
-    // 验证码识别 + 登录
-    public static String loginWithCaptcha(String url, String username, String password) throws Exception {
-        SessionConfig config = SessionConfig.builder()
-            .captchaConfigKey("default")
-            .build();
-        WebotSession session = webotManager.createSession(config);
-        return webotManager.execute(session, tab -> {
-            tab.navigate(url + "/login");
-            tab.waitForLoadState(LoadState.NETWORKIDLE);
-            tab.fill("#username", username);
-            tab.fill("#password", password);
-            // 获取验证码图片并识别
-            byte[] captchaImg = tab.screenshot("#captcha-img");
-            CaptchaResult result = webotManager.getCaptchaService("default").recognizeImageCaptcha(captchaImg);
-            if (result.isValid()) {
-                tab.fill("#captcha", result.getText());
-            }
-            tab.click("#login-btn");
-            tab.waitForLoadState(LoadState.NETWORKIDLE);
-            return tab.getUrl();
-        });
+    /** 验证码识别 */
+    public String recognize(byte[] imgBytes) {
+        CaptchaService svc = webotManager.getCaptchaManager().getCaptchaService("default");
+        CaptchaResult r = svc.recognizeImageCaptcha(imgBytes);
+        return r.success() ? r.code() : null;
     }
 }
 ```
+
+## 注意事项
+
+1. **BrowserTab 不可复用**：每次 `openBrowserTab` 都新建 Context+Page，`close()` 销毁。不要持有 tab 跨方法长期使用。
+2. **反检测时机**：必须在 `navigate` 前注入 initScript；`openBrowserTab` 已在返回前完成注入（配了 stealthConfigKey 时）。
+3. **OCR 默认失败**：未集成真实 OCR 引擎，`LocalOcrCaptchaServiceImpl` 直接返回 failure，生产请用 2captcha/capsolver。
+4. **代理池不取走代理**：`getProxy` 命中代理也保留在池中，无需 release；`LocalProxyPoolImpl` 健康检查走 httpbin 同步请求，可能 10s 阻塞。
+5. **submitAndWait 超时**：默认 60s，超时会 cancel 任务并把 BrowserInstance 标记失效异步重建——长耗时导航请用带超时重载或调高默认值。
+6. **线程模型**：BrowserInstance 单线程串行执行所有 Playwright 操作；同一 instance 上的多个 tab 操作会串行排队。
+7. **会话存储**：`WebotSession.storageStateJson` 可在 createSession 前设置以恢复登录态，或 `tab.getStorageStateJson()` 取出保存。

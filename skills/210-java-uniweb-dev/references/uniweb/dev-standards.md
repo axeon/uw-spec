@@ -94,6 +94,21 @@ entity、dto、controller 基础代码通过 uw-code-center 工具自动生成�
 
 实体类继承 `DataEntity`，使用 `@TableMeta` 和 `@ColumnMeta` 注解。
 
+**差量更新机制**（框架核心，代码生成器产出的 Entity 已内置）：
+
+1. 框架 `load` 后反射置 `_IS_LOADED=true`
+2. 此后每次 setter 调用 `DataUpdateInfo.addUpdateInfo(info, "col", oldVal, newVal, _IS_LOADED)` 记录变更
+3. `update(entity)` 仅对有变更的字段生成 `SET col=?`，未改字段不入 SQL
+4. 非 load 来源（`_IS_LOADED=false`）的 entity，`addUpdateInfo` 不记录（初始赋值），update 时写全部非主键字段
+
+**关键约束**：
+- 两个 `transient` 字段 `_IS_LOADED` / `_UPDATED_INFO` 由框架维护，**勿手动修改**
+- `@ColumnMeta.columnName` 大小写不敏感（框架内部统一用小写匹配）
+- setter 必须返回 `this`（链式），并在内部调用 `addUpdateInfo` 记录变更
+- Entity 由代码生成器产出，**保留不动，不手动修改**
+
+> 完整实体类模板见 [code-templates.md](code-templates.md)「Entity 实体类模板」。
+
 ### @Schema 注解规范
 
 所有 Entity、Dto、Vo 类及其字段的 `@Schema` 注解**必须同时设置 `title` 和 `description`**：
@@ -126,7 +141,28 @@ public class GuestInfoVo {
 
 ### 链式调用规范
 
-DaoManager 所有方法返回 `ResponseData<T>`，这是框架的核心设计模式。通过链式 `onSuccess` / `onError` 回调，实现零中间变量、自动错误传播的简洁代码。
+DaoManager 所有方法返回 `ResponseData<T>`，这是框架的核心设计模式。通过链式 `onSuccess` / `onError` / `onWarn` / `onNotSuccess` 回调，实现零中间变量、自动错误传播的简洁代码。
+
+**onXxx 全家族**（每个回调都有 3 种重载：Function 转换 / Consumer 副作用 / Runnable 无参）：
+
+| 回调 | 触发条件 | 典型用途 |
+|------|---------|---------|
+| `onSuccess` | state == SUCCESS | 成功后处理（最常用） |
+| `onWarn` | state == WARN | 数据未找到等业务告警分支 |
+| `onError` | state == ERROR | 系统异常分支 |
+| `onFatal` | state == FATAL | 致命错误分支 |
+| `onNotSuccess` | state != SUCCESS | 通用失败兜底（WARN/ERROR/FATAL 都触发） |
+| `onNotError` | state != ERROR | 非 ERROR 情况（含 SUCCESS/WARN/FATAL） |
+
+**三种重载**（以 `onSuccess` 为例，其余 onXxx 同构）：
+
+| 重载 | 签名 | 返回值 | 适用场景 |
+|------|------|--------|---------|
+| **Function 版（转换）** | `onSuccess(Function<T, ResponseData<R>>)` | 新的 `ResponseData<R>` | 链式类型转换：`dao.load()` → 修改 → `return dao.update()` |
+| **Consumer 版（回调）** | `onSuccess(Consumer<T>)` | 自身 `ResponseData<T>` | 副作用：缓存失效、日志、数据组装 |
+| **Runnable 版（无参）** | `onSuccess(Runnable)` | 自身 `ResponseData<T>` | 不需要 data 的操作 |
+
+> **Function 版核心机制**：成功时执行 function 返回新的 ResponseData（类型 T→R）；失败时跳过 function 直接返回自身（自动转型），这是"扁平链式"的真正实现。`dao.queryForObject(...).onSuccess(e -> dao.update(e))` 返回的是 update 的 ResponseData。
 
 | 规则 | 说明 | 示例 |
 |------|------|------|
@@ -138,6 +174,7 @@ DaoManager 所有方法返回 `ResponseData<T>`，这是框架的核心设计模
 | **日志前置** | `logRef()` 放在方法体开头（`return` 之前），不嵌套在 `onSuccess()` 内 | 避免漏记日志 |
 | **空页检查** | `onSuccess` 内第一行 `if (list.isEmpty()) return;` | 父子表联查必须检查空页 |
 | **原地设值** | `onSuccess` 内直接修改 ResponseData 中的对象引用 | `orders.forEach(o -> o.setItems(...))` |
+| **状态分支用 onWarn/onError** | 区分"数据未找到"与"系统异常"用 `onWarn` / `onError`，而非嵌套 if | `dao.load(...).onWarn(w -> log.warn("未找到"))` |
 
 > 完整链式调用代码范例见 [uw-dao.md](uw-dao.md)「DaoManager 链式调用设计」和 [uw-common.md](uw-common.md)「ResponseData 链式回调」。
 
@@ -289,9 +326,12 @@ return ResponseData.errorCode(CommonResponseCode.ENTITY_UPDATE_ERROR);
 ## 缓存使用规范
 
 - 高频读取场景使用 `FusionCache`（本地 + Redis 融合缓存）
-- Kryo 序列化**必须使用具体实现类**，不能使用接口类型（如 List/Map/Set），必须传 ArrayList/LinkedHashMap/HashSet 等
-- Caffeine 设定过期时间后性能劣化 200 倍，建议仅设 Redis 过期时间，不设 Caffeine 本地过期
+- Kryo 序列化**必须使用具体实现类**，不能使用接口类型（如 List/Map/Set），必须传 ArrayList/LinkedHashMap/HashSet 等；`CacheDataLoader<V>` 的 V 必须是具体类
+- Caffeine 设定过期时间后性能劣化 200 倍，建议 `cacheExpireMillis` 保持 -1（永久），仅靠 Redis TTL 兜底
 - **FusionCache 必须在 static 块中初始化**：所有使用 FusionCache 的 Helper 必须在 `static {}` 块中一次性完成 `FusionCache.config(new FusionCache.Config(...), new CacheDataLoader<>() {...})` 初始化，包括缓存参数（容量、过期时间）和 CacheDataLoader.load() 实现。GlobalCache 不需要 static 初始化（使用行内 CacheDataLoader）。
+- **`CacheDataLoader` 是抽象类**，不是函数式接口，**禁止用 lambda**，必须 `new CacheDataLoader<K,V>(){...}`
+- **判断存在用 `containsKey`**，没有 `getIfPresent` / `exists`；查本地缓存条目数用 `localCacheSize`（不是 `size`）
+- **全量清空**：`FusionCache.invalidate(Class, null)`（key 传 null）或 `GlobalCache.invalidate(cacheName, null)`，按前缀批量失效用 `invalidatePrefix` / `invalidateKeys`（内部走 SCAN，注意大 keyset 阻塞）
 
 **FusionCache vs GlobalCache 选型**：
 
@@ -301,6 +341,127 @@ return ResponseData.errorCode(CommonResponseCode.ENTITY_UPDATE_ERROR);
 | 适用 | 单条实体详情（高频读取） | 列表、临时数据 |
 | 初始化 | 必须在 `static {}` 块 | 行内 CacheDataLoader |
 | 失效 | `FusionCache.invalidate(Class, key)` | `GlobalCache.invalidate(cacheName, key)` |
+| 是否占 JVM 内存 | 是（Caffeine） | 否 |
+
+**其他缓存组件选型**：
+
+| 组件 | 用途 | 关键约束 |
+|------|------|---------|
+| `GlobalLocker` | 分布式锁 | stamp > 0 才持有锁；`finally` 中 `unlock`；长任务必须 `keepLock` 续期（执行时间不可超过 lockTimeMillis）；unlock/keepLock 已是 Lua CAS 原子操作 |
+| `FusionCounter` | 高性能计数器（本地+Redis融合） | 必须 `static {}` config；本地与 Redis 有 syncGlobalMillis 级延迟；强一致读用 `get(Class, id, true)` |
+| `GlobalCounter` | 纯 Redis 计数器 | increment/decrement/get/set/delete |
+| `GlobalHashSet` | 去重/随机抽取 | `contains` 会序列化 item 后比对，序列化协议与 add/remove 一致 |
+| `GlobalSortedSet` | 延迟任务/定时触发 | score 通常为时间戳，按范围查询和删除 |
+
+> 完整缓存组件方法签名与示例见 [uw-cache.md](uw-cache.md)。
+
+## 响应包裹与异常处理规范
+
+- **`GlobalResponseAdvice` 自动包裹**：所有 Controller 返回值自动包裹为 `ResponseData`，开发者无需手动包装（返回 null → `warn()`；返回业务对象 → `success(body)`；已是 ResponseData → 直接透传）。**正常情况下 Controller 直接 `return` 业务对象或 `ResponseData<T>` 即可**。
+- **`GlobalExceptionAdvice` 自动处理异常**：所有未捕获异常自动转为 ResponseData 错误响应（TokenInvalidException→401、TokenPermException→403、TokenPayException→402、TokenExpiredException→498、TokenServiceException→503、TokenSudoException→426、其他→500），**Controller 无需 try-catch**。
+- **跳过包裹**：文件下载等场景在类或方法上加 `@ResponseAdviceIgnore`（`uw.auth.service.annotation.ResponseAdviceIgnore`）。
+- **权限匹配不支持路径变量**：`@MscPermDeclare` 的 PERM/SUDO 校验基于精确 URI + 请求方法，**不支持 `{id}` 等路径变量**。带路径变量的接口用 `auth = AuthType.NONE/USER`，或拆分为固定路径。
+- **`user()` 为单值**：必须精确匹配一种 `UserType`，不支持数组。多类型访问需拆分接口。
+
+## 任务框架规范
+
+定时任务（`TaskCroner`）和队列任务（`TaskRunner`）由 `uw-task` 提供，配合服务端 `uw-task-center` 实现动态配置、状态上报与告警。
+
+> **关键区别**：`TaskCroner` / `TaskRunner` 是 **Spring Bean**（必须加 `@Component`，由框架管理生命周期），**与 Helper（纯静态工具类，禁止 `@Component`）不同**。任务类放在 `task/` 包下，按 `task-project` 包名前缀扫描。
+
+| 任务类型 | 基类 | 触发方式 | 多实例区分 |
+|---------|------|---------|-----------|
+| 定时任务 | `TaskCroner` | cron 表达式 | `taskParam` |
+| 队列任务 | `TaskRunner<TP, RD>` | MQ 队列消费 | `taskTag` |
+
+**TaskRunner 是单例**：多消费者线程并发调用同一实例的 `runTask`，**勿使用非线程安全的实例变量**。
+
+**TaskFactory 获取**：`@Autowired private TaskFactory taskFactory;` 注入，或 `TaskFactory.getInstance()` 静态获取。
+
+**run 系列方法选型**：
+
+| 方法 | 执行位置 | 阻塞调用方 | 返回结果 | 本机无 runner | 典型用途 |
+|------|---------|-----------|---------|--------------|---------|
+| `sendToQueue` | 远程（入队） | 否 | 无 | 入队（正常） | 标准异步入队，不关心结果 |
+| `runQueue` | 本地优先，否则入队 | 否 | 无 | 入队 | 高频短任务优化，省 MQ |
+| `runTask` | AUTO 自动选 | 是 | 有 | 回退远程 RPC | 需立即同步拿结果 |
+| `runTaskLocal` | 仅本地 | 是 | 有 | **抛异常** | 强制本机执行 |
+| `runTaskAsync` | AUTO 自动选 | 否（Future） | 有（get 时） | 回退远程 RPC | 异步拿结果 |
+
+> **禁止复用 taskData**：`runTask` / `runTaskLocal` / `runTaskAsync` / `runQueue` 会向传入的 taskData 写入 id/queueDate/runType 等运行期字段，每次必须新建。远程 RPC 默认超时 180 秒，避免在 Web 请求线程高频同步调用。
+
+**重试与异常处理**：
+
+| 异常类 | 状态 | 触发重试 | 使用场景 |
+|--------|------|---------|---------|
+| `TaskPartnerException` | STATE_FAIL_PARTNER | ✅ 按 `retryTimesByPartner` | 第三方接口限流、网络异常 |
+| （框架自动） | STATE_FAIL_CONFIG | ✅ 按 `retryTimesByOverrated` | 超过流量限制 |
+| `TaskDataException` | STATE_FAIL_DATA | ❌ 不重试 | 参数错误、数据格式错误 |
+| 其他未捕获异常 | STATE_FAIL_PROGRAM | ❌ 不重试 | 程序 bug |
+
+> **没有 `retryTimesByProgram`**，程序异常不重试。`retryTimes = N` 时总计执行 N+1 次（1 次初始 + N 次重试）。
+
+> 完整任务类模板（TaskCroner/TaskRunner/TaskData）见 [code-templates.md](code-templates.md)「任务框架模板」，API 细节见 [uw-task.md](uw-task.md)。
+
+## AI 集成规范
+
+`uw-ai` 模块封装与 AI 服务中心（`uw-ai-center`）的交互，统一入口为静态门面 `uw.ai.AiClientHelper`。涵盖同步/流式对话、结构化输出、批量翻译、图片生成、模型/API 配置查询，以及 AI 工具扩展。
+
+**核心原则**：
+
+| 原则 | 说明 |
+|------|------|
+| **统一入口** | 一律通过 `AiClientHelper` 静态方法调用，不绕过门面直接 RPC |
+| **configCode 优先** | `configId` 与 `configCode` 二选一定位配置，**优先用 `configCode`**（语义化、跨环境）；禁止业务代码硬编码 configId，确需运行时决定则从 AiConfig 表动态读取 |
+| **bindAuthInfo 强制** | 认证信息（saasId/userId/userType/userInfo）通过 `param.bindAuthInfo()` 自动绑定当前登录用户，**禁止手动 `setSaasId`** |
+| **结果必检查** | `generate`/`generateEntity` 等返回 `ResponseData`，**必须检查 `isNotSuccess()` 并写降级逻辑**，禁止 `.getData()` 后直接使用 |
+| **真实调用不可降级为 DB 查询** | Javadoc 步骤标注 `[调用AI]` 的，必须调用 `AiClientHelper`；外部服务不可用时降级是"写降级逻辑"，不是省略或退化为数据库查询 |
+| **流式场景用流式 API** | 对话/SSE 场景用 `chatGenerate()` 返回 `Flux<String>`，禁止用同步 `generate()` 处理流式需求 |
+
+### 调用方式选型
+
+| 场景 | 方法 | 返回类型 | 关键约束 |
+|------|------|---------|---------|
+| 同步对话 | `generate(param)` | `ResponseData<String>` | 需要完整结果时使用 |
+| 流式对话（SSE） | `chatGenerate(param)` | `Flux<String>` | 对话场景默认用此，前端逐字渲染 |
+| 结构化输出 | `generateEntity(param, Class<T>)` | `ResponseData<T>` | 系统提示会自动追加 JSON Schema 说明，返回值按 Class 反序列化 |
+| 批量翻译（数组） | `translateList(param)` | `ResponseData<AiTranslateResultData[]>` | 每个目标语言一条结果，**返回是数组**不是单 Map |
+| Map 翻译 | `translateMap(param)` | `ResponseData<AiTranslateResultData[]>` | key 保留、value 翻译；`textMap` 必须用 `LinkedHashMap` |
+| 图片生成 | `generateImage(param)` | `ResponseData<AiImageResultData>` | `userPrompt` 必填（Builder 用 `.prompt(...)`） |
+| 查询模型配置 | `listModelInfoByCode(configCode)` 等 | `ResponseData<AiModelConfigVo>` | modelType 取值：CHAT/EMBEDDING/RERANK/TTS/OCR |
+
+### 调用流程模板
+
+```
+1. 构建 Param（Builder 链式）
+   ├─ configCode("xxx")        ← 优先 configCode，不硬编码 configId
+   ├─ systemPrompt(...)         ← 可选，结构化输出/翻译按需
+   ├─ userPrompt(...) / textList / textMap / prompt
+   └─ bindAuthInfo()            ← 最后调用，自动填充认证四元组
+2. 调用 AiClientHelper.xxx(param)
+3. 检查 ResponseData.isNotSuccess() → 降级处理
+4. 取 .getData() 使用
+```
+
+### AiTool 扩展规范
+
+自定义 AI 工具须实现 `AiTool<P, R>` 接口 + `@Component`：P 继承 `AiToolParam`（内置认证四元组），R 通常为 `ResponseData<T>`。
+
+| 约束 | 说明 |
+|------|------|
+| **必须是 Spring Bean** | 加 `@Component`，由 `UwAiAutoConfiguration` 启动时扫描注册（与 Helper 的禁止 @Component 相反） |
+| **toolVersion 升级递增** | 框架按 `toolClass + toolVersion` 比对同步元数据，功能变更必须递增 version |
+| **toolCode = 类名** | `AiToolCallInfo` 的 toolCode 对应工具类**类名**（`Class.getSimpleName()`），不是 `toolName()` / `toolVersion` |
+| **参数 Schema** | 内部 Param 类用 `@Schema` 标注（遵循 title+description 规范），框架据此生成输入/输出 JSON Schema |
+| **工具执行入口** | 服务中心回调 `POST /rpc/ai/tool/execute`，以 `UserType.RPC` 身份执行，工具类无需自行暴露接口 |
+
+### 降级与可靠性
+
+- **降级原则**：AI 服务不可用（`isNotSuccess()`）时返回提示信息/默认值，**不是删除调用步骤**
+- **批量翻译防丢**：`translateList`/`translateMap` 返回数组，取结果时按目标语言索引（`resp.getData()[0]`），注意判空
+- **configId 动态化**：确需运行时决定配置时，从 AiConfig 表查询：`dao.queryForObject(AiConfig.class, ...)`
+
+> 完整 AI 调用代码模板（同步/流式/结构化/降级 + AiTool）见 [code-templates.md](code-templates.md)「AI 集成模板」，API 细节见 [uw-ai.md](uw-ai.md)。
 
 ## 认证授权规范
 
@@ -363,23 +524,26 @@ return ResponseData.errorCode(CommonResponseCode.ENTITY_UPDATE_ERROR);
 | 禁止自己写 | 必须用 | 所在包 |
 |-----------|--------|--------|
 | `System.currentTimeMillis()` | `SystemClock.now()` / `SystemClock.nowDate()` | `uw.common.util.SystemClock` |
-| `new SimpleDateFormat(...)` | `DateUtils.format()` / `DateUtils.parse()` | `uw.common.util.DateUtils` |
+| `new SimpleDateFormat(...)` | `DateUtils.dateToString()` / `DateUtils.stringToDate()` | `uw.common.util.DateUtils` |
 | `new ObjectMapper()` / 手写 JSON 序列化 | `JsonUtils.toString()` / `JsonUtils.parse()` | `uw.common.util.JsonUtils` |
-| 手写 MD5/SHA256 | `DigestUtils.md5()` / `DigestUtils.sha256()` | `uw.common.util.DigestUtils` |
+| 手写 MD5/SHA256 | `DigestUtils.signHex(msg, Algorithm.SHA_256)` — 无独立 md5/sha256 方法 | `uw.common.util.DigestUtils` |
 | 手写 AES 加密 | `AESUtils.encryptString()` / `BizAESBox` | `uw.common.util` |
 | 手写金额计算（double/BigDecimal） | `MoneyUtils`（long 分单位） | `uw.common.util.MoneyUtils` |
 | 手写邮箱/手机号/身份证正则 | `ValidateUtils.isEmail()` / `isChinaMobile()` 等 | `uw.common.util.ValidateUtils` |
-| 手写 IP 匹配/CIDR | `IpMatchUtils.match()` / `isInRange()` | `uw.common.util.IpMatchUtils` |
+| 手写 IP 匹配/CIDR | `IpMatchUtils.sortList()` 后 `matches()` | `uw.common.util.IpMatchUtils` |
 | `Math.random()` / `Random` 生成 ID | `SnowflakeIdGenerator.getInstance().generateId()` | `uw.common.util.SnowflakeIdGenerator` |
 | 手写位运算开关 | `BitConfigUtils.isOn()` / `on()` / `off()` | `uw.common.util.BitConfigUtils` |
 | 硬编码状态值 0/1/-1 | `CommonState.ENABLED/DISABLED/DELETED` | `uw.common.app.constant.CommonState` |
 | 硬编码错误消息字符串 | `ResponseData.warnCode(CommonResponseCode.XXX)` | `uw.common.app.constant.CommonResponseCode` |
 | 手写 `@Schema` 校验逻辑 | `SchemaValidateHelper.validate(entity)` | `uw.common.app.helper.SchemaValidateHelper` |
-| 手写分页参数解析 | `QueryParamHelper.buildQuerySql(param)` | `uw.common.app.helper.QueryParamHelper` |
+| 手写 URL 查询参数拼接 | `QueryParamHelper.buildUriWithParams(url, param)` | `uw.common.app.helper.QueryParamHelper` |
 | 手写数据变更历史记录 | `SysDataHistoryHelper.saveHistory(entity, "操作")` | `uw.common.app.helper.SysDataHistoryHelper` |
 | 手写 JSON 配置管理 | `JsonConfigHelper` / `JsonConfigBox` | `uw.common.app.helper` / `uw.common.app.vo` |
 | `UUID.randomUUID()` 做业务 ID | `dao.getSequenceId(Class)` — 分布式序列 | `uw.dao.DaoManager` |
 | 手写日志记录（Web 场景） | `AuthServiceHelper.logRef()` / `logInfo()` | `uw.auth.service.AuthServiceHelper` |
+| 手写系统日志（非 Web 场景） | `AuthServiceHelper.logSysInfo(...)` | `uw.auth.service.AuthServiceHelper` |
+| 手写数据脱敏 | `MaskUtils.maskChinaMobile()` / `maskChinaIdCard()` / `maskSecret()` 等 | `uw.common.util.MaskUtils` |
+| 手写 HmacSha256 | `HmacUtils.sign()` / `verify()` | `uw.common.util.HmacUtils` |
 
 ### ResponseData 模块
 
@@ -418,17 +582,60 @@ return ResponseData.errorCode(CommonResponseCode.ENTITY_UPDATE_ERROR);
 | `if (result.isSuccess()) { ... } else { ... }` | `result.onSuccess(...)` / `.onNotSuccess(...)` — 禁止 if-else 判断 ResponseData 状态 |
 | `var result = dao.load(...); return result;` | `return dao.load(...);` — 零中间变量直接返回 |
 | `result.getData() != null` 判断成功 | `result.isSuccess()` 或直接用 `onSuccess` / `onNotSuccess` 链式处理 |
+| `dao.beginBatchUpdate()` 不开事务 | **批量更新必须先 `beginTransaction()`**，否则 addBatch 数据被 autoCommit 立即提交，框架抛 TransactionException |
+| 批量提交后不复位 batchSize | `submit()` 后 batchSize 重置为默认 100，连续批量提交需重新 `setBatchSize` |
+| MySQL 批量无 `rewriteBatchedStatements=true` | 连接 URL 须加 `rewriteBatchedStatements=true` 才能真正合并批处理 |
+| `dao.queryForValue` 用基本类型接收 | 查标量值用包装类型（`Long.class`），NULL 返回 null；禁止 list+size() 计数 |
+| `@QueryMeta(expr="id in (?)")` IN 单值 | IN 查询占位符对 List/数组自动展开，单值也用 List/数组 |
+| `GlobalResponseAdvice` 场景手动包裹 | Controller 直接 `return` 业务对象/`ResponseData<T>`，框架自动包裹；仅文件下载等用 `@ResponseAdviceIgnore` |
+| Controller 内 try-catch 异常 | `GlobalExceptionAdvice` 自动转为错误响应，Controller 无需 try-catch |
+| `@MscPermDeclare(user = {A, B})` 多类型 | `user()` 为单值，多类型访问需拆分接口 |
+| PERM 校验带 `{id}` 路径变量 | 权限匹配不支持路径变量，带变量用 `AuthType.NONE/USER` 或拆固定路径 |
 
 ### Cache 模块
 
 | ❌ 错误写法 | ✅ 正确写法 |
 |------------|-----------|
-| `FusionCache.invalidateAll()` | 逐个 `FusionCache.invalidate(Class, key)` — 没有 invalidateAll |
-| `FusionCache` 缓存 `DataList` | 缓存 `ArrayList<Entity>` — DataList 序列化异常 |
 | `GlobalCache.delete()` | `GlobalCache.invalidate(cacheName, key)` — 方法名是 invalidate |
 | `CacheDataLoader` 用 lambda | `new CacheDataLoader<K,V>(){@Override public V load(K key){...}}` — 是抽象类 |
-| `GlobalCache.getIfPresent()` | `GlobalCache.get(cacheName, key, CacheDataLoader, expireMillis)` — 没有 getIfPresent |
+| `GlobalCache.getIfPresent()` | `GlobalCache.get(cacheName, key, CacheDataLoader, expireMillis)` / `containsKey()` — 没有 getIfPresent |
+| `FusionCache.size()` | `FusionCache.localCacheSize(Class)` — 没有 size 方法 |
+| `FusionCache.invalidateAll()` | 逐个 `FusionCache.invalidate(Class, key)`；全量清空用 `invalidate(Class, null)` — 没有 invalidateAll |
+| `FusionCache` 缓存 `DataList` | 缓存 `ArrayList<Entity>` — DataList 序列化异常 |
 | FusionCache/GlobalCache 选错 | 单条实体详情用 FusionCache；列表、临时数据用 GlobalCache |
+| `CacheDataLoader<V>` V 用接口类型 | V 必须是**具体实现类**（Kryo 反序列化要求），如 `ArrayList<Entity>` 而非 `List<Entity>` |
+| `GlobalLocker` 不续期长任务 | 执行超过 lockTimeMillis 会自动过期被抢占；长任务必须 `keepLock` 续期 |
+| `GlobalLocker` 自行加锁后 CAS | unlock/keepLock 已是 Lua CAS 原子操作（stamp 为 SnowflakeId 跨 JVM 唯一），无需自行加锁 |
+
+### 任务框架模块
+
+| ❌ 错误写法 | ✅ 正确写法 |
+|------------|-----------|
+| `TaskCroner` / `TaskRunner` 不加 `@Component` | 必须加 `@Component`（是 Spring Bean，与 Helper 不同） |
+| `TaskRunner` 使用非线程安全实例变量 | TaskRunner 是单例，多消费者线程并发调用，禁止非线程安全实例变量 |
+| 复用同一 `taskData` 对象多次提交 | run 系列方法会写入运行期字段（id/queueDate/runType），每次必须新建 |
+| `retryTimesByProgram` 配置 | **没有 `retryTimesByProgram`**，程序异常（STATE_FAIL_PROGRAM）不重试 |
+| 第三方错误抛普通异常 | 抛 `TaskPartnerException` 才按 `retryTimesByPartner` 重试 |
+| 数据错误抛普通异常 | 抛 `TaskDataException` 表示不重试 |
+| `runTask` 在 Web 请求线程高频同步调用 | 远程 RPC 默认超时 180 秒，高频同步调用会耗尽 Tomcat 线程 |
+| `runTaskLocal` 本机无 runner | 本机无 runner 时 `runTaskLocal` **抛异常**（不降级入队） |
+
+### AI 集成模块
+
+> 详细规范见上方「AI 集成规范」。跨模块编排（通知推送、跨 Helper 调用）与降级总原则见下方「外部集成模块」。
+
+| ❌ 错误写法 | ✅ 正确写法 |
+|------------|-----------|
+| AI 调用退化为数据库查询 | `AiClientHelper.generate(AiChatGenerateParam)` — 标注 `[调用AI]` 的步骤必须真实调用 |
+| `configId` 硬编码 | 优先 `configCode`（语义化、跨环境）；确需运行时决定则从 AiConfig 表读取 |
+| `AiChatGenerateParam` 手动 `setSaasId` | `.bindAuthInfo()` 自动绑定认证四元组，禁止手动 set |
+| `AiClientHelper.generate()` 不检查结果 | `if (aiResult.isNotSuccess()) { 降级处理 }`，禁止 `.getData()` 后直接用 |
+| 流式对话用同步方式 | 对话/SSE 场景用 `chatGenerate(param)` 返回 `Flux<String>` |
+| `translateList`/`translateMap` 当单 Map 用 | 返回**数组**（每目标语言一条），按语言索引取值并判空；`textMap` 用 `LinkedHashMap` |
+| `generateImage` 用 `.userPrompt(...)` | Builder 用 `.prompt(...)` 设置图片提示词 |
+| `AiTool` 不加 `@Component` | AI 工具类必须是 Spring Bean 并实现 `AiTool<P,R>` |
+| `toolCode` 写 `toolName()` | `toolCode` 对应工具类的**类名**（`Class.getSimpleName()`），不是 toolName/toolVersion |
+| `AiTool.toolVersion()` 不递增 | 升级时必须递增 version，框架据此判断是否需同步元数据 |
 
 ### Helper/通用模块
 
@@ -445,12 +652,26 @@ return ResponseData.errorCode(CommonResponseCode.ENTITY_UPDATE_ERROR);
 | `warnCode("USER_NOT_FOUND", "用户不存在")` 硬编码 | `warnCode(GuestResponseCode.USER_NOT_FOUND)` — 定义 ResponseCode 枚举 |
 | 枚举类散落在 entity/service 包 | 统一放在 `{package}/constant/` 包下 |
 
-### @Schema/DateUtils 模块
+### @Schema/DateUtils/DigestUtils 模块
 
 | ❌ 错误写法 | ✅ 正确写法 |
 |------------|-----------|
 | `@Schema(description="xxx")` 缺 title | `@Schema(title="xxx", description="xxx")` — 必须同时设置 |
 | `DateUtils.getDayStart/getDayEnd/addDays` | `DateUtils.beginOfToday(date)` / `endOfToday(date)` / `offsetDay(date, n)` |
+| `DateUtils.format(date, fmt)` / `parse(str)` | `DateUtils.dateToString(date, fmt)` / `stringToDate(str)` — 方法名不同 |
+| `DigestUtils.md5()` / `sha256()` | `DigestUtils.signHex(msg, DigestUtils.Algorithm.SHA_256)` — 无独立方法，用 Algorithm 枚举 |
+| `new Date()` / `System.currentTimeMillis()` | `SystemClock.nowDate()` / `SystemClock.now()` — createDate/modifyDate 赋值必用 |
+| 自写 IP 匹配/CIDR | `IpMatchUtils.sortList(ipList)` 后 `matches(sortedList, ip)` — 必须先 sortList 再二分查找 |
+| 手写脱敏方法 `desensitize/hide` | `MaskUtils.maskXxx()` — 所有方法统一 mask 前缀，无 desensitize/hide |
+
+### QueryParam 模块
+
+| ❌ 错误写法 | ✅ 正确写法 |
+|------------|-----------|
+| 自定义 QueryParam 重新声明 `saasId/mchId/userId/userType` | 继承 `AuthQueryParam`/`AuthPageQueryParam` 后**禁止重新声明**这四个字段及其 @QueryMeta/getter/setter — 否则 WHERE 条件被注入两次且反射读到错误对象 |
+| 新增权限维度用 `groupId`（已被占用） | 使用父类未占用的字段名；如需 `groupId`，确认父类未定义 |
+| `QueryParam` 不限定可排序字段 | 覆写 `ALLOWED_SORT_PROPERTY()` 返回 `属性名→列名` 映射，防排序注入 |
+| `@QueryMeta(expr="id in (?)")` 传单个值 | IN 查询传 List/数组自动展开占位符 |
 
 ### 外部集成模块
 
@@ -458,13 +679,10 @@ return ResponseData.errorCode(CommonResponseCode.ENTITY_UPDATE_ERROR);
 
 | ❌ 错误写法 | ✅ 正确写法 |
 |------------|-----------|
-| AI 调用退化为数据库查询 | `AiClientHelper.generate(AiChatGenerateParam.builder().configId(configId).userPrompt(content).build())` |
 | 通知推送退化为数据库 INSERT | `dao.save(msgNotice)` 后必须调用 `NotifyClientHelper.pushNotify(new WebNotifyMsg(...))` |
-| AiClientHelper 不检查结果 | `ResponseData<String> aiResult = AiClientHelper.generate(param); if (aiResult.isNotSuccess()) { 降级处理 }` |
-| AiChatGenerateParam 未 bindAuthInfo | `param.bindAuthInfo()` 自动绑定当前用户认证信息，禁止手动 `setSaasId` |
-| configId 硬编码 | 从 AiConfig 表动态读取：`dao.queryForObject(AiConfig.class, ...)` |
-| 流式对话用同步方式 | 对话场景用 `AiClientHelper.chatGenerate()` 返回 `Flux<String>` |
 | 跨模块调用被省略 | 如 `acceptAnswer()` 必须：PostQuestionHelper.resolveQuestion() + GuestPointHelper.earnPoint() + MsgNotifyHelper.sendNotice() |
+
+> AI 调用的专属陷阱（退化/降级/bindAuthInfo/configCode/流式/工具扩展）见上方「AI 集成模块」。
 
 **降级原则**：外部服务不可用时的降级是写降级逻辑（如返回提示信息），不是直接删除该步骤。
 
@@ -506,6 +724,8 @@ return ResponseData.errorCode(CommonResponseCode.ENTITY_UPDATE_ERROR);
 | 权限声明 / 响应格式 | @MscPermDeclare + ResponseData\<T\> | 详见「Controller 规范」 |
 | Helper 依赖获取 / 方法风格 | 静态获取 + public static | 详见「Helper 设计规范」 |
 | 枚举 / 响应码 | CommonState + ResponseCode | 详见「枚举与响应码规范」 |
+| 定时/队列任务 | TaskCroner / TaskRunner + TaskFactory | 详见「任务框架规范」 |
+| AI 对话/翻译/工具 | AiClientHelper + AiTool | 详见「AI 集成规范」 |
 
 ### 原则四：代码可读性（Self-Documenting Code）
 
@@ -561,6 +781,20 @@ for enum_file in $(grep -rln 'implements ResponseCode' src/main/java/ --include=
     fi
 done
 
-# 10. 编译 + 全量测试
+# 10. 任务类 Spring Bean 检查（TaskCroner/TaskRunner 必须加 @Component）
+for task_file in $(grep -rln 'extends TaskCroner\|extends TaskRunner' src/main/java/ --include="*.java"); do
+    if ! grep -q '@Component' "$task_file"; then
+        echo "MISSING @Component: $task_file"
+    fi
+done
+
+# 11. Helper 误加 Spring 注解检查（Helper 禁止 @Component/@Service）
+for helper_file in $(find src/main/java -name '*Helper.java' -path '*/service/*'); do
+    if grep -qE '@Component|@Service|@Autowired' "$helper_file"; then
+        echo "HELPER WITH SPRING ANNOTATION: $helper_file"
+    fi
+done
+
+# 12. 编译 + 全量测试
 mvn compile && mvn test -Dspring.profiles.active=debug
 ```

@@ -12,7 +12,20 @@ uw:
     service:
       auth-center-host: http://uw-auth-center
       app-label: 我的应用
+      # 受IP白名单保护的高危路径（如内部RPC）
+      ip-protected-paths: /rpc/*,/agent/*
+      # IP白名单（配置了ip-protected-paths时必须配置，否则受保护路径无限制）
+      ip-white-list: 127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+      # 可信代理（仅来源IP在列表内才信任X-Forwarded-For/X-Real-IP，防伪造）
+      trusted-proxies: 127.0.0.1,10.0.0.0/8
+      # 请求日志body缓存上限（字节，默认8MB）
+      log-body-cache-limit: 8388608
 ```
+
+> **关键行为**
+> - 应用在 `ApplicationReadyEvent` 时**异步**注册到 auth-center，不阻塞启动；注册失败进入降级模式（不退出 JVM），通过状态上报持续重试。
+> - 仅 auth-center 明确判定 Token 无效（401/403/498）才入非法黑名单（20分钟），503 服务异常不入，避免误伤。
+> - 配置了 `ip-protected-paths` 但 `ip-white-list` 为空时，受保护路径将无任何限制（仅输出 warn）。
 
 ## AI 决策速查
 
@@ -73,11 +86,11 @@ public void download(HttpServletResponse response) { ... }
 | 异常类型 | HTTP 状态码 | 说明 |
 |---------|------------|------|
 | `TokenInvalidException` | 401 | Token 无效/被踢出 |
-| `TokenExpiredException` | 419（自定义） | Token 过期 |
-| `TokenPermException` | 403（自定义） | 权限不足 |
-| `TokenPayException` | 402（自定义） | 付费功能未开通 |
-| `TokenServiceException` | 503（自定义） | 服务不可用 |
-| `TokenSudoException` | 426（自定义） | 需要超级权限 |
+| `TokenExpiredException` | 498（自定义） | Token 过期 |
+| `TokenPermException` | 403 | 权限不足 |
+| `TokenPayException` | 402 | 付费功能未开通 |
+| `TokenServiceException` | 503 | 服务不可用（权限表未初始化/auth-center 不可达） |
+| `TokenSudoException` | 426 | 需要超级权限（SUDO） |
 | `ErrorResponse`（Spring） | 按 statusCode | Spring 内置错误 |
 | `IOException` | — | 客户端断开，不返回错误 |
 | 其他异常 | 500 | 内部错误，打印完整堆栈 |
@@ -104,6 +117,10 @@ public ResponseData<User> save(@RequestBody User user) {
     log = ActionLog.ALL
 )
 ```
+
+> ⚠️ **重要约束**
+> - **`user()` 为单值**：必须精确匹配一种 `UserType`，不支持数组（`user = {A, B}` 无法编译）。多类型访问需求请拆分接口。
+> - **权限匹配基于精确请求 URI + 请求方法，不支持路径变量**（如 `/user/{id}`）。带 `{id}` 等路径变量的接口使用 `auth = AuthType.NONE/USER`，或拆分为固定路径，否则 `PERM/SUDO` 权限校验无法命中。
 
 ### UserType — 用户类型
 

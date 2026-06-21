@@ -11,19 +11,24 @@
 | 系统异常 | `ResponseData.errorCode(ResponseCode)` 或 `errorCode("CODE","msg")` | 禁止 `error("CODE","msg")`（泛型陷阱） |
 | 致命错误 | `ResponseData.fatalCode(ResponseCode)` | — |
 | 判断成功 | `result.isSuccess()` | — |
-| 判断非成功 | `result.isNotSuccess()` | 不要再 `|| getData()==null` |
+| 判断非成功 | `result.isNotSuccess()` | 不要再叠加 getData()==null 判断 |
 | 链式处理 | `result.onSuccess(data -> ...).onError(data -> ...)` | — |
 | 货币计算 | `MoneyUtils` | 金额以 long（分）为单位，禁止浮点 |
 | 数据校验 | `ValidateUtils.isXxx(value)` | 覆盖字符串/整数/身份证/手机号等 |
+| 数据脱敏 | `MaskUtils.maskXxx(value)` | 所有方法 mask 前缀；null 返回 null；手机/身份证用 `maskChinaMobile/maskChinaIdCard` |
 | JSON序列化 | `JsonUtils.toString(object)` | — |
 | JSON反序列化 | `JsonUtils.parse(json, Class)` 或 `parse(json, new TypeReference<List<T>>(){})` | — |
 | AES加密 | `AESUtils.encryptString(key, data)` | 推荐自动IV版本（密文自带IV） |
-| 日期格式化 | `DateUtils.format(date)` 或 `format(date, pattern)` | — |
+| 当前时间 | `SystemClock.nowDate()` / `SystemClock.now()` | **不要用 `new Date()` / `System.currentTimeMillis()`**，createDate/modifyDate 赋值必用此 |
+| 日期格式化 | `DateUtils.dateToString(date, DateUtils.DATE_TIME)` | 方法名是 `dateToString` 不是 `format` |
+| 日期解析 | `DateUtils.stringToDate(str)` 或 `stringToDate(str, pattern)` | 方法名是 `stringToDate` 不是 `parse` |
 | 日期偏移 | `DateUtils.offsetDay(date, n)` | 方法名不是 addDays |
 | 当天开始 | `DateUtils.beginOfToday(date)` | 方法名不是 getDayStart |
 | 当天结束 | `DateUtils.endOfToday(date)` | 方法名不是 getDayEnd |
+| 摘要签名 | `DigestUtils.sign(msg, DigestUtils.Algorithm.SHA_256)` | 无独立 md5/sha256 方法，用 `Algorithm` 枚举 |
+| HMAC签名 | `HmacUtils.sign(message, secret)` / `verify(...)` | HMAC-SHA256 |
 | 雪花ID | `SnowflakeIdGenerator.getInstance().generateId()` | — |
-| 位运算开关 | `BitConfigUtils.isOn/On/Off(config, bitIndex)` | int 32位，long 64位 |
+| 位运算开关 | `BitConfigUtils.isOn/on/off(config, bitIndex)` | int 32位，long 64位 |
 
 ## ResponseData
 
@@ -140,7 +145,7 @@ public static ResponseData<User> resetPassword(long userId, String newPassword) 
     AuthServiceHelper.logRef(User.class, userId);
     return dao.load(User.class, userId)
         .onSuccess(user -> {
-            user.setPassword(DigestUtils.sha256(newPassword));
+            user.setPassword(DigestUtils.signHex(newPassword, DigestUtils.Algorithm.SHA_256));
             user.setModifyDate(SystemClock.nowDate());
             return dao.update(user);
         });
@@ -407,6 +412,7 @@ String cn = MoneyUtils.of(214748364700L)
 | `isUrl(String)` | URL（http/https/ftp，<=2048字符） |
 | `isIpv4(String)` | IPv4 地址 |
 | `isIpv6(String)` | IPv6 地址（标准8段全称） |
+| `isIp(String)` | IPv4 或 IPv6（合并判断） |
 
 **中国业务校验**：
 
@@ -428,6 +434,57 @@ if (!ValidateUtils.isChinaIdCard(idCard)) {
 }
 ```
 
+## MaskUtils
+
+> **包路径**：`uw.common.util.MaskUtils`
+
+数据脱敏工具。null 输入返回 null，不抛异常。**所有方法统一 `mask` 前缀**。过短无法保留明文片段时整体返回 `FULL_MASK`（`****`）。脱敏仅用于回显/日志/展示，**不可作为加密手段**。
+
+> ⚠️ 本类**没有** `desensitize` / `hide` 等方法名，也**没有**不带 mask 前缀的 `email`/`phone`/`ipv4` 等方法（避免与取值类方法混淆）。所有公开方法都是 `maskXxx`。
+
+**两类 API**：
+
+| API | 中间掩码行为 | 适用场景 |
+|-----|------------|---------|
+| `mask(input, pre, suf, maskStr)` / `maskSecret(secret)` | **固定掩码串**，不随原长变化（不泄漏长度结构） | 凭证/密钥/Token |
+| `maskByLength(input, pre, suf)` + 业务语义方法 | **按原文长度逐位填星** | 展示类固定格式字段（手机号展示 `138****5678`） |
+
+**通用方法**：
+
+| 方法 | 说明 |
+|------|------|
+| `mask(String, int pre, int suf)` | 保留前后指定位，中间填默认 `****` |
+| `mask(String, int pre, int suf, String maskStr)` | 自定义中间掩码串 |
+| `maskByLength(String, int pre, int suf)` | 按原长逐位填星 |
+| `maskSecret(String)` | 凭证脱敏（前4后4固定掩码，长度≤8整体 `****`） |
+
+**业务语义化方法**（内部走 `maskByLength`）：
+
+| 方法 | 示例 |
+|------|------|
+| `maskChinaMobile(mobile)` | 13812345678 → 138****5678 |
+| `maskTelephone(tel)` | 01012345678 → 0101*****78 |
+| `maskChinaIdCard(idCard)` | 110101199001011234 → 110101********1234 |
+| `maskPassport(passport)` | E12345678 → E1*****78 |
+| `maskChinaName(name)` | 欧阳修 → 欧**；单字 → `****` |
+| `maskBankCard(bankCard)` | 6222021234567890 → 6222********7890 |
+| `maskEmail(email)` | alice@example.com → a****@example.com（域名完整保留） |
+| `maskChinaUscc(uscc)` | 911101081234561234 → 9111**********1234 |
+| `maskChinaTaxNo(taxNo)` | 同 USCC，兼容 15/18/20 位税号 |
+| `maskChinaPlateNo(plateNo)` | 京A12345 → 京A*****（前2位保留） |
+| `maskAddress(addr)` | 保留前6位（省市区），其余填星 |
+| `maskImei(imei)` | 490154203237518 → 490154*******18（前6 TAC 后2） |
+| `maskWechatId(wxId)` | alice_wx → a******x（首+尾，长度≤2 整体 `****`） |
+| `maskIpv4(ip)` | 192.168.1.100 → 192.168.*.*（非标准 IPv4 整体 `****`） |
+
+```java
+// 日志脱敏（凭证用固定掩码，不泄漏长度）
+log.info("login failed, token={}", MaskUtils.maskSecret(token));
+
+// 接口返回脱敏（手机号展示用按长度填星）
+user.setMobile(MaskUtils.maskChinaMobile(user.getMobile()));
+```
+
 ## JsonUtils
 
 > **包路径**：`uw.common.util.JsonUtils`
@@ -447,20 +504,47 @@ if (!ValidateUtils.isChinaIdCard(idCard)) {
 
 | 方法 | 说明 | 注意 |
 |------|------|------|
-| `format(Date)` | 格式化为 yyyy-MM-dd HH:mm:ss | — |
-| `format(Date, String)` | 按指定格式格式化 | — |
-| `parse(String)` | 解析默认格式 | — |
-| `parse(String, String)` | 按指定格式解析 | — |
+| `dateToString(Date, String format)` | 按指定格式格式化 | 方法名是 `dateToString` 不是 `format` |
+| `stringToDate(String)` | 按默认格式 yyyy-MM-dd HH:mm:ss 解析 | 方法名是 `stringToDate` 不是 `parse` |
+| `stringToDate(String, String format)` | 按指定格式解析 | — |
 | `offsetDay(Date, int)` | 偏移天数 | 不是 addDays |
-| `offsetMonth(Date, int)` | 偏移月数 | — |
-| `offsetHour(Date, int)` | 偏移小时 | — |
+| `offsetMonth/offsetYear/offsetHour/offsetMinute/offsetSecond` | 各粒度偏移 | — |
 | `beginOfToday(Date)` | 当天开始 00:00:00 | 不是 getDayStart |
 | `endOfToday(Date)` | 当天结束 23:59:59 | 不是 getDayEnd |
-| `daysDiff(Date, Date)` | 相差天数 | — |
-| `now()` | 当前时间戳（毫秒） | — |
-| `nowDate()` | 当前 Date | 常用于 createDate/modifyDate |
+| `beginOfMonth/beginOfYear/beginOfYesterday/beginOfTomorrow` | 区间起点 | 同系列有 endXxx |
+| `daysDiff/hoursDiff/minutesDiff/monthsDiff/yearsDiff` | 时间差 | — |
+| `dateToLocalDate/localDateToDate` | Date ↔ LocalDate 互转 | — |
+| `dayOfMonth/dayOfWeek` | 取日/星期 | — |
 
-**日期格式常量**：`FORMAT_DEFAULT`="yyyy-MM-dd HH:mm:ss"、`FORMAT_DATE`="yyyy-MM-dd"、`FORMAT_TIME`="HH:mm:ss"
+> ⚠️ **DateUtils 没有 `now()` / `nowDate()`**。获取当前时间用 [`SystemClock`](#systemclock) 的 `now()` / `nowDate()`。
+
+**日期格式常量**（直接用常量名，不要手写格式串）：
+
+| 常量 | 值 |
+|------|------|
+| `DATE_TIME` | yyyy-MM-dd HH:mm:ss |
+| `DATE_MILLIS` | yyyy-MM-dd HH:mm:ss.SSS |
+| `DATE` | yyyy-MM-dd |
+| `TIME` | HH:mm:ss |
+| `DATE_SIMPLE` | yyyyMMdd |
+| `DATE_TIME_SIMPLE` | yyyyMMddHHmmss |
+| `MONTH` | yyyy-MM |
+| `DATE_TIME_ISO` | yyyy-MM-dd'T'HH:mm:ssZZ |
+
+> 常量名是 `DATE_TIME` / `DATE` / `TIME` 等，不是 `FORMAT_DEFAULT` / `FORMAT_DATE`。
+
+## SystemClock
+
+> **包路径**：`uw.common.util.SystemClock`
+
+高性能动态系统时钟。调用频率低时直接读系统时钟，频率高时（>10/ms）自动切换为定时器刷新的缓存值。**`createDate` / `modifyDate` 赋值一律用 `SystemClock.nowDate()`**，禁止 `new Date()` / `System.currentTimeMillis()`。
+
+| 方法 | 返回类型 | 说明 |
+|------|---------|------|
+| `now()` | long | 当前时间戳（毫秒），高频场景比 `System.currentTimeMillis` 快约 40 倍 |
+| `nowDate()` | Date | 当前 Date（createDate/modifyDate 赋值用） |
+| `elapsedMillis(long startTime)` | long | 从 startTime 到当前的耗时 |
+| `elapsedMillis(long startTime, long endTime)` | long | 两时间戳之差 |
 
 ## AESUtils
 
@@ -530,6 +614,34 @@ String decrypted = aesBox.decrypt(encrypted);
 
 > 相似度返回值范围 0~10000（10000 = 完全相同）。`ngramSimilarDegree` 对少量字符差异更敏感，适合区分高度相似但不同的名称。
 
+## DigestUtils
+
+> **包路径**：`uw.common.util.DigestUtils`
+
+消息摘要工具类。**没有独立的 `md5()`/`sha256()` 方法**，统一通过 `sign(msg, Algorithm)` 调用，算法由 `Algorithm` 枚举指定。
+
+| 方法 | 说明 |
+|------|------|
+| `sign(String msg, Algorithm)` | 摘要签名，返回 Base64 字符串 |
+| `signHex(String msg, Algorithm)` | 摘要签名，返回十六进制字符串 |
+| `bytesToHex(byte[])` | 字节数组转十六进制 |
+
+**Algorithm 枚举值**：
+
+| 枚举 | 算法 | 说明 |
+|------|------|------|
+| `MD5` | MD5 | 不安全，仅兼容旧系统 |
+| `SHA` | SHA-1 | 较弱，仅历史系统 |
+| `SHA_256` | SHA-256 | **推荐使用** |
+| `SHA_384` | SHA-384 | 高强度 |
+| `SHA_512` | SHA-512 | 最高强度 |
+| `SHA3_256` | SHA3-256 | 最新标准，推荐 |
+| `SHA3_512` | SHA3-512 | 最新标准，最高强度 |
+
+```java
+String hash = DigestUtils.signHex(password, DigestUtils.Algorithm.SHA_256);
+```
+
 ## HmacUtils
 
 > **包路径**：`uw.common.util.HmacUtils`
@@ -593,13 +705,13 @@ executor.shutdown();
 
 | 类名 | 核心方法 | 用途 |
 |------|---------|------|
-| `RSAUtils` | `generateKeyPair()` / `encrypt()` / `decrypt()` / `sign()` / `verify()` | RSA 非对称加密签名 |
-| `DigestUtils` | `md5()` / `sha1()` / `sha256()` / `hmacSha256()` / `bytesToHex()` | 哈希摘要计算 |
-| `IpMatchUtils` | `match(ip, pattern)` / `isInRange(ip, cidr)` | IP 匹配，支持 CIDR |
-| `ByteArrayUtils` | `toHex()` / `fromHex()` / `concat()` / `slice()` | 字节数组操作 |
-| `NumCodeUtils` | `encode()` / `decode()` | 数字编码混淆 |
-| `EnumUtils` | `getEnum()` / `getEnumMap()` / `getEnumList()` / `enumNameToDotCase()` | 枚举转换工具 |
-| `SnowflakeIdGenerator` | `getInstance().generateId()` | 分布式雪花ID（synchronized） |
-| `ResponseCodeUtils` | `toPropertyString(Class)` / `toProperties(Class)` | 将 ResponseCode 枚举导出为 Properties |
-| `SystemClock` | `now()` / `nowDate()` / `elapsedMillis(long)` | 高性能系统时钟（高频场景自动切换定时器模式），用于 `createDate`/`modifyDate` |
+| `RSAUtils` | `genKeyPair(keySize)` / `encrypt()` / `decrypt()` / `sign()` / `checkSign()` | RSA 非对称加密签名 |
+| `IpMatchUtils` | `sortList(ipList)` / `matches(sortedList, ip)` / `parseInetAddress(ip)` | IP 段匹配（**先 sortList 排序再 matches 二分查找**），`IpRange` 支持 CIDR/范围 |
+| `ByteArrayUtils` | `intToByteArray` / `byteArrayToInt` / `longToByteArray` / `hexToByteArray` / `byteArrayToString`（均含 LittleEndian 版） | 数值 ↔ 字节数组大小端转换，底层协议开发 |
+| `NumCodeUtils` | `confuseNum(num)` / `clarifyNum(enc)` | 数字编码混淆 |
+| `EnumUtils` | `getEnumMap(basePackage)` / `enumNameToDotCase` / `enumNameToHyphenCase` / `enumNameToCamelCase` | 枚举名称转换（点号/连字符/驼峰），用于 ResponseCode code 生成 |
+| `SnowflakeIdGenerator` | `getInstance().generateId()` | 分布式雪花ID（machineId: 环境变量 → HOSTNAME hash → UUID 降级） |
+| `ResponseCodeUtils` | `toProperties(Class)` / `toPropertyString(Class)` | 将 ResponseCode 枚举导出为 i18n Properties |
 | `ExceptionUtils` | `exceptionToString(Throwable)` | 过滤框架堆栈的异常格式化（GlobalExceptionAdvice 使用） |
+
+> DigestUtils 见 [上文独立章节](#digestutils)，SystemClock 见 [上文独立章节](#systemclock)。

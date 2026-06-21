@@ -42,11 +42,11 @@ public static void main(String[] args) {
 
 | 属性 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
-| `enableCritLog` | boolean | true | 开启 CritLog 数据记录 |
-| `localeDefault` | Locale | zh_CN | 默认语言 |
-| `localeList` | List\<Locale\> | 全部可用 | 可选语言列表 |
-| `shutdownTimeout` | Duration | 3s | 优雅关闭超时 |
-| `disableSwagger` | boolean | false | 禁用 Swagger |
+| `enableCritLog` | boolean | true | 是否开启 CritLog 数据落库 |
+| `localeDefault` | Locale | zh_CN | 默认语言（Accept-Language 缺失或匹配失败时使用） |
+| `localeList` | List\<Locale\> | 12 种已覆盖语言 | 可选语言列表（参与 Accept-Language 匹配，默认收窄避免全量 Locale 的 lookup 开销） |
+| `shutdownTimeout` | Duration | 3s | Nacos 反注册后预留的优雅停机等待时长 |
+| `disableSwagger` | boolean | false | 是否禁用 Swagger 接口 |
 
 ## 预置常量/枚举
 
@@ -134,9 +134,11 @@ QueryParam (uw.common.dto)
 
 PageQueryParam (uw.common.dto)
 ├── AuthPageQueryParam    — saasId / mchId / userId / userType（自动绑定）
-├── SysCritLogQueryParam  — 系统关键日志查询
-└── SysDataHistoryQueryParam — 数据历史查询
+├── SysCritLogQueryParam  — 系统关键日志查询（mchId/userId/userType 继承自 AuthPageQueryParam）
+└── SysDataHistoryQueryParam — 数据历史查询（mchId/userId/userType 继承自 AuthPageQueryParam）
 ```
+
+> ⚠️ **字段遮蔽陷阱**：自定义 QueryParam 继承 `AuthPageQueryParam` / `AuthQueryParam` 时，**切勿**重新声明 `saasId/mchId/userId/userType` 字段。`uw-dao` 的 `QueryParamUtils` 会遍历整个继承链收集 `@QueryMeta`，重复字段会导致同一 WHERE 条件被注入两次且反射读到错误对象。如需新增权限字段（如 `groupId`），使用父类未占用的名称。
 
 ### AuthQueryParam — 权限查询参数
 
@@ -184,15 +186,15 @@ public ResponseData<PageList<Order>> myList(AuthQueryParam param) {
 
 ### SysCritLogQueryParam — 系统关键日志查询
 
-继承 AuthPageQueryParam，支持按以下条件查询：
+继承 AuthPageQueryParam，支持按以下条件查询（mchId/userId/userType 为继承字段，请勿重复声明）：
 
 | 字段 | @QueryMeta 表达式 | 类型 |
 |------|-------------------|------|
 | id | `id=?` | Long |
 | ids | `id in (?)` | Long[] |
-| mchId | `mch_id=?` | Long |
-| userId | `user_id=?` | Long |
-| userType | `user_type=?` | Integer |
+| mchId | `mch_id=?` | Long（继承自 AuthPageQueryParam） |
+| userId | `user_id=?` | Long（继承自 AuthPageQueryParam） |
+| userType | `user_type=?` | Integer（继承自 AuthPageQueryParam） |
 | groupId | `group_id=?` | Long |
 | userName | `user_name like ?` | String |
 | nickName | `nick_name like ?` | String |
@@ -215,15 +217,15 @@ public ResponseData<PageList<Order>> myList(AuthQueryParam param) {
 
 ### SysDataHistoryQueryParam — 数据历史查询
 
-继承 AuthPageQueryParam，支持按以下条件查询：
+继承 AuthPageQueryParam，支持按以下条件查询（mchId/userId/userType 为继承字段，请勿重复声明）：
 
 | 字段 | @QueryMeta 表达式 | 类型 |
 |------|-------------------|------|
 | id | `id=?` | Long |
 | ids | `id in (?)` | Long[] |
-| mchId | `mch_id=?` | Long |
-| userId | `user_id=?` | Long |
-| userType | `user_type=?` | Integer |
+| mchId | `mch_id=?` | Long（继承自 AuthPageQueryParam） |
+| userId | `user_id=?` | Long（继承自 AuthPageQueryParam） |
+| userType | `user_type=?` | Integer（继承自 AuthPageQueryParam） |
 | groupId | `group_id=?` | Long |
 | userName | `user_name like ?` | String |
 | nickName | `nick_name like ?` | String |
@@ -248,7 +250,9 @@ public ResponseData<PageList<Order>> myList(AuthQueryParam param) {
 | `saveHistory(DataEntity, String remark)` | 保存 + 备注 |
 | `saveHistory(entityId, dataEntity, entityName, remark)` | 完整参数 |
 
-自动记录：saasId / mchId / userId / groupId / userType / userName / nickName / realName / userIp / entityData（JSON）/ entityUpdateInfo（差异Map）。保存后自动调用 `CLEAR_UPDATED_INFO()`。
+自动记录：saasId / mchId / userId / groupId / userType / userName / nickName / realName / userIp / entityData（JSON）/ entityUpdateInfo（差异Map）。
+
+> ⚠️ **副作用语义**：`CLEAR_UPDATED_INFO()` 在 `dao.save(history)` **成功之后**才调用，避免落库失败时清空原实体更新信息造成副作用泄漏。落库失败不阻断主业务，仅记录 WARN 日志；`Error` 级异常（OOM 等）会重新抛出。
 
 ```java
 SysDataHistoryHelper.saveHistory(user, "更新前");
@@ -468,3 +472,49 @@ public enum SystemConfig implements JsonConfigParam {
 | remark | String | 备注 |
 | userIp | String | 用户IP |
 | createDate | Date | 创建日期 |
+
+## 开发约定与常见陷阱
+
+### QueryParam 字段遮蔽（高频陷阱）
+
+自定义 QueryParam 继承 `AuthPageQueryParam` / `AuthQueryParam` 时，**禁止**重新声明 `saasId` / `mchId` / `userId` / `userType` 字段及其 `@QueryMeta`/getter/setter。
+
+- `uw-dao` 的 `QueryParamUtils.loadQueryParamMetaInfo` 会遍历整个继承链收集 `@QueryMeta`，子类与父类同名字段会导致同一 WHERE 条件被注入两次，且反射读取到错误的对象字段。
+- 如需新增权限维度（如 `groupId`），使用父类未占用的名称；`SysCritLogQueryParam` / `SysDataHistoryQueryParam` 已删除重复字段，仅保留父类未定义的 `groupId`。
+
+### JsonConfigHelper 全部为静态方法
+
+`JsonConfigHelper` 的 `buildParamBox` 与 `validateConfigData` **均为 static**，无需实例化即可调用：
+
+```java
+JsonConfigHelper.validateConfigData(params, json);   // ✅
+new JsonConfigHelper().validateConfigData(params, json); // ❌ 多余
+```
+
+### 关键日志（CritLog）可靠性
+
+`SysCritLogStorageService` 通过虚拟线程异步落库，应用关闭时 `@PreDestroy shutdown` 会调用 `awaitTermination(10s)` 等待未完成任务完成；超时则 `shutdownNow` 并打印告警。落库失败仅记录错误日志，不影响主流程。可通过 `uw.common.app.enableCritLog=false` 关闭。
+
+### Nacos 依赖为可选
+
+`CommonAppAutoConfiguration` 通过 `ObjectProvider` 注入 `NacosAutoServiceRegistration`，**未启用 Nacos 服务发现的应用（如非 cloud 应用、本地测试）也能正常装配**。优雅停机逻辑在无 Nacos 时自动跳过。
+
+### LoadBalancer 缓存策略（系统设计）
+
+`CommonAppAutoConfiguration` 注册 `@Primary` 的 `LoadBalancerCacheManager` 返回 `NoOpCache`，**全局禁用** Spring LoadBalancer 缓存层，使每次请求直连 Nacos 获取实例列表，实现秒级感知服务上下线。此为系统级设计，**不要移除或改为有缓存实现**。
+
+### QueryParamHelper URL 构建
+
+`QueryParamHelper.buildUriWithParams` 将 QueryParam 展开为 URL 查询参数：
+
+- 自动映射 PageQueryParam 魔法参数（PAGE→`$pg` 等）；
+- 过滤 Auth 系字段与魔法字段；
+- **兼容基本类型数组**（int[]/long[]），不会因强转 `Object[]` 抛 CCE 而静默丢失参数。
+
+### SchemaValidateHelper 继承链校验
+
+`SchemaValidateHelper` 解析 `@Schema` 时**遍历整个继承链**（子类优先），父类带 `@Schema` 的字段同样参与校验；`minimum`/`maximum` 解析失败时按"不校验"处理（返回 NaN），不会中断整个类的解析。
+
+### i18n 资源覆盖
+
+默认 `localeList` 仅包含 i18n 资源实际覆盖的 12 种语言（zh_CN/zh_TW/en/ja/ko/de/fr/it/es/ru/pt/ar）。`uw_common` 与 `uw_validate` 两套资源均已覆盖这 12 种。新增语言时需同步补充资源文件并扩展默认列表。
