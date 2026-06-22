@@ -1,7 +1,7 @@
 # uw-httpclient — HTTP客户端
 
 **Maven 坐标**: `com.umtone:uw-httpclient`
-**底层实现**: OkHttp 4.12 + Jackson（JSON / XML 序列化）
+**底层实现**: OkHttp 5.3.x（`okhttp-jvm`，服务端 JVM 版）+ Jackson（JSON / XML 序列化）
 
 > 本文档方法签名与 `uw.httpclient.http.HttpInterface` 实际源码一一对应，AI 生成代码时请严格按此文档调用，勿臆造方法名。
 
@@ -24,6 +24,11 @@
 | 自定义 OkHttp Request | `helper.requestForEntity(Request, Class)` | 走底层原生 Request |
 | 直接拿 OkHttpClient | `helper.getOkHttpClient()` | 兜底，可自由操作 |
 | 自定义超时/并发 | `HttpConfig.builder().connectTimeout(...).build()` 传入构造器 | 见 HttpConfig |
+| 默认请求头 | `HttpConfig.builder().defaultHeaders(map)` | 所有请求自动追加，业务同名头覆盖 |
+| Cookie 持久化（会话） | `HttpConfig.builder().cookieJar(jar)` | 默认不持久化 |
+| 应用/网络拦截器 | `HttpConfig.builder().addInterceptor(...)` / `.addNetworkInterceptor(...)` | 仅作用于本实例 |
+| 取响应头 | `data.getResponseHeaders()` / `((HttpDefaultData)data).getResponseHeader(name)` | 大小写不敏感，`Map<String,List<String>>` |
+| 取重试/重定向次数 | `data.getRetryCount()` | 自动启用，含连接失败重试与 follow-up |
 | 自签名 HTTPS | `SSLContextUtils.getTruestAllSocketFactory()` + `getTrustAllManager()` | 见 SSL 章节 |
 
 ## 包路径
@@ -146,6 +151,11 @@ helper.getForEntity(url, type);
 | `responseBytes` | byte[] | **响应原始字节（二进制优先）** |
 | `getResponseData()` | String | 懒转换为字符串（UTF-8），优先返回已设置的 responseData |
 | `responseSize` / `responseType` | long / String | 响应大小 / Content-Type |
+| `responseHeaders` | `Map<String,List<String>>` | **完整响应头（大小写不敏感、不可变）**，同名多值头（如 `Set-Cookie`）用 List 表达 |
+| `getResponseHeader(name)` | String | `HttpDefaultData` 便捷方法：取单个响应头首值，大小写不敏感 |
+| `responseMessage` | String | HTTP 状态消息（reason phrase，如 "Not Found"） |
+| `elapsedMillis` | long | 请求整体耗时（毫秒，基于 OkHttp 时间戳，含连接/重试/传输耗时），-1 未设置 |
+| `retryCount` | int | **重试/重定向次数**（物理网络请求次数 - 1，含连接失败重试与 follow-up），自动启用，默认 0 |
 | `errorInfo` | String | 错误信息 |
 | `requestDate` / `responseDate` | Date | 请求/响应时间 |
 
@@ -171,8 +181,12 @@ helper.getForEntity(url, type);
 
 ```java
 public interface HttpDataProcessor<D extends HttpData, T> {
-    // 请求发送前（可拿到 requestBody / formData / headers）
+    // 请求发送前（可拿到 requestBody / formData / headers，但拿不到 OkHttp 注入头）
     void requestProcess(String requestBody, Map<String,String> formData, Map<String,String> headers);
+    // 请求发送前（完整 Request 版，默认空实现，按需覆写）
+    // 拿到最终将要发出的 okhttp3.Request（含 OkHttp 注入的 Content-Type/Host/Cookie 等所有头、最终 URL、body 引用）
+    // 适合做签名/验签/链路追踪。注意：抛出的 DataMapperException 会直接冒泡（不包装），交由上层处理。
+    default void requestProcess(okhttp3.Request request) {}
     // 收到响应后（可拿到 httpData 与响应 headers）
     void responseProcess(D httpData, Headers headers);
     // 请求完成后（通常用于日志上报，t 为反序列化对象或 null）
@@ -194,6 +208,10 @@ HttpConfig config = HttpConfig.builder()
     .maxRequestsPerHost(32)             // 每主机最大并发
     .maxIdleConnections(50)             // 连接池最大空闲连接
     .keepAliveTimeout(300000)           // 空闲连接存活毫秒
+    // .defaultHeaders(headerMap)        // 默认请求头，所有请求自动追加，业务同名头覆盖
+    // .cookieJar(cookieJar)             // Cookie 持久化（会话/登录态）
+    // .addInterceptor(appInterceptor)   // 应用拦截器（重试/重定向前介入）
+    // .addNetworkInterceptor(netInterceptor) // 网络拦截器（重试/重定向后介入）
     // .sslSocketFactory(...) / .trustManager(...) / .hostnameVerifier(...)
     .build();
 ```
@@ -206,6 +224,9 @@ HttpConfig config = HttpConfig.builder()
 | retryOnConnectionFailure | boolean | 连接失败重试（幂等敏感接口设 false） |
 | maxRequests / maxRequestsPerHost | int | 全局/每主机最大并发 |
 | maxIdleConnections / keepAliveTimeout | int / long | 连接池空闲连接数/存活时间 |
+| defaultHeaders | `Map<String,String>` | 默认请求头，所有请求自动追加，业务侧同名头覆盖 |
+| cookieJar | `okhttp3.CookieJar` | Cookie 持久化，为 null 时 OkHttp 默认不持久化 |
+| interceptors / networkInterceptors | `List<Interceptor>` | 应用/网络拦截器链，仅作用于本实例 |
 | sslSocketFactory / trustManager / hostnameVerifier | — | SSL 配置 |
 
 > 自 2026/06 重构起：每个 HttpInterface 实例使用**独立的 Dispatcher**，配置 maxRequests/maxRequestsPerHost 不会污染全局或其他实例。
@@ -255,7 +276,14 @@ helper.getOkHttpClient().dispatcher(); // 兜底：可直接拿 client 做更多
 | `HttpRequestException`（继承 `TaskPartnerException`） | 请求阶段异常：网络错误、URL 非法、IO 失败 |
 | `DataMapperException`（继承 `TaskDataException`） | 序列化/反序列化异常：JSON/XML 转换失败、null 内容 |
 
-两者均为 `RuntimeException` 子类。
+两者均为 `RuntimeException` 子类（非受检，无需 throws 声明）。
+
+**异常分类语义**（与 uw-task 调度框架对齐）：
+- `HttpRequestException` → 接口方/网络错误（外部原因），uw-task 通常会重试。
+- `DataMapperException` → 数据/序列化错误（内部原因），uw-task 通常不重试。
+- `HttpDataProcessor` 抛出的 `DataMapperException` 会**直接冒泡**，不被本库吞掉或改写异常类型。
+
+> `uw.task.exception` 包下的 `TaskDataException`/`TaskPartnerException` 是本库为避免强依赖 uw-task 而保留的同名桥接副本。运行在 uw-task 环境时类加载器优先加载 uw-task 的同名类，异常分类语义生效；独立运行回退到本地副本。
 
 ## 完整使用示例
 
@@ -335,3 +363,7 @@ public class HttpHelper {
 4. **`retryOnConnectionFailure`**：对下单/支付等幂等敏感接口必须设为 `false`，否则重试可能造成重复调用。
 5. **泛型响应**：用 `TypeReference` 或 `JavaType` 重载，不能直接传 `List<User>.class`。
 6. **二进制响应**：用 `getForData` + `getResponseBytes()`，避免不必要的字符串转换。
+7. **取响应头**：用 `data.getResponseHeaders()`（`Map<String,List<String>>`，大小写不敏感）或 `HttpDefaultData.getResponseHeader(name)`，**不要**从 `getResponseType()`（只有 Content-Type）取。
+8. **`retryCount` 自动启用**：无需配置，所有请求都能拿到。语义是"物理网络请求次数 - 1"，含连接失败重试与重定向 follow-up；即便 `retryOnConnectionFailure=false`，发生 302 重定向跟随时 retryCount 也会 >0。
+9. **异常不吞**：`HttpDataProcessor` 抛出的 `DataMapperException` 会**直接冒泡**（不包装成 `HttpRequestException`），交由上层（uw-task/业务）按异常分类处理。生成 Processor 实现时不要在内部吞掉异常。
+10. **OkHttp 5.x artifact**：服务端必须用 `okhttp-jvm`（5.0+ 主 `okhttp` artifact 为空 jar）。本库已通过 `uw-httpclient` 传递引入，下游无需自行声明。
