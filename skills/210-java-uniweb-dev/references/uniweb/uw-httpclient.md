@@ -181,11 +181,12 @@ helper.getForEntity(url, type);
 
 ```java
 public interface HttpDataProcessor<D extends HttpData, T> {
-    // 请求发送前（可拿到 requestBody / formData / headers，但拿不到 OkHttp 注入头）
+    // 请求发送前（可拿到 requestBody / formData / headers，业务侧原始参数）
     void requestProcess(String requestBody, Map<String,String> formData, Map<String,String> headers);
     // 请求发送前（完整 Request 版，默认空实现，按需覆写）
-    // 拿到最终将要发出的 okhttp3.Request（含 OkHttp 注入的 Content-Type/Host/Cookie 等所有头、最终 URL、body 引用）
-    // 适合做签名/验签/链路追踪。注意：抛出的 DataMapperException 会直接冒泡（不包装），交由上层处理。
+    // 拿到构建完成的 okhttp3.Request（含已合并的业务头 + defaultHeaders、最终解析的 HttpUrl、method、body 引用）
+    // 注意：不含 OkHttp 网络层注入的头（Host/Content-Length/Connection/Cookie 等），那些只在网络拦截器里可见
+    // 适合做签名/验签/链路追踪。抛出的 DataMapperException 会直接冒泡（不包装），交由上层处理。
     default void requestProcess(okhttp3.Request request) {}
     // 收到响应后（可拿到 httpData 与响应 headers）
     void responseProcess(D httpData, Headers headers);
