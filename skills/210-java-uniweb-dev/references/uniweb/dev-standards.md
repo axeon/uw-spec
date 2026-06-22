@@ -563,7 +563,7 @@ return ResponseData.errorCode(CommonResponseCode.ENTITY_UPDATE_ERROR);
 | 业务校验失败 | `warnCode()` | `ResponseData.warnCode(CommonResponseCode.ENTITY_NOT_FOUND_ERROR)` |
 | 系统异常 | `errorCode()` | `ResponseData.errorCode(CommonResponseCode.ENTITY_SAVE_ERROR)` |
 | 致命错误 | `fatalCode()` | `ResponseData.fatalCode(...)` |
-| 数据不存在（dao.load/list 查无结果） | 框架自动返回 WARN | 检查 `result.getData() != null` 而非 `isSuccess()` |
+| 数据不存在（dao.load/queryForObject 查无结果、execute 0行） | 框架自动返回 WARN | 注意 `dao.list` 空结果是 success（空 PageList），不是 warn；判定见下方 DaoManager 模块 |
 
 ### DaoManager 模块
 
@@ -581,6 +581,7 @@ return ResponseData.errorCode(CommonResponseCode.ENTITY_UPDATE_ERROR);
 | `dao.update` 部分字段不设 modifyDate | `new Entity().id(id).field(value)` 只更新非 null 字段，必须同时 `.modifyDate()` |
 | `modifyDate` 在 `dao.save()` 时必填 | `dao.save()` 时可设 `modifyDate(null)` 或不设（框架不强制）；`dao.update()` 时必须设 |
 | `if (result.isSuccess()) { ... } else { ... }` | `result.onSuccess(...)` / `.onNotSuccess(...)` — 禁止 if-else 判断 ResponseData 状态 |
+| `load`/`queryForObject` 后"查到走A，查不到走B(新建/判重)"用 `isNotSuccess()` 判中断 | 用 **`isError()`** 判中断 — `isNotSuccess()` 对 warn 也为 true，会把"查无数据(返warn)"误判为失败直接 return，新建分支永远走不到（首次注册建库场景必踩：id 恒为 0） |
 | `var result = dao.load(...); return result;` | `return dao.load(...);` — 零中间变量直接返回 |
 | `result.getData() != null` 判断成功 | `result.isSuccess()` 或直接用 `onSuccess` / `onNotSuccess` 链式处理 |
 | `dao.beginBatchUpdate()` 不开事务 | **批量更新必须先 `beginTransaction()`**，否则 addBatch 数据被 autoCommit 立即提交，框架抛 TransactionException |

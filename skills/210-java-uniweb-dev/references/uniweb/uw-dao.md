@@ -45,7 +45,27 @@ uw:
 
 **SaaS多租户安全规则**：仅当实体表含 `saas_id` 时适用。load/list 默认不自动带 saasId 过滤，需在 QueryParam 中显式声明 `@QueryMeta(expr="saas_id=?")` 或用 `AuthIdQueryParam`。
 
-**load/queryForObject/queryForValue 返回值**：无数据（查不到行/值为 null）时返回 `DATA_NOT_FOUND_WARN`，`getData()` 为 null。更新/删除 0 行也返回 `DATA_NOT_FOUND_WARN`。判空用 `resp.isSuccess() && resp.getData() != null`，或直接 `resp.isOnWarn()`/`resp.getCode()` 判断是否无数据。
+**无数据时的返回值（重要，源自 `DaoManager` 源码）**：不同方法在"无数据/0 行"时返回语义不同，写判定逻辑前必须区分：
+
+| 方法 | 无数据 / 0 行时 | 说明 |
+|---|---|---|
+| `load(Class, id)` | **`warn`**（`DATA_NOT_FOUND_WARN`，data=null） | 主键查不到 |
+| `queryForObject(...)` / `queryForValue(...)` | **`warn`**（data=null） | 单条/标量查不到 |
+| `list(...)` / `queryForList(...)` | **`success`**（空 `PageList`，非 null） | 列表为空仍是成功 |
+| `execute(update/delete SQL)` 影响行数 < 1 | **`warn`**（data=effectedNum） | 0 行更新/删除 |
+| `save(entity)` / `update(entity)` / `delete(entity)` 影响行数 < 1 | **`warn`** | 写入未生效 |
+
+根因：`DaoManager.responseData(null)` 对 null 统一返回 `warnCode(DATA_NOT_FOUND_WARN)`；所有写操作在 `effectedNum < 1` 时也返回该 warn。
+
+**判定方法选择（强制）**：`isNotSuccess()` 对 **warn 和 error 都为 true**。
+
+| 业务语义 | 判定方法 |
+|---|---|
+| "查到走 A，查不到走 B（新建/判无重复）" | **`isError()`**（仅 error 才中断，warn 时 `getData()==null` 继续走新建分支） |
+| "查不到=告知调用方数据不存在" | `isNotSuccess()` 或链式 `onSuccess`（warn 即"未找到"，合理回传） |
+| 写操作"必须成功否则中止" | `isNotSuccess()` |
+
+> **关键陷阱**：在"查无数据需要新建"的分支误用 `isNotSuccess()`，warn 会被当成失败直接 return，**新建分支永远走不到**（如任务首次注册：库里本就没记录→queryForObject 返 warn→误判失败→永远注册不进去，id 恒为 0）。凡 `load`/`queryForObject`/`execute` 后跟 `if (查到) {...} else {新建}` 结构的，判定必须用 `isError()`。
 
 ## 两个入口：DaoManager vs DaoFactory
 
