@@ -29,6 +29,11 @@
 | HMAC签名 | `HmacUtils.sign(message, secret)` / `verify(...)` | HMAC-SHA256 |
 | 雪花ID | `SnowflakeIdGenerator.getInstance().generateId()` | — |
 | 位运算开关 | `BitConfigUtils.isOn/on/off(config, bitIndex)` | int 32位，long 64位 |
+| 字符串拼接 | `StringTools.join(long[]/int[]/String[]/Collection, [sep])` | null/空返回空串，元素null跳过 |
+| 数字串切分 | `StringTools.splitToLongArray/splitToIntArray(s, [sep])` | 自动trim、跳过空白段、脏数据逐条跳过+WARN，不走正则 |
+| SQL占位符 | `StringTools.buildPlaceholders(count)` / `buildInClause(ids)` | 空集合兜底`(0)`避免语法错；仅服务端白名单ID |
+| 命名风格转换 | `StringTools.toSnakeCase/toCamelCase/toKebabCase(str)` | 自动探测源格式，正确处理HTTPResponse缩写 |
+| 字符串相似度 | `StringTools.levenshteinSimilarity/lcsSimilarity/ngramSimilarity(s1,s2)` | 返回[0,1]；中文场景用ChineseUtils万分制版本 |
 
 ## ResponseData
 
@@ -647,6 +652,79 @@ String decrypted = aesBox.decrypt(encrypted);
 | `toDBC(String)` | 全角 → 半角 |
 
 > 相似度返回值范围 0~10000（10000 = 完全相同）。`ngramSimilarDegree` 对少量字符差异更敏感，适合区分高度相似但不同的名称。
+>
+> ⚠️ 相似度算法实现与 `toSBC`/`toDBC` 全角半角转换均已委托 [StringTools](#stringtools)（`StringTools.lcsSimilarity/ngramSimilarity/toFullWidth/toHalfWidth`），ChineseUtils 保留万分制 int 返回值以兼容历史调用方。新代码可直接用 StringTools 的 [0,1] double 版本。
+
+## StringTools
+
+> **包路径**：`uw.common.util.StringTools`
+
+通用字符串工具，覆盖「数组/集合 ⇄ 字符串互转」「命名风格转换」「相似度」「转义」「随机串」五类高频场景。所有方法空安全（null 不抛 NPE）。校验用 `ValidateUtils`、脱敏用 `MaskUtils`，本类不重复实现。
+
+**Join（数组/集合 → 字符串）**：
+
+| 方法 | 说明 |
+|------|------|
+| `join(long[]/int[]/String[]/Collection, [sep])` | 拼接为字符串，null/空返回 `""`，元素 null 跳过 |
+| `joinMap(Map, entrySep, kvSep)` | Map → `k1=v1&k2=v2`。独立方法名（非 join 重载），避免三参 String 与 Collection 版重载歧义 |
+| `surround(joined, sep)` | 首尾各补一个分隔符：`surround("1,2,3", ",")` → `,1,2,3,`。需首尾补分隔符时自行组合 `surround(join(arr,sep), sep)` |
+| `buildPlaceholders(count[, ph, sep])` | SQL 占位符 `?,?,?` |
+| `buildInClause(long[]/Collection)` | `(1,2,3)`，空集合兜底 `(0)` 避免 SQL 语法错。仅服务端白名单 ID，不接受外部未清洗输入 |
+
+**Split（字符串 → 数组/集合）**：
+
+| 方法 | 说明 |
+|------|------|
+| `splitToLongArray/splitToIntArray(s, [sep])` | → `long[]/int[]`，自动 trim、跳过空白段、脏数据逐条跳过+WARN |
+| `splitToStringArray/splitToLongList/splitToIntList/splitToStringList(s, [sep])` | 各类型切分 |
+| `split(s, char, omitEmpty)` / `split(s, char, limit)` | 单字符切分（避免正则意外）/ 限制段数 |
+| `splitLines(s)` | 统一处理 `\n`/`\r\n`/`\r` |
+| `splitMap(s, entrySep, kvSep)` | `joinMap` 逆操作，kvSep 以首次出现为准 |
+
+> 切分底层用 indexOf+substring 实现，不走正则引擎，默认分隔符兼容逗号+各类空白（合并连续分隔符）。脏数据逐条跳过+WARN，符合批量读取降级约定。
+
+**命名风格转换**：
+
+| 方法 | 说明 |
+|------|------|
+| `toCamelCase(str, sep)` | 按指定分隔符转驼峰（做大小写规范化） |
+| `toSnakeCase` / `toKebabCase` / `toPascalCase` / `toMacroCase` / `toTrainCase` / `toDotCase` / `toPathCase` / `toFlatCase` | 自动探测源格式输出对应风格 |
+| `convertCase(str, CaseStyle)` | 命名风格统一互转入口，`CaseStyle` 是 StringTools 内嵌枚举 |
+| `capFirst(s)` / `uncapFirst(s)` | 首字母大/小写 |
+
+> 自动探测规则：所有分隔符 `-_. /` 视为边界 + 大小写边界，能正确处理连续大写缩写（`HTTPResponse` → `http_response`、`userID` → `user_id`）。
+
+**默认值 / 截断 / 填充**：`defaultIfBlank(str, def)` / `defaultIfBlank(supplier)` / `defaultIfEmpty(supplier)`（supplier 惰性求值）；`truncate(str, max, suffix)` / `truncateByWidth(str, maxWidth)`（中文算 2 宽度）；`padStart/padEnd(str, min, ch)`。
+
+**格式化 / 清理**：`format(template, Map)`（命名参数 `${name}`，未提供 key 原样保留）；`format(template, args...)`（null 安全版 `String.format`）；`clean(str)`（清理零宽/BOM/全角空格/控制字符）；`normalizeSpace(str)`；`toHalfWidth/toFullWidth`；`extractChinese/hasCJK`。
+
+**包含 / 计数 / 判等**：`containsAny/containsAll/containsIgnoreCase`；`countMatches(str, sub)`（不重叠）；`startsWithAny/endsWithAny`；`equals/equalsIgnoreCase/trimToEmpty/trimToNull`（均 null 安全）。
+
+**转义 / 编码**：`escapeHtml` / `escapeJson` / `escapeXml` / `escapeRegex`；`unicodeEncode/unicodeDecode`（非 ASCII ⇄ `\uXXXX`）。
+
+**路径 / 文件名**：
+
+| 方法 | 说明 |
+|------|------|
+| `getFileName(path)` | 跨平台提取文件名（同时处理 `/` `\`） |
+| `getFileExtension(name)` / `removeFileExtension(name)` | 扩展名（小写）/ 去扩展名 |
+| `normalizePath(path)` | 合并连续分隔符、解析 `.`/`..`；绝对路径根之上的 `..` 剔除（`/../a` → `/a`） |
+| `safeFileName(name[, ch])` | 去除非法字符 `< > : " / \ \| ? *`，默认替换为 `_` |
+
+**随机串**（均基于 SecureRandom）：`randomNumeric(len)` / `randomAlphanumeric(len)` / `randomChinese(len)`（CJK 常用汉字区，测试数据用）；`randomUuidSimple()`（无横线 32 位）；`randomToken(len)`（URL-safe Base64 无填充）。
+
+**文本 / 相似度**：
+
+| 方法 | 算法 | 适用场景 |
+|------|------|---------|
+| `levenshteinDistance(s1,s2)` | 编辑距离（int） | "打错几次字" |
+| `levenshteinSimilarity(s1,s2)` | 编辑距离换算 [0,1] | 拼写纠错 / OCR |
+| `lcsSimilarity(s1,s2)` | 最长公共子序列 [0,1] | 简称匹配全称 |
+| `ngramSimilarity(s1,s2)` | bigram 余弦 [0,1] | 区分高度相似但不同（万达嘉华 vs 万达瑞华） |
+| `similarity(s1,s2)` | `levenshteinSimilarity` 别名 | 默认场景 |
+| `diff(oldStr, newStr)` | 行级 LCS 差异标记 | `- `/`+ `/`  ` 前缀 |
+
+> 三种相似度算法维度不同不可互替：编辑距离看「操作量」，LCS/N-gram 看「重合度」。ChineseUtils 的万分制版本（`lcsSimilarDegree/ngramSimilarDegree`）委托本类算法。
 
 ## DigestUtils
 
