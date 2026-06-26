@@ -525,7 +525,7 @@ return ResponseData.errorCode(CommonResponseCode.ENTITY_UPDATE_ERROR);
 | 禁止自己写 | 必须用 | 所在包 |
 |-----------|--------|--------|
 | `System.currentTimeMillis()` | `SystemClock.now()` / `SystemClock.nowDate()` | `uw.common.util.SystemClock` |
-| `new SimpleDateFormat(...)` | `DateUtils.dateToString()` / `DateUtils.stringToDate()` | `uw.common.util.DateUtils` |
+| `new SimpleDateFormat(...)` | `DateTools.dateToString()` / `DateTools.stringToDate()` | `uw.common.util.DateTools` |
 | `new ObjectMapper()` / 手写 JSON 序列化 | `JsonUtils.toString()` / `JsonUtils.parse()` | `uw.common.util.JsonUtils` |
 | 手写 MD5/SHA256 | `DigestUtils.signHex(msg, Algorithm.SHA_256)` — 无独立 md5/sha256 方法 | `uw.common.util.DigestUtils` |
 | 手写 AES 加密 | `AESUtils.encryptString()` / `BizAESBox` | `uw.common.util` |
@@ -654,13 +654,13 @@ return ResponseData.errorCode(CommonResponseCode.ENTITY_UPDATE_ERROR);
 | `warnCode("USER_NOT_FOUND", "用户不存在")` 硬编码 | `warnCode(GuestResponseCode.USER_NOT_FOUND)` — 定义 ResponseCode 枚举 |
 | 枚举类散落在 entity/service 包 | 统一放在 `{package}/constant/` 包下 |
 
-### @Schema/DateUtils/DigestUtils 模块
+### @Schema/DateTools/DigestUtils 模块
 
 | ❌ 错误写法 | ✅ 正确写法 |
 |------------|-----------|
 | `@Schema(description="xxx")` 缺 title | `@Schema(title="xxx", description="xxx")` — 必须同时设置 |
-| `DateUtils.getDayStart/getDayEnd/addDays` | `DateUtils.beginOfToday(date)` / `endOfToday(date)` / `offsetDay(date, n)` |
-| `DateUtils.format(date, fmt)` / `parse(str)` | `DateUtils.dateToString(date, fmt)` / `stringToDate(str)` — 方法名不同 |
+| `DateTools.getDayStart/getDayEnd/addDays` | `DateTools.beginOfToday(date)` / `endOfToday(date)` / `offsetDay(date, n)` |
+| `DateTools.format(date, fmt)` / `parse(str)` | `DateTools.dateToString(date, fmt)` / `stringToDate(str)` — 方法名不同 |
 | `DigestUtils.md5()` / `sha256()` | `DigestUtils.signHex(msg, DigestUtils.Algorithm.SHA_256)` — 无独立方法，用 Algorithm 枚举 |
 | `new Date()` / `System.currentTimeMillis()` | `SystemClock.nowDate()` / `SystemClock.now()` — createDate/modifyDate 赋值必用 |
 | 自写 IP 匹配/CIDR | `IpMatchUtils.sortList(ipList)` 后 `matches(sortedList, ip)` — 必须先 sortList 再二分查找 |

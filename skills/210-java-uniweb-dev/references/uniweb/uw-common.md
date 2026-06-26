@@ -20,11 +20,11 @@
 | JSON反序列化 | `JsonUtils.parse(json, Class)` 或 `parse(json, new TypeReference<List<T>>(){})` | parse 失败抛 RuntimeException 且 message **含原始数据**，对外边界必须 catch + 固定文案，禁止回传 `e.getMessage()` |
 | AES加密 | `AESUtils.encryptString(key, data)` | 推荐自动IV版本（密文自带IV） |
 | 当前时间 | `SystemClock.nowDate()` / `SystemClock.now()` | **不要用 `new Date()` / `System.currentTimeMillis()`**，createDate/modifyDate 赋值必用此 |
-| 日期格式化 | `DateUtils.dateToString(date, DateUtils.DATE_TIME)` | 方法名是 `dateToString` 不是 `format` |
-| 日期解析 | `DateUtils.stringToDate(str)` 或 `stringToDate(str, pattern)` | 方法名是 `stringToDate` 不是 `parse` |
-| 日期偏移 | `DateUtils.offsetDay(date, n)` | 方法名不是 addDays |
-| 当天开始 | `DateUtils.beginOfToday(date)` | 方法名不是 getDayStart |
-| 当天结束 | `DateUtils.endOfToday(date)` | 方法名不是 getDayEnd |
+| 日期格式化 | `DateTools.dateToString(date, DateTools.DATE_TIME)` | 方法名是 `dateToString` 不是 `format` |
+| 日期解析 | `DateTools.stringToDate(str)` 或 `stringToDate(str, pattern)` | 方法名是 `stringToDate` 不是 `parse` |
+| 日期偏移 | `DateTools.offsetDay(date, n)` | 方法名不是 addDays |
+| 当天开始 | `DateTools.beginOfToday(date)` | 方法名不是 getDayStart |
+| 当天结束 | `DateTools.endOfToday(date)` | 方法名不是 getDayEnd |
 | 摘要签名 | `DigestUtils.sign(msg, DigestUtils.Algorithm.SHA_256)` | 无独立 md5/sha256 方法，用 `Algorithm` 枚举 |
 | HMAC签名 | `HmacUtils.sign(message, secret)` / `verify(...)` | HMAC-SHA256 |
 | 雪花ID | `SnowflakeIdGenerator.getInstance().generateId()` | — |
@@ -537,9 +537,9 @@ user.setMobile(MaskUtils.maskChinaMobile(user.getMobile()));
 >
 > 参考实现：`MscTokenService.verifyAuthToken` / `parseRefreshToken` / `loadAuthTokenData` / `getInvalidTokenList`、`GlobalCache.get`、`GlobalHashSet` / `GlobalSortedSet` 批量方法。完整说明见 `KryoUtils` 类注释与 [dev-standards.md](dev-standards.md)「缓存使用规范」。
 
-## DateUtils
+## DateTools
 
-> **包路径**：`uw.common.util.DateUtils`
+> **包路径**：`uw.common.util.DateTools`
 
 | 方法 | 说明 | 注意 |
 |------|------|------|
@@ -555,7 +555,7 @@ user.setMobile(MaskUtils.maskChinaMobile(user.getMobile()));
 | `dateToLocalDate/localDateToDate` | Date ↔ LocalDate 互转 | — |
 | `dayOfMonth/dayOfWeek` | 取日/星期 | — |
 
-> ⚠️ **DateUtils 没有 `now()` / `nowDate()`**。获取当前时间用 [`SystemClock`](#systemclock) 的 `now()` / `nowDate()`。
+> ⚠️ **DateTools 没有 `now()` / `nowDate()`**。获取当前时间用 [`SystemClock`](#systemclock) 的 `now()` / `nowDate()`。
 
 **日期格式常量**（直接用常量名，不要手写格式串）：
 

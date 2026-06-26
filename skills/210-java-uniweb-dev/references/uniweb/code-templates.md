@@ -1518,7 +1518,7 @@ groupId：`com.umtone`（以下标注 ★ 的为 `saas`）
 
 | 需求 | artifactId |
 |------|-----------|
-| 通用工具（ResponseData/JsonUtils/DateUtils） | uw-common |
+| 通用工具（ResponseData/JsonUtils/DateTools） | uw-common |
 | Web应用基础（AuthQueryParam/CommonState/CommonResponseCode） | uw-common-app |
 | 数据库操作（DaoManager/DataEntity） | uw-dao |
 | 缓存（FusionCache/GlobalCache/GlobalLocker） | uw-cache |
