@@ -329,7 +329,7 @@ return ResponseData.errorCode(CommonResponseCode.ENTITY_UPDATE_ERROR);
 - Kryo 序列化**必须使用具体实现类**，不能使用接口类型（如 List/Map/Set），必须传 ArrayList/LinkedHashMap/HashSet 等；`CacheDataLoader<V>` 的 V 必须是具体类
 - **Kryo 反序列化异常对外报错安全（强制）**：`KryoUtils` 反序列化失败（旧协议残留、字段错位、数据损坏）时直接抛 `KryoException`/`KryoBufferUnderflowException`，其 message 携带框架内部关键字（`kryo`、`Buffer underflow`），**禁止出现在对外响应**，否则暴露服务端序列化实现与协议结构，构成信息泄露。调用方规范：①面向外部的边界（Controller/RPC/对外响应）必须 catch，对外用**固定文案**（如 `"token invalid or corrupted."`），**禁止拼接 `e.getMessage()`/`e.toString()`**，详细原因只进服务端日志；②缓存/MQ 批量读取（`GlobalHashSet`/`GlobalSortedSet`/`GlobalCache`）**逐条 catch 跳过**脏数据降级 WARN，单条损坏不得拖垮整批；单元素读取保持抛异常由调用方决策。详见 `KryoUtils` 类注释与 [uw-common.md](uw-common.md)
 - Caffeine 设定过期时间后性能劣化 200 倍，建议 `cacheExpireMillis` 保持 -1（永久），仅靠 Redis TTL 兜底
-- **FusionCache 必须在 static 块中初始化**：所有使用 FusionCache 的 Helper 必须在 `static {}` 块中一次性完成 `FusionCache.config(new FusionCache.Config(...), new CacheDataLoader<>() {...})` 初始化，包括缓存参数（容量、过期时间）和 CacheDataLoader.load() 实现。GlobalCache 不需要 static 初始化（使用行内 CacheDataLoader）。
+- **FusionCache 必须在 static 块/构造器中初始化**：所有使用 FusionCache 的 Helper 必须在 `static {}` 块/构造器中一次性完成 `FusionCache.config(new FusionCache.Config(...), new CacheDataLoader<>() {...})` 初始化，包括缓存参数（容量、过期时间）和 CacheDataLoader.load() 实现。GlobalCache 不需要 static 初始化（使用行内 CacheDataLoader）。
 - **`CacheDataLoader` 是抽象类**，不是函数式接口，**禁止用 lambda**，必须 `new CacheDataLoader<K,V>(){...}`
 - **判断存在用 `containsKey`**，没有 `getIfPresent` / `exists`；查本地缓存条目数用 `localCacheSize`（不是 `size`）
 - **全量清空**：`FusionCache.invalidate(Class, null)`（key 传 null）或 `GlobalCache.invalidate(cacheName, null)`，按前缀批量失效用 `invalidatePrefix` / `invalidateKeys`（内部走 SCAN，注意大 keyset 阻塞）
