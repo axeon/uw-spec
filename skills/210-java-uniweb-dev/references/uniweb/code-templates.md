@@ -431,9 +431,9 @@ public ResponseData<Integer> disable(long id) {
 public ResponseData<PageList<OrderEx>> listEx(AuthQueryParam param) {
     return dao.list(OrderEx.class, param).onSuccess(orders -> {
         if (orders.isEmpty()) return;  // 空页必须检查
-        Object[] ids = orders.stream().map(OrderEx::getId).toArray();
+        long[] ids = orders.stream().mapToLong(OrderEx::getId).toArray();
         String inSql = "SELECT * FROM order_item WHERE order_id IN ("
-            + String.join(",", Collections.nCopies(ids.length, "?")) + ")";
+            + StringTools.buildPlaceholders(ids.length) + ")";
         dao.list(OrderItem.class, inSql, ids).onSuccess(items -> {
             Map<Long, List<OrderItem>> itemMap = items.stream()
                 .collect(Collectors.groupingBy(OrderItem::getOrderId));
@@ -505,9 +505,9 @@ public class {Parent}Ex extends {ParentEntity} {
 public ResponseData<PageList<{Parent}Ex>> listEx({Parent}QueryParam param) {
     return dao.list({Parent}Ex.class, param).onSuccess(parents -> {
         if (parents.size() == 0) return;
-        Object[] ids = parents.stream().map({Parent}Ex::getId).toArray();
+        long[] ids = parents.stream().mapToLong({Parent}Ex::getId).toArray();
         String inSql = "SELECT * FROM {child_table} WHERE {fk_column} IN ("
-            + String.join(",", Collections.nCopies(ids.length, "?")) + ")";
+            + StringTools.buildPlaceholders(ids.length) + ")";
         dao.list({Child}.class, inSql, ids).onSuccess(children -> {
             Map<Long, List<{Child}>> childMap = children.stream()
                 .collect(Collectors.groupingBy({Child}::get{FkMethod}));

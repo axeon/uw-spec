@@ -173,9 +173,9 @@ public ResponseData<Integer> enable(long id) {
 public ResponseData<PageList<OrderEx>> listEx(OrderQueryParam param) {
     return dao.list(OrderEx.class, param).onSuccess(orders -> {
         if (orders.isEmpty()) return;
-        Object[] ids = orders.stream().map(OrderEx::getId).toArray();
+        long[] ids = orders.stream().mapToLong(OrderEx::getId).toArray();
         String inSql = "SELECT * FROM order_item WHERE order_id IN ("
-            + String.join(",", Collections.nCopies(ids.length, "?")) + ")";
+            + StringTools.buildPlaceholders(ids.length) + ")";
         dao.list(OrderItem.class, inSql, ids).onSuccess(items -> {
             Map<Long, List<OrderItem>> itemMap = items.stream()
                 .collect(Collectors.groupingBy(OrderItem::getOrderId));

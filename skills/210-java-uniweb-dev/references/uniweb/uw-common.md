@@ -122,9 +122,9 @@ String json = dao.load(User.class, id).map(resp -> JsonUtils.toString(resp));
 public ResponseData<PageList<OrderEx>> listEx(AuthQueryParam param) {
     return dao.list(OrderEx.class, param).onSuccess(orders -> {
         if (orders.isEmpty()) return;
-        Object[] ids = orders.stream().map(OrderEx::getId).toArray();
+        long[] ids = orders.stream().mapToLong(OrderEx::getId).toArray();
         dao.list(OrderItem.class, "SELECT * FROM order_item WHERE order_id IN ("
-            + String.join(",", Collections.nCopies(ids.length, "?")) + ")", ids)
+            + StringTools.buildPlaceholders(ids.length) + ")", ids)
             .onSuccess(items -> {
                 Map<Long, List<OrderItem>> map = items.stream()
                     .collect(Collectors.groupingBy(OrderItem::getOrderId));
