@@ -306,8 +306,12 @@ public ResponseData<Integer> delete(long id) {
     AuthServiceHelper.logRef(User.class, id);
     AuthServiceHelper.logInfo("删除用户");
     return dao.queryForObject(User.class, new AuthIdQueryParam(getSaasId(), id))
-        .onSuccess(user -> dao.delete(user))
-        .onSuccess(deleted -> FusionCache.invalidate(User.class, id));
+        .onSuccess(user -> {
+            return dao.delete(user);      // 块lambda+return消歧
+        })
+        .onSuccess(deleted -> {
+            FusionCache.invalidate(User.class, id);
+        });
 }
 
 // 复杂场景：先 logRef 绑定引用，操作成功后 logInfo 追加详情

@@ -12,7 +12,7 @@
 | 致命错误 | `ResponseData.fatalCode(ResponseCode)` | — |
 | 判断成功 | `result.isSuccess()` | — |
 | 判断非成功 | `result.isNotSuccess()` | 不要再叠加 getData()==null 判断 |
-| 链式处理 | `result.onSuccess(data -> ...).onError(data -> ...)` | — |
+| 链式处理 | `result.onSuccess(data -> {...}).onError(data -> {...})`（块 lambda 消歧，禁造型） | — |
 | 货币计算 | `MoneyUtils` | 金额以 long（分）为单位，禁止浮点 |
 | 数据校验 | `ValidateUtils.isXxx(value)` | 覆盖字符串/整数/身份证/手机号等 |
 | 数据脱敏 | `MaskUtils.maskXxx(value)` | 所有方法 mask 前缀；null 返回 null；手机/身份证用 `maskChinaMobile/maskChinaIdCard` |
@@ -74,7 +74,8 @@
 **Function 版（转换）核心机制**：
 - **成功时**：执行 `function.apply(data)`，返回新的 `ResponseData<R>`（类型从 T 变为 R）
 - **失败时**：跳过 function，直接返回自身（`this.raw()`，自动转型为 `ResponseData<R>`）
-- **这是"扁平链式"的真正实现**：`dao.queryForObject()` → `onSuccess(product -> dao.update(product))` 返回的是 update 的 ResponseData
+- **这是"扁平链式"的真正实现**：`dao.queryForObject()` → `onSuccess(product -> { return dao.update(product); })` 返回的是 update 的 ResponseData
+- **消歧规则（强制）**：三个重载（Function/Consumer/Runnable）使**单参表达式 lambda 普遍歧义**（`x -> dao.update(x)`、`x -> cache.invalidate(x.getId())` 均报 `ambiguous`，与 lambda 体是否返回值无关）。**必须写成块 lambda**（Function 版加 `return`、Consumer 版不加）。**禁止 `(Function<...>)` / `(Consumer<...>)` 造型绕过**。无参 `() ->`（Runnable）不受影响。
 
 **Consumer 版（回调）核心机制**：
 - 执行 consumer 后返回自身，支持连续链式调用
@@ -97,9 +98,9 @@ public ResponseData<User> load(long id) {
 public ResponseData<User> save(@RequestBody User user) {
     user.setId(dao.getSequenceId(User.class));
     user.setCreateDate(SystemClock.nowDate());
-    return dao.save(user).onSuccess(saved ->
-        FusionCache.invalidate(User.class, saved.getId())
-    );
+    return dao.save(user).onSuccess(saved -> {
+        FusionCache.invalidate(User.class, saved.getId());
+    });
 }
 
 // 3. Function 版：链式类型转换（加载→修改→更新，返回update的ResponseData）

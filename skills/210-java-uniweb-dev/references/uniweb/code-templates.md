@@ -370,7 +370,9 @@ public ResponseData<Product> save(@RequestBody Product product) {
     product.setCreateDate(SystemClock.nowDate());
     product.setSaasId(getSaasId());
     return dao.save(product)
-        .onSuccess(saved -> FusionCache.invalidate(Product.class, saved.getId()));
+        .onSuccess(saved -> {
+            FusionCache.invalidate(Product.class, saved.getId());
+        });
 }
 
 // 更新 + 数据历史
@@ -379,7 +381,9 @@ public ResponseData<Product> save(@RequestBody Product product) {
 public ResponseData<Product> update(@RequestBody Product product) {
     product.setModifyDate(SystemClock.nowDate());
     return dao.update(product)
-        .onSuccess(updated -> SysDataHistoryHelper.saveHistory(updated, "更新产品"));
+        .onSuccess(updated -> {
+            SysDataHistoryHelper.saveHistory(updated, "更新产品");
+        });
 }
 
 // 删除 = 加载 + 删除 + 清缓存 + 日志
@@ -388,8 +392,12 @@ public ResponseData<Product> update(@RequestBody Product product) {
 public ResponseData<Integer> delete(long id) {
     AuthServiceHelper.logRef(Product.class, id);
     return dao.queryForObject(Product.class, new AuthIdQueryParam(getSaasId(), id))
-        .onSuccess(product -> dao.delete(product))
-        .onSuccess(deleted -> FusionCache.invalidate(Product.class, id));
+        .onSuccess(product -> {
+            return dao.delete(product);   // 块lambda+return消歧，禁止用(Function<...>)造型
+        })
+        .onSuccess(deleted -> {
+            FusionCache.invalidate(Product.class, id);
+        });
 }
 ```
 
@@ -453,8 +461,12 @@ public ResponseData<PageList<OrderEx>> listEx(AuthQueryParam param) {
 @MscPermDeclare(name = "详情", auth = AuthType.PERM, log = ActionLog.BASE)
 public ResponseData<Product> load(long id) {
     return dao.queryForObject(Product.class, new AuthIdQueryParam(getSaasId(), id))
-        .onWarn(w -> log.warn("产品未找到, id={}", id))
-        .onError(e -> log.error("加载产品异常, id={}", id, e.getData()));
+        .onWarn(w -> {
+            log.warn("产品未找到, id={}", id);
+        })
+        .onError(e -> {
+            log.error("加载产品异常, id={}", id, e.getData());
+        });
 }
 
 // 通用失败兜底（WARN/ERROR/FATAL 都触发 onNotSuccess）
@@ -463,9 +475,15 @@ public ResponseData<Product> load(long id) {
 public ResponseData<Integer> delete(long id) {
     AuthServiceHelper.logRef(Product.class, id);
     return dao.queryForObject(Product.class, new AuthIdQueryParam(getSaasId(), id))
-        .onSuccess(product -> dao.delete(product))              // Function 版：返回 delete 的 ResponseData
-        .onNotSuccess(r -> log.warn("删除失败, id={}, code={}", id, r.getCode()))  // Consumer 版：副作用
-        .onSuccess(deleted -> FusionCache.invalidate(Product.class, id));          // Consumer 版：清缓存
+        .onSuccess(product -> {
+            return dao.delete(product);   // 块lambda+return消歧，禁止用(Function<...>)造型
+        })              // Function 版：返回 delete 的 ResponseData
+        .onNotSuccess(r -> {              // Consumer 版：副作用（块lambda消歧）
+            log.warn("删除失败, id={}, code={}", id, r.getCode());
+        })
+        .onSuccess(deleted -> {           // Consumer 版：清缓存（块lambda消歧）
+            FusionCache.invalidate(Product.class, id);
+        });
 }
 ```
 

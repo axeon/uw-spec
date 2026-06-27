@@ -162,19 +162,21 @@ DaoManager 所有方法返回 `ResponseData<T>`，这是框架的核心设计模
 | **Consumer 版（回调）** | `onSuccess(Consumer<T>)` | 自身 `ResponseData<T>` | 副作用：缓存失效、日志、数据组装 |
 | **Runnable 版（无参）** | `onSuccess(Runnable)` | 自身 `ResponseData<T>` | 不需要 data 的操作 |
 
-> **Function 版核心机制**：成功时执行 function 返回新的 ResponseData（类型 T→R）；失败时跳过 function 直接返回自身（自动转型），这是"扁平链式"的真正实现。`dao.queryForObject(...).onSuccess(e -> dao.update(e))` 返回的是 update 的 ResponseData。
+> **Function 版核心机制**：成功时执行 function 返回新的 ResponseData（类型 T→R）；失败时跳过 function 直接返回自身（自动转型），这是"扁平链式"的真正实现。`dao.queryForObject(...).onSuccess(e -> { return dao.update(e); })` 返回的是 update 的 ResponseData。
+
+> **禁止造型消歧（强制）**：`onSuccess`/`onError`/`onWarn`/`onNotSuccess` 各有 `Function<T,ResponseData<R>>` / `Consumer<T>` / `Runnable` 三重载。**单参表达式 lambda**（如 `e -> dao.update(e)`、`u -> cache.invalidate(u.getId())`）会触发 `Function`/`Consumer` 重载歧义，编译报 `对 onSuccess 的引用不明确` —— 即使 lambda 体返回 void 也不能靠此消歧。**正确做法是写成块 lambda**：有返回值用 `onSuccess(e -> { return dao.update(e); })`（Function 版），纯副作用用 `onSuccess(e -> { cache.invalidate(e.getId()); })`（Consumer 版）。**禁止用 `(Function<...>)` / `(Consumer<...>)` 造型绕过歧义**。注：无参 `() -> ...`（Runnable 重载）不受影响，可保留表达式形式。
 
 | 规则 | 说明 | 示例 |
 |------|------|------|
 | **直接返回** | 简单 CRUD 直接 `return dao.xxx()` | `return dao.list(User.class, param);` |
-| **链式后处理** | 需要额外操作时用 `onSuccess` | `return dao.save(user).onSuccess(u -> cache.invalidate(u.getId()));` |
+| **链式后处理** | 需要额外操作时用 `onSuccess`（块 lambda 消歧） | `dao.save(user).onSuccess(u -> { cache.invalidate(u.getId()); });` |
 | **自动跳过** | 链中任何一步 WARN/ERROR，后续 `onSuccess` 自动跳过 | 无需 `if (result.isSuccess())` 判空 |
 | **禁止 if-else 判断** | 禁止 `if (result.isSuccess()) { ... } else { ... }` | 用 `.onSuccess(...)` / `.onNotSuccess(...)` 替代 |
 | **扁平链式** | 禁止嵌套 `onSuccess` 内再嵌套 `onSuccess`，用 `return dao.xxx()` 展平 | 见下方说明 |
 | **日志前置** | `logRef()` 放在方法体开头（`return` 之前），不嵌套在 `onSuccess()` 内 | 避免漏记日志 |
 | **空页检查** | `onSuccess` 内第一行 `if (list.isEmpty()) return;` | 父子表联查必须检查空页 |
 | **原地设值** | `onSuccess` 内直接修改 ResponseData 中的对象引用 | `orders.forEach(o -> o.setItems(...))` |
-| **状态分支用 onWarn/onError** | 区分"数据未找到"与"系统异常"用 `onWarn` / `onError`，而非嵌套 if | `dao.load(...).onWarn(w -> log.warn("未找到"))` |
+| **状态分支用 onWarn/onError** | 区分"数据未找到"与"系统异常"用 `onWarn` / `onError`，而非嵌套 if | `dao.load(...).onWarn(w -> { log.warn("未找到"); });` |
 
 > 完整链式调用代码范例见 [uw-dao.md](uw-dao.md)「DaoManager 链式调用设计」和 [uw-common.md](uw-common.md)「ResponseData 链式回调」。
 

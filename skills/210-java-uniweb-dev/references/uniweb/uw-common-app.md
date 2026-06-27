@@ -257,7 +257,9 @@ public ResponseData<PageList<Order>> myList(AuthQueryParam param) {
 ```java
 SysDataHistoryHelper.saveHistory(user, "更新前");
 ResponseData<User> result = dao.update(user);
-result.onSuccess(updated -> SysDataHistoryHelper.saveHistory(updated, "更新后"));
+result.onSuccess(updated -> {
+    SysDataHistoryHelper.saveHistory(updated, "更新后");
+});
 ```
 
 ### JsonConfigHelper — JSON配置参数
