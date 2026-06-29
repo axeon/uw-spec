@@ -812,105 +812,82 @@ public enum AuditState {
 package {package}.constant;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.context.MessageSource;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import uw.common.response.ResponseCode;
-import uw.common.util.EnumUtils;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum {Module}ResponseCode implements ResponseCode {
-    ENTITY_NOT_FOUND( "实体未找到"),
+    ENTITY_NOT_FOUND("实体未找到"),
     ;
 
     /**
-     * 国际化信息MESSAGE_SOURCE。
-     */
-    private static final ResourceBundleMessageSource MESSAGE_SOURCE = new ResourceBundleMessageSource() {{
-        setBasename( "i18n/messages/{module}" );
-        setDefaultEncoding( "UTF-8" );
-    }};
-
-    /**
-     * 响应码。
-     */
-    private final String code;
-    /**
-     * 错误信息。
+     * 错误信息（兜底文案，未经 i18n 解析）。
      */
     private final String message;
 
     {Module}ResponseCode(String message) {
-        this.code = EnumUtils.enumNameToDotCase( this.name() );
         this.message = message;
     }
+
     /**
-     * 获取配置前缀.
-     *
-     * @return
-     */
-    @Override
-    public String codePrefix() {
-        return "{package}.{module}";
-    }
-    /**
-     * 获取响应码
-     *
-     * @return
-     */
-    @Override
-    public String getCode() {
-        return code;
-    }
-    /**
-     * 获取错误信息
-     *
-     * @return
+     * 获取兜底错误信息，供接口 getLocalizedMessage() 回退使用。
      */
     @Override
     public String getMessage() {
         return message;
     }
+
     /**
-     * 获取消息源.
-     *
-     * @return
+     * 响应码前缀（按模块习惯命名，可自定义），同时作为 i18n basename 推导依据
+     * （点转下划线：uw.auth.center → i18n/messages/uw_auth_center）。
      */
     @Override
-    public MessageSource messageSource() {
-        return MESSAGE_SOURCE;
+    public String codePrefix() {
+        return "uw.{module}";
     }
 }
 ```
 
+> 实现类**只需** `getMessage()` + `codePrefix()`。`code`/`getCode()` 由接口从枚举名自动派生，`messageSource()` 由接口按 `codePrefix()` 自动加载并缓存——**不要**手写 `MESSAGE_SOURCE` 静态块、`code` 字段、`getCode()`/`messageSource()` 覆写（历史样板，已内化到接口）。
+>
+> `codePrefix()` 的值无强制格式要求，通常跟随模块包名/习惯命名（如 `uw.guest`、`uw.auth.center`），作用是拼接完整响应码与推导 i18n basename。
+
 ### i18n 资源文件
 
+资源目录固定为 `src/main/resources/i18n/messages/`，文件名由 `codePrefix()` 推导（`点转下划线`），basename = `i18n/messages/<codePrefix 点转下划线>`。例如 `codePrefix() = "uw.guest"` → basename `i18n/messages/uw_guest`：
+
 ```
-src/main/resources/{枚举类全路径}/
-├── messages.properties           # 默认（中文简体）
-├── messages_zh_CN.properties     # 中文简体
-├── messages_zh_TW.properties     # 中文繁体
-├── messages_en.properties        # 英语
-├── messages_ja.properties        # 日语
-├── messages_de.properties        # 德语
-├── messages_fr.properties        # 法语
-├── messages_ko.properties        # 韩语
-├── messages_it.properties        # 意大利语
-├── messages_ru.properties        # 俄语
-├── messages_es.properties        # 西班牙语
-├── messages_pt.properties        # 葡萄牙语
-└── messages_ar.properties        # 阿拉伯语
+src/main/resources/i18n/messages/
+├── uw_guest.properties           # 默认（中文简体，兜底）
+├── uw_guest_zh_CN.properties     # 中文简体
+├── uw_guest_zh_TW.properties     # 中文繁体
+├── uw_guest_en.properties        # 英语
+├── uw_guest_ja.properties        # 日语
+├── uw_guest_de.properties        # 德语
+├── uw_guest_fr.properties        # 法语
+├── uw_guest_ko.properties        # 韩语
+├── uw_guest_it.properties        # 意大利语
+├── uw_guest_ru.properties        # 俄语
+├── uw_guest_es.properties        # 西班牙语
+├── uw_guest_pt.properties        # 葡萄牙语
+└── uw_guest_ar.properties        # 阿拉伯语
 ```
+
+> ⚠️ locale 段必须用下划线 `_`（Java ResourceBundle 规范），basename 段也用 `_`（由 codePrefix 点转下划线得来）。不要用 `-` 或 `.`。
 
 ```properties
-# messages_zh_CN.properties
-entity.not.found=实体未找到
+# uw_guest_zh_CN.properties
+user.not.found=用户不存在
 
-# messages_en.properties
-entity.not.found=Entity not found
+# uw_guest_en.properties
+user.not.found=User not found
 
-# messages_ja.properties
-entity.not.found=エンティティが見つかりません
+# uw_guest_ja.properties
+user.not.found=ユーザーが見つかりません
 ```
+
+> 资源 key 约定为响应码短码（枚举名点分小写，如 `USER_NOT_FOUND` → `user.not.found`），由接口 `getCode()` 自动派生。
+
+> `JsonConfigParam` 的 i18n 资源目录为 `src/main/resources/i18n/config/`（与 ResponseCode 的 `i18n/messages/` 对称区分），basename 由 `configPrefix()` 推导（如 `configPrefix() = "system.config"` → `i18n/config/system_config`）。
 
 ## 缓存使用模板
 

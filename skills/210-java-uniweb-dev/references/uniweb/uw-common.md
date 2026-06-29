@@ -171,41 +171,50 @@ public static ResponseData<User> resetPassword(long userId, String newPassword) 
 
 > **包路径**：`uw.common.response.ResponseCode`
 
-业务枚举实现此接口实现类型安全的响应码管理，替代硬编码字符串。
+业务枚举实现此接口实现类型安全的响应码管理，替代硬编码字符串。接口自带 i18n：实现类只需提供 `getMessage()`（兜底文案）与 `codePrefix()`，其余由接口 default 方法自动组装。
+
+**接口方法**：
 
 | 方法 | 返回类型 | 说明 |
 |------|---------|------|
-| getCode() | String | 响应码 |
-| getMessage() | String | 默认消息 |
-| messageSource() | MessageSource | 国际化消息源（可选） |
-| codePrefix() | String | 码前缀（可选） |
-| getFullCode() | String | 完整码（prefix + code） |
-| getMessage(Object... args) | String | 格式化消息 |
-| getLocalizedMessage(Locale, Object... args) | String | 国际化消息 |
+| `getMessage()` | String | **抽象**，兜底文案（未经 i18n 解析）。标注 `@JsonIgnore`，不直接序列化 |
+| `codePrefix()` | String | 码前缀（可选，default null）。同时用于拼完整码与推导 i18n basename |
+| `getCode()` | String | 完整响应码（default，由 `codePrefix + 枚举名点分` 自动拼接） |
+| `getLocalizedMessage()` | String | **JSON 输出字段**（`@JsonProperty("message")`），按当前 Locale i18n，缺失回退 `getMessage()` |
+| `getLocalizedMessage(Object... params)` | String | 带格式化参数的 i18n 消息（`@JsonIgnore`，业务调用，不参与序列化） |
+| `messageSource()` | MessageSource | i18n 消息源（default，按 `codePrefix()` 自动加载并缓存） |
+
+> ⚠️ **i18n 双方法模式（强制）**：`getMessage()` 是抽象原始值（`@JsonIgnore` 不输出），`getLocalizedMessage()` 是 default i18n 出口（`@JsonProperty("message")` 输出）。这样即便实现类误覆写 i18n 出口，原始文案也不会泄漏到 JSON。**Jackson 仅识别严格无参方法为 getter**——所以 `getLocalizedMessage()` 必须无参（变参重载 `getLocalizedMessage(Object...)` 不参与序列化）。
+
+**i18n basename 自动推导**：`messageSource()` 按 `codePrefix()` 推导 basename = `i18n/messages/<codePrefix 点转下划线>`（如 `uw.validate` → `i18n/messages/uw_validate`），加载后缓存在 `MESSAGE_SOURCE_CACHE`（多枚举共享同 prefix 复用同一实例）。资源 key 约定为**短码**（枚举名点分小写，如 `NOT_NULL` → `not.null`，即接口 `code()` 的返回值，**非完整码** `getCode()`）。未配置 `codePrefix()` 或资源缺失时回退 `getMessage()` 兜底文案。
 
 **枚举定义模板**（在 `{package}/constant/` 包下）：
 ```java
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum GuestResponseCode implements ResponseCode {
     USER_NOT_FOUND("用户不存在"),
     PHONE_EXISTS("该手机号已注册"),
     ;
 
-    private final String code;
     private final String message;
 
     GuestResponseCode(String message) {
-        this.code = EnumUtils.enumNameToDotCase(this.name());
         this.message = message;
     }
 
-    @Override
-    public String getCode() { return code; }
+    /** 兜底文案（原始值），供接口 getLocalizedMessage() 回退使用 */
     @Override
     public String getMessage() { return message; }
+
+    /** 响应码前缀，同时作为 i18n basename 推导依据（uw.guest → i18n/messages/uw_guest） */
+    @Override
+    public String codePrefix() { return "uw.guest"; }
 }
 ```
 
-> 完整 ResponseCode 模板（含 i18n 12语种资源文件）见 [code-templates.md](code-templates.md) §4。
+> 实现类**只需** `getMessage()` + `codePrefix()`，其余（`code`/`getCode()`/`messageSource()`）由接口自动派生或加载——**不要**手写 `MESSAGE_SOURCE` 静态块、`code` 字段、`getCode()`/`messageSource()` 覆写（历史样板，已内化到接口）。
+>
+> 完整 ResponseCode 模板（含 i18n 12 语种资源文件目录结构）见 [code-templates.md](code-templates.md)「枚举与响应码模板」。
 
 ## PageList
 

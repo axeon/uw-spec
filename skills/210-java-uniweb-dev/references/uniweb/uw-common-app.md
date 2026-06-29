@@ -274,7 +274,6 @@ result.onSuccess(updated -> {
 |------|------|
 | `buildParamBox(List<JsonConfigParam>, String json)` | 从 JSON 数据构建 |
 | `buildParamBox(List<JsonConfigParam>, Map data)` | 从 Map 构建 |
-| `buildParamBox(String paramJson, String dataJson)` | 从两个 JSON 字符串构建 |
 
 **校验方法**：
 
@@ -282,9 +281,10 @@ result.onSuccess(updated -> {
 |------|------|
 | `validateConfigData(List<JsonConfigParam>, Map data)` | 校验配置数据 |
 | `validateConfigData(List<JsonConfigParam>, String json)` | 校验配置数据 |
-| `validateConfigData(String paramJson, String dataJson)` | 校验配置数据 |
 
-返回 `ResponseData<List<ValidateResult>>`，校验通过返回空列表。
+返回 `ResponseData<List<ValidateResult>>`：校验通过返回 `success`（data 为空），失败时 state=error 且 data 为校验结果列表。
+
+> ⚠️ 配置参数定义（`List<JsonConfigParam>`）必须是编译期枚举（如 `MyConfig.values()`），不存在"从 JSON 反序列化参数定义"的重载——`JsonConfigParam` 是接口，Jackson 无法反序列化。配置**数据**（用户填的值）才走 JSON/Map 入参。
 
 ### SchemaValidateHelper — Schema注解校验
 
@@ -355,7 +355,24 @@ String url = QueryParamHelper.buildUriWithParams("/api/list", queryParam);
 
 > **包路径**：`uw.common.app.vo.JsonConfigParam`
 
-使用枚举实现此接口定义配置参数。
+使用枚举实现此接口定义配置参数。实现类只需提供 {@link #getParamData()}（返回 `ParamData` 元数据载体），`getKey()` 由枚举名自动派生，`getType/getValue/getTitle/getRegex` 由接口 default 委托 `getParamData()`。`getLocalizedTitle()` 自动按 Locale 国际化。
+
+**接口方法**：
+
+| 方法 | 返回类型 | 说明 |
+|------|---------|------|
+| `getParamData()` | ParamData | **唯一抽象方法**，返回元数据载体（type/value/title/regex） |
+| `getKey()` | String | **default**，由枚举名自动派生（`MAX_TOKENS` → `max.tokens`） |
+| `getType()` | ParamType | **default**，委托 `getParamData().getType()` |
+| `getValue()` | String | **default**，委托 `getParamData().getValue()` |
+| `getTitle()` | String | **default**，委托 `getParamData().getTitle()`。原始标题（兜底文案），`@JsonIgnore` 不直接序列化 |
+| `getLocalizedTitle()` | String | **default**，按当前 Locale i18n（`@JsonProperty("title")` 输出），缺失回退 `getTitle()` |
+| `getRegex()` | String | **default**，委托 `getParamData().getRegex()` |
+| `configPrefix()` | String | **default null**，i18n 资源前缀（可选） |
+
+> ⚠️ **i18n 双方法模式（与 ResponseCode 同构）**：`getTitle()` 是原始值（`@JsonIgnore` 不输出），`getLocalizedTitle()` 是 i18n 出口（`@JsonProperty("title")` 输出）。即便实现类误覆写 i18n 出口，原始标题也不会泄漏到 JSON。
+
+**i18n basename 自动推导**：`messageSource()` 按 `configPrefix()` 推导 basename = `i18n/config/<前缀点转下划线>`（如 `openai.config` → `i18n/config/openai_config`），与 `ResponseCode` 的 `i18n/messages/` 目录对称区分（配置参数标题 vs 响应码文案）。资源 key 约定为 `getKey()`。未配置 `configPrefix()` 时 `getLocalizedTitle()` 直接返回原始标题。
 
 **ParamType 枚举**：
 
@@ -388,20 +405,30 @@ String url = QueryParamHelper.buildUriWithParams("/api/list", queryParam);
 **枚举定义模板**：
 
 ```java
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum SystemConfig implements JsonConfigParam {
-    SITE_NAME("siteName", ParamType.STRING, "MySite", "站点名称", null),
-    MAX_UPLOAD_SIZE("maxUploadSize", ParamType.INT, "10485760", "最大上传大小", null);
+    SITE_NAME(ParamType.STRING, "MySite", "站点名称", null),
+    MAX_UPLOAD_SIZE(ParamType.INT, "10485760", "最大上传大小", null),
+    ;
 
     private final ParamData paramData;
 
-    SystemConfig(String key, ParamType type, String value, String desc, String regex) {
-        this.paramData = new ParamData(key, type, value, desc, regex);
+    SystemConfig(ParamType type, String value, String title, String regex) {
+        this.paramData = new ParamData(type, value, title, regex);
     }
 
     @Override
-    public ParamData getParamData() { return paramData; }
+    public ParamData getParamData() {
+        return paramData;
+    }
+    // 启用 i18n 时覆写（资源 → i18n/config/system_config）：
+    // @Override public String configPrefix() { return "system.config"; }
 }
 ```
+
+> `ParamData` 载体承载 type/value/title/regex 四项元数据；`key` 不在载体中（由接口 `getKey()` 从枚举名自动派生，避免实现类手写 `enumNameToDotCase(name())`）。需要 i18n 时覆写 `configPrefix()` 返回逻辑前缀（如 `system.config`），并配套 `i18n/config/system_config*.properties` 资源文件。
+
+> ⚠️ **实现枚举必须标注 `@JsonFormat(shape = JsonFormat.Shape.OBJECT)`**。否则 Jackson 默认把枚举序列化为枚举名字符串（`"SITE_NAME"`），前端拿不到 `{key,type,value,title,regex}` 对象。该注解决定序列化形态，与接口的 default 方法/`@JsonProperty` 无关。
 
 ### ValidateResult — 校验结果
 

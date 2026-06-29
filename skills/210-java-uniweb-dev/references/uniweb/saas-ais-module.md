@@ -55,17 +55,9 @@ AIS 模块提供可插拔的应用接口服务管理框架，通过 Linker（链
 
 ## JsonConfigParam
 
-构造：`new JsonConfigParam(name, ParamType, defaultValue, desc, children)`
+`JsonConfigParam` 是接口（`uw.common.app.vo.JsonConfigParam`），通过**枚举实现**定义配置参数，不能用 `new` 实例化。完整方法表与枚举定义模板见 [uw-common-app.md](uw-common-app.md)「JsonConfigParam」。
 
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| name | String | 参数名称 |
-| paramType | ParamType | 参数类型：STRING / INT / LONG / DOUBLE / BOOLEAN / SELECT / GROUP |
-| defaultValue | String | 默认值 |
-| desc | String | 参数描述 |
-| children | `List<JsonConfigParam>` | 子参数（GROUP 类型时使用） |
-| required | boolean | 是否必填 |
-| options | `List<String>` | 可选项（SELECT 类型时使用） |
+> Linker 场景特有：`apiParam()`/`pubParam()`/`sysParam()`/`logParam()` 返回的 `List<JsonConfigParam>` 是编译期枚举集合（如 `Arrays.asList(WechatPayApiParam.values())`），参数定义本身不存库、不走 JSON 反序列化；存库的是用户填的配置数据（`pubData`/`apiData`/`sysData` JSON）。
 
 ## AisLinkerConfigMeta
 
@@ -104,11 +96,7 @@ public class WechatPaymentLinker extends BaseAisLinker {
 
     @Override
     public List<JsonConfigParam> apiParam() {
-        return Arrays.asList(
-            new JsonConfigParam("appId", ParamType.STRING, "", "应用ID", null),
-            new JsonConfigParam("mchId", ParamType.STRING, "", "商户号", null),
-            new JsonConfigParam("apiKey", ParamType.STRING, "", "API密钥", null)
-        );
+        return Arrays.asList(WechatPayApiParam.values());
     }
 
     @Override public List<JsonConfigParam> pubParam() { return Collections.emptyList(); }
@@ -120,6 +108,8 @@ public class WechatPaymentLinker extends BaseAisLinker {
         // 实现微信支付逻辑
     }
 ```
+
+> `WechatPayApiParam` 是 implements `JsonConfigParam` 的枚举，定义方式见 [uw-common-app.md](uw-common-app.md)「JsonConfigParam」枚举模板。
 
 ## Helper 使用示例
 

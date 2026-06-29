@@ -345,9 +345,11 @@ return ResponseData.errorCode(CommonResponseCode.ENTITY_UPDATE_ERROR);
 - 业务场景（密码错误、积分不足等）→ 在 `{package}/constant/` 包下定义业务 `ResponseCode` 枚举
 - 同一业务的响应码放在同一个枚举类中（如 `GuestResponseCode`、`PostResponseCode`、`CmsResponseCode`）
 
+**codePrefix 命名**：`codePrefix()` 的值**无强制格式要求，可自定义**——通常跟随模块包名/习惯（如 `uw.guest`、`uw.validate`、`uw.mfa`、`uw.auth.center`），但并非必须以 `uw.` 开头。它的作用是：①拼接完整响应码（`codePrefix + '.' + 短码`，如 `uw.auth.center.login.success`）；②推导 i18n basename（点转下划线，如 `uw.auth.center` → `i18n/messages/uw_auth_center`）。各模块按自身命名习惯定义即可，保持模块内一致。
+
 ### ResponseCode i18n 资源文件规范
 
-每个业务 `ResponseCode` 枚举必须配套 i18n 资源文件（12 种语种），资源文件位置：`src/main/resources/{枚举类全路径}/`。
+每个业务 `ResponseCode` 枚举必须配套 i18n 资源文件（12 种语种），资源目录固定为 `src/main/resources/i18n/messages/`，文件名由 `codePrefix()` 推导（如 `codePrefix()="uw.guest"` → `uw_guest_zh_CN.properties` 等）。
 
 > 完整 i18n 资源文件目录结构和示例见 [code-templates.md](code-templates.md)「枚举与响应码模板」。
 
@@ -798,16 +800,19 @@ grep -rn '// TODO:' src/main/java/ --include="*.java" | wc -l
 grep -rn '@Schema(description' src/main/java/ --include="*.java" | grep -v 'title' | wc -l
 
 # 9. ResponseCode i18n 资源文件检查（每个 ResponseCode 枚举必须配套 ≥3 个语种文件）
+# 资源目录固定为 src/main/resources/i18n/messages/，basename 由 codePrefix() 推导（点转下划线）。
 for enum_file in $(grep -rln 'implements ResponseCode' src/main/java/ --include="*.java"); do
-    enum_class=$(echo "$enum_file" | sed 's|src/main/java/||;s|\.java||;s|/|.|g')
-    resource_dir="src/main/resources/$(echo $enum_class | tr '.' '/')"
-    if [ ! -d "$resource_dir" ]; then
-        echo "MISSING i18n: $resource_dir (for $enum_class)"
-    else
-        file_count=$(ls "$resource_dir"/messages*.properties 2>/dev/null | wc -l)
-        if [ "$file_count" -lt 3 ]; then
-            echo "INCOMPLETE i18n: $resource_dir has $file_count files (need ≥3)"
-        fi
+    # 从源码提取 codePrefix() 返回值（如 "uw.guest"）
+    prefix=$(grep -oE 'codePrefix\(\)\s*\{\s*return\s*"[^"]*"' "$enum_file" | grep -oE '"[^"]*"' | tr -d '"' | head -1)
+    if [ -z "$prefix" ]; then
+        echo "SKIP (no codePrefix): $enum_file"
+        continue
+    fi
+    basename_prefix=$(echo "$prefix" | tr '.' '_')   # uw.guest → uw_guest
+    resource_pattern="src/main/resources/i18n/messages/${basename_prefix}*.properties"
+    file_count=$(ls $resource_pattern 2>/dev/null | wc -l)
+    if [ "$file_count" -lt 3 ]; then
+        echo "INCOMPLETE i18n: $resource_pattern has $file_count files (need ≥3)"
     fi
 done
 
