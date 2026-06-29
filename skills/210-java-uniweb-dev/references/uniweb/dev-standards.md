@@ -11,8 +11,38 @@ entity、dto、controller 基础代码通过 uw-code-center 工具自动生成�
 
 **开发重点与代码组织**：
 
-- 开发核心为 **service 层** 和 **controller 层**实现
-- 针对非 CRUD 的复杂业务逻辑，必须封装在 **service 层**或 **Helper 工具类**中，供 controller 层调用
+- 开发核心为 **controller 层** 和 **service 层（Helper）** 实现
+
+### Controller 与 Helper 分层判据
+
+> **Controller = 协议层（HTTP 进出）；Helper = 领域层（业务逻辑）。**
+>
+> **抽 Helper 的核心驱动力是复用**：逻辑被 2 个以上入口（Controller / RPC / 定时任务 / 消息消费者）共用时，必须抽取以消除重复。无复用时，仅当逻辑复杂到留在 Controller 读不懂或无法独立单测，才抽；否则留 Controller 直连 dao，加注释说明规则。
+
+**默认写法（90% 场景，照此模仿）**——纯 CRUD + 一行常识校验，全部留在 Controller：
+
+> 要点：参数绑定、一行校验、落库都在 Controller，**不为对称造 Helper**。方法理想形态 ≤100 行、无复杂分支。
+
+**何时抽 Helper（两种正模式）**：
+
+| 模式 | 触发条件 | 示例 |
+|---|---|---|
+| **A. 复用驱动（首选）** | 逻辑被 2+ 入口共用 | `TagInfoHelper.tagReference()` 被 saas/mch 两端 save/update/delete 调用 |
+| **B. 复杂度驱动** | 单点调用，但多步/多分支/多实体，留在 Controller 读不懂或测不了 | 价格计算（基础价 × 折扣 − 优惠券 + 手续费 − 积分抵扣） |
+
+
+**决策流程**：
+
+```
+1. 逻辑被 2+ 入口需要？              → 抽 Helper（复用，硬约束）
+2. 否。复杂到留 Controller 读不懂/测不了？ → 抽 Helper（复杂度）
+3. 否（一行常识/单分支/一眼可读懂）  → 留 Controller，加注释
+4. 依赖 HTTP/权限注解？              → 必须留 Controller
+```
+
+> **YAGNI**："未来可能复用"不抽取。出现第二个调用方时再抽，重构成本极低。
+
+> Helper 类自身的形态约束（纯静态工具类、禁 `@Component`、两种类型识别）见下方「Helper 设计规范」。
 
 ### Vo/Ex 规范
 
@@ -248,9 +278,7 @@ DaoManager 所有方法返回 `ResponseData<T>`，这是框架的核心设计模
 
 ## Helper 设计规范
 
-Helper 是纯静态工具类，**不是 Spring Bean**，不加 `@Component`，不使用构造器注入。
-
-**创建条件**（三条件满足至少一项才创建 Helper）：
+> **何时创建 Helper** 见上方「开发重点与代码组织 → Controller 与 Helper 分层判据」。本节仅约束 Helper 类自身的**形态与写法**。
 
 | 条件 | 说明 | 示例 |
 |------|------|------|
@@ -258,9 +286,7 @@ Helper 是纯静态工具类，**不是 Spring Bean**，不加 `@Component`，�
 | 功能性 | 缓存、分布式锁、事务等横切关注点 | 详情缓存（FusionCache）、并发操作（GlobalLocker） |
 | 多处调用 | 2个以上 Controller 或其他 Helper 调用 | 发送通知（多处触发）、用户信息查询（多处引用） |
 
-**不建 Helper 的场景**：简单 CRUD（list/get/save/update/delete/enable/disable）直接在 Controller 中调 `DaoManager.getInstance()` 即可。
-
-**Helper 两种类型**：
+**Helper 两种类型**（识别维度不同）：
 
 | 类型 | 识别维度 | 示例 |
 |------|---------|------|
