@@ -42,18 +42,19 @@ uw:
 
 | 我要做什么 | 用什么 | 关键约束 |
 |-----------|--------|--------|
-| 定时任务 | 继承 `TaskCroner`，加 `@Component` | TaskCroner/TaskRunner 是 Spring Bean，与 Helper 不同 |
+| 定时任务 | 继承 `TaskCroner`，加 `@Component` | runTask 需幂等：配置覆盖/降级切换用 cancel(false) 让上次跑完，可能与本次重叠 |
 | 队列任务 | 继承 `TaskRunner<P,R>`，加 `@Component` | 同上 |
 | 发送到队列 | `taskFactory.sendToQueue(taskData)` | 完全异步，无返回值 |
 | 本地优先执行（高频短任务） | `taskFactory.runQueue(taskData)` | 本机有 runner 则本地跑，否则降级入队，不走同步 RPC |
 | 同步执行任务 | `taskFactory.runTask(taskData)` | 阻塞等待结果；taskData 不可复用 |
 | 构建任务数据 | `TaskData.builder(TaskClass.class, param).refId(id).build()` | Builder 模式 |
 | 延迟任务（到期执行） | 继承 `TaskDelayer<P,R>`，加 `@Component` | 第三种任务类型，基于 Redis zset poll，无队头阻塞 |
-| 投递延迟任务 | `taskFactory.submitDelay(taskData)` | 异步无返回值，`taskDelay` 设延迟毫秒 |
+| 投递延迟任务 | `taskFactory.delayTask(taskData)` | 异步无返回值，`taskDelay` 设延迟毫秒 |
 | 队列任务延时 | `TaskData.builder(...).taskDelay(5000)` + `delayType=ON` | 走 MQ TTL+死信，长延时阻塞短延时，建议改用 TaskDelayer |
 | 触发重试 | 抛 `TaskPartnerException` | 第三方接口错误，按 retryTimesByPartner 重试 |
 | 超限流重试 | （框架自动，配置 retryTimesByOverrated） | STATE_FAIL_CONFIG 时重试 |
 | 不重试 | 抛 `TaskDataException` | 数据错误不重试 |
+| center 不可用降级 | 三套任务自动用 initConfig 本地默认配置继续跑 | 拉取失败+首次触发（非失败计数），center 恢复后配置覆盖；详见客户端 README |
 
 > **TaskFactory 获取**：Helper/Service 中 `@Autowired private TaskFactory taskFactory;` 注入；或 `TaskFactory.getInstance()` 静态获取。
 
@@ -289,7 +290,7 @@ public NotifyResult runTask(TaskData<OrderNotifyParam, NotifyResult> taskData) t
 
 构造：继承 `TaskDelayer<TP, RD>` 抽象类 + `@Component` — 泛型 TP=参数类型，RD=返回类型。三方法与 TaskRunner 对齐（`initConfig`/`initContact`/`run`），区别是 `run(TaskData)` 返回 **void**（结果经 taskData 回写）、载体是 **Redis zset 而非 RabbitMQ**。
 
-**机制**：投递时写入 Redis zset（key=`uw-task-delay:`+configKey，score=到期时间戳=`queueDate+taskDelay`，member=Kryo 序列化 TaskData）；各 uw-task 实例独立 poll 同一 zset，Lua 原子 `ZRANGEBYSCORE+ZREM` 取出到期任务、虚拟线程即取即执行（无内存队列、并发许可耗尽则任务留 zset）。多实例竞争消费、**无队头阻塞、重启不丢存量**。
+**机制**：投递时写入 Redis zset（key=`uw-task-delayer:`+configKey，score=到期时间戳=`queueDate+taskDelay`，member=Kryo 序列化 TaskData）；各 uw-task 实例独立 poll 同一 zset，Lua 原子 `ZRANGEBYSCORE+ZREM` 取出到期任务、虚拟线程即取即执行（无内存队列、并发许可耗尽则任务留 zset）。多实例竞争消费、**无队头阻塞、重启不丢存量**。
 
 **TaskDelayerConfig 构造**：`new TaskDelayerConfig()` setter 链式，或 `TaskDelayerConfig.builder()`
 
@@ -309,7 +310,7 @@ public NotifyResult runTask(TaskData<OrderNotifyParam, NotifyResult> taskData) t
 | alertDelayOvertime | int | — | **Delayer 特有**：实际执行晚于 runAt 的平均超时报警（毫秒） |
 | logLevel | int | 0 | 日志类型，复用 `TaskRunnerConfig.TASK_LOG_TYPE_*` |
 
-**投递**：`taskFactory.submitDelay(taskData)` — 完全异步、无返回值。taskData 需设 `taskClass`（TaskDelayer 实现类）+ `taskDelay`（延迟毫秒）+ `taskParam`。
+**投递**：`taskFactory.delayTask(taskData)` — 完全异步、无返回值。taskData 需设 `taskClass`（TaskDelayer 实现类）+ `taskDelay`（延迟毫秒）+ `taskParam`。
 
 **示例**：
 ```java
@@ -344,7 +345,7 @@ TaskData<OrderTimeoutParam, Void> data = TaskData
     .taskDelay(30 * 60 * 1000L)
     .refId(orderId)
     .build();
-taskFactory.submitDelay(data);
+taskFactory.delayTask(data);
 ```
 
 > 与 TaskRunner 的选择：需"X 时间后执行"用 **TaskDelayer**（Redis zset，无队头阻塞）；需异步队列消费用 **TaskRunner**（RabbitMQ）。TaskRunner 的 `taskDelay` + `delayType=TYPE_DELAY_ON` 走 MQ 死信延时，有长延时阻塞短延时问题，优先用 TaskDelayer。
@@ -358,7 +359,7 @@ taskFactory.submitDelay(data);
 | 方法 | 返回类型 | 说明 |
 |------|---------|------|
 | `sendToQueue(TaskData)` | void | 发送到 MQ 队列（异步） |
-| `submitDelay(TaskData)` | void | 投递延迟任务到 Redis zset，到期本机 poll 执行（异步，`taskDelay` 设延迟毫秒） |
+| `delayTask(TaskData)` | void | 投递延迟任务到 Redis zset，到期本机 poll 执行（异步，`taskDelay` 设延迟毫秒） |
 | `runQueue(TaskData)` | void | 本地线程池优先执行，满则降级入队；带 taskDelay 直接入队 |
 | `runTask(TaskData)` | `TaskData<TP, RD>` | 同步执行（阻塞，按 runType 选本地/远程 RPC） |
 | `runTaskLocal(TaskData)` | `TaskData<TP, RD>` | 强制本地同步执行（无 runner 抛异常） |
