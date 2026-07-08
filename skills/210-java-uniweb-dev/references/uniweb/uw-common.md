@@ -794,10 +794,12 @@ HMAC-SHA256 签名工具类。
 
 背压限制虚拟线程执行器。基于虚拟线程 + Semaphore 实现最大并发数限制。
 
+虚拟线程使用 `threadNamePrefix + 序号` 命名（如 "my-task-0"），便于在 JMC/JFR、线程堆栈与日志中区分任务来源；前缀建议以分隔符（如 "-"）结尾。
+
 | 构造 | 说明 |
 |------|------|
-| `new LimitedVirtualThreadExecutor(int maxConcurrency)` | 默认阻塞等待策略 |
-| `new LimitedVirtualThreadExecutor(int maxConcurrency, CallPolicy)` | 自定义策略 |
+| `new LimitedVirtualThreadExecutor(String threadNamePrefix, int maxConcurrency)` | 默认阻塞等待策略 |
+| `new LimitedVirtualThreadExecutor(String threadNamePrefix, int maxConcurrency, CallPolicy)` | 自定义策略 |
 
 | 方法 | 说明 |
 |------|------|
@@ -818,7 +820,8 @@ HMAC-SHA256 签名工具类。
 | `DiscardPolicy` | 静默丢弃任务 |
 
 ```java
-LimitedVirtualThreadExecutor executor = new LimitedVirtualThreadExecutor(100);
+// 虚拟线程名为 "my-task-0"、"my-task-1" ...，便于 JMC/JFR 区分
+LimitedVirtualThreadExecutor executor = new LimitedVirtualThreadExecutor("my-task-", 100);
 executor.submit(() -> doSomething());
 executor.shutdown();
 ```

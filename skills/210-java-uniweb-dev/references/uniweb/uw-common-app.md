@@ -22,7 +22,7 @@
 
 > **包路径**：`uw.common.app.AppBootStrap`
 
-自定义 Bean 命名策略，解决多模块同名的 Controller/Runner/Cronner 冲突。
+自定义 Bean 命名策略，解决多模块同名的 Controller/Runner/Croner/Delayer 冲突。
 
 ```java
 public static void main(String[] args) {

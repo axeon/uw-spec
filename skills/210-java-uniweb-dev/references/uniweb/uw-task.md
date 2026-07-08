@@ -48,7 +48,9 @@ uw:
 | 本地优先执行（高频短任务） | `taskFactory.runQueue(taskData)` | 本机有 runner 则本地跑，否则降级入队，不走同步 RPC |
 | 同步执行任务 | `taskFactory.runTask(taskData)` | 阻塞等待结果；taskData 不可复用 |
 | 构建任务数据 | `TaskData.builder(TaskClass.class, param).refId(id).build()` | Builder 模式 |
-| 延迟执行 | `TaskData.builder(...).taskDelay(5000).build()` | 毫秒，配合 delayType=ON |
+| 延迟任务（到期执行） | 继承 `TaskDelayer<P,R>`，加 `@Component` | 第三种任务类型，基于 Redis zset poll，无队头阻塞 |
+| 投递延迟任务 | `taskFactory.submitDelay(taskData)` | 异步无返回值，`taskDelay` 设延迟毫秒 |
+| 队列任务延时 | `TaskData.builder(...).taskDelay(5000)` + `delayType=ON` | 走 MQ TTL+死信，长延时阻塞短延时，建议改用 TaskDelayer |
 | 触发重试 | 抛 `TaskPartnerException` | 第三方接口错误，按 retryTimesByPartner 重试 |
 | 超限流重试 | （框架自动，配置 retryTimesByOverrated） | STATE_FAIL_CONFIG 时重试 |
 | 不重试 | 抛 `TaskDataException` | 数据错误不重试 |
@@ -281,6 +283,72 @@ public NotifyResult runTask(TaskData<OrderNotifyParam, NotifyResult> taskData) t
 | RUN_TYPE_GLOBAL_RPC | 5 | 全局同步 RPC，不受流控 |
 | RUN_TYPE_AUTO_RPC | 6 | 自动选择本地或远程（默认） |
 
+## TaskDelayer 延迟任务
+
+> **包路径**：`uw.task.TaskDelayer`
+
+构造：继承 `TaskDelayer<TP, RD>` 抽象类 + `@Component` — 泛型 TP=参数类型，RD=返回类型。三方法与 TaskRunner 对齐（`initConfig`/`initContact`/`run`），区别是 `run(TaskData)` 返回 **void**（结果经 taskData 回写）、载体是 **Redis zset 而非 RabbitMQ**。
+
+**机制**：投递时写入 Redis zset（key=`uw-task-delay:`+configKey，score=到期时间戳=`queueDate+taskDelay`，member=Kryo 序列化 TaskData）；各 uw-task 实例独立 poll 同一 zset，Lua 原子 `ZRANGEBYSCORE+ZREM` 取出到期任务、虚拟线程即取即执行（无内存队列、并发许可耗尽则任务留 zset）。多实例竞争消费、**无队头阻塞、重启不丢存量**。
+
+**TaskDelayerConfig 构造**：`new TaskDelayerConfig()` setter 链式，或 `TaskDelayerConfig.builder()`
+
+| 属性 | 类型 | 默认 | 说明 |
+|------|------|------|------|
+| taskName | String | — | 任务名称（必填） |
+| consumerNum | int | 1 | 执行并发数（虚拟线程 + Semaphore） |
+| pollInterval | long | 3 | zset poll 间隔（秒），命中连续 poll、空才 sleep |
+| prefetchNum | int | 50 | 单次 poll 最大条数（实际取 `min(此值, 空闲并发许可)`） |
+| rateLimitType | int | 0 | 限流类型，复用 `TaskRunnerConfig.RATE_LIMIT_*` 常量 |
+| rateLimitValue / rateLimitTime / rateLimitWait | int | 10 / 1 / 30 | 限流值 / 窗口秒 / 触发限速等待秒 |
+| retryTimesByPartner | int | 0 | 合作方异常重试次数（N → 总计执行 N+1 次） |
+| retryTimesByOverrated | int | 3 | 连续限速超限放弃次数上限（防死循环），超限标 STATE_FAIL_CONFIG |
+| retryTimesByProgram | int | 0 | 程序异常重试次数（默认 0 不重试） |
+| alertFailRate / alertFailProgramRate / alertFailPartnerRate | int | — | 失败率报警阈值（%） |
+| alertRunTimeout | int | — | 平均运行耗时报警（毫秒） |
+| alertDelayOvertime | int | — | **Delayer 特有**：实际执行晚于 runAt 的平均超时报警（毫秒） |
+| logLevel | int | 0 | 日志类型，复用 `TaskRunnerConfig.TASK_LOG_TYPE_*` |
+
+**投递**：`taskFactory.submitDelay(taskData)` — 完全异步、无返回值。taskData 需设 `taskClass`（TaskDelayer 实现类）+ `taskDelay`（延迟毫秒）+ `taskParam`。
+
+**示例**：
+```java
+@Component
+public class OrderTimeoutTask extends TaskDelayer<OrderTimeoutParam, Void> {
+
+    @Override
+    public void run(TaskData<OrderTimeoutParam, Void> task) throws Exception {
+        orderService.closeIfUnpaid(task.getTaskParam().getOrderId());
+    }
+
+    @Override
+    public TaskDelayerConfig initConfig() {
+        TaskDelayerConfig config = new TaskDelayerConfig();
+        config.setTaskName("订单超时关闭");
+        config.setConsumerNum(5);
+        config.setPollInterval(3);
+        config.setRetryTimesByPartner(3);       // 第三方失败：总计执行 4 次（1+3）
+        config.setAlertDelayOvertime(5000);     // 延迟超时报警（毫秒）
+        return config;
+    }
+
+    @Override
+    public TaskContact initContact() {
+        return TaskContact.builder("订单负责人").email("order@example.com").build();
+    }
+}
+
+// 投递：30 分钟后执行
+TaskData<OrderTimeoutParam, Void> data = TaskData
+    .<OrderTimeoutParam, Void>builder(OrderTimeoutTask.class, new OrderTimeoutParam(orderId))
+    .taskDelay(30 * 60 * 1000L)
+    .refId(orderId)
+    .build();
+taskFactory.submitDelay(data);
+```
+
+> 与 TaskRunner 的选择：需"X 时间后执行"用 **TaskDelayer**（Redis zset，无队头阻塞）；需异步队列消费用 **TaskRunner**（RabbitMQ）。TaskRunner 的 `taskDelay` + `delayType=TYPE_DELAY_ON` 走 MQ 死信延时，有长延时阻塞短延时问题，优先用 TaskDelayer。
+
 ## TaskFactory
 
 > **包路径**：`uw.task.TaskFactory`
@@ -290,6 +358,7 @@ public NotifyResult runTask(TaskData<OrderNotifyParam, NotifyResult> taskData) t
 | 方法 | 返回类型 | 说明 |
 |------|---------|------|
 | `sendToQueue(TaskData)` | void | 发送到 MQ 队列（异步） |
+| `submitDelay(TaskData)` | void | 投递延迟任务到 Redis zset，到期本机 poll 执行（异步，`taskDelay` 设延迟毫秒） |
 | `runQueue(TaskData)` | void | 本地线程池优先执行，满则降级入队；带 taskDelay 直接入队 |
 | `runTask(TaskData)` | `TaskData<TP, RD>` | 同步执行（阻塞，按 runType 选本地/远程 RPC） |
 | `runTaskLocal(TaskData)` | `TaskData<TP, RD>` | 强制本地同步执行（无 runner 抛异常） |
