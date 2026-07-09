@@ -222,7 +222,7 @@
 | 地区信息 | saas-base | SysAreaHelper：省市区数据 |
 | 实时通知推送 | uw-notify-client | NotifyClientHelper：基于 SSE 的 Web 通知 |
 | 分布式缓存 | uw-cache | FusionCache（本地+Redis）/ GlobalCache（纯Redis）/ GlobalLocker（分布式锁） |
-| 异步任务调度 | uw-task | TaskCroner（定时任务）/ TaskRunner（异步队列） |
+| 异步任务调度 | uw-task | TaskCroner（定时任务）/ TaskRunner（异步队列）/ TaskDelayer（延迟任务） |
 | 操作日志 | uw-auth-service | @MscPermDeclare log 级别：NONE/REQUEST/ALL/CRIT |
 | 数据审计历史 | uw-common-app | SysDataHistoryHelper：数据变更记录 |
 | 国际化（i18n） | uw-common-app | LocaleHelper：多语言支持 |

@@ -105,7 +105,7 @@ version: "3.0.0"
 |---------|--------|-----------|
 | AI对话/生成/翻译 | `AiClientHelper`（uw-ai） | AI、智能、对话、推荐、生成、降级 |
 | 实时通知推送 | `NotifyClientHelper`（uw-notify-client） | 推送、通知、SSE、实时提醒 |
-| 异步/定时任务 | `TaskCroner`、`TaskRunner<P,R>`（uw-task） | 异步、定时、延迟、队列 |
+| 异步/定时/延迟任务 | `TaskCroner`、`TaskRunner<P,R>`、`TaskDelayer<P,R>`（uw-task） | 异步、定时、延迟、队列 |
 | HTTP外部调用 | `JsonInterfaceHelper`（uw-httpclient） | 第三方API、外部接口 |
 | AIP授权计费 | `AipHelper`（saas-aip） | 计费、授权、配额 |
 | AIS接口服务 | `AisHelper`（saas-ais） | 接口管理、数据同步 |

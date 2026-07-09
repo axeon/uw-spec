@@ -236,7 +236,7 @@ TDD（Test-Driven Development）是一种**先写测试、后写实现**的开�
 | uw-auth-service | 认证服务端 |
 | uw-auth-client | 认证客户端（Token自动管理） |
 | uw-mfa | 多因素认证（TOTP） |
-| uw-task | 分布式任务框架（TaskCroner、TaskRunner） |
+| uw-task | 分布式任务框架（TaskCroner、TaskRunner、TaskDelayer） |
 | uw-httpclient | HTTP客户端（连接池管理） |
 | uw-log-es | Elasticsearch 日志客户端 |
 | uw-logback-es | Logback ES Appender |

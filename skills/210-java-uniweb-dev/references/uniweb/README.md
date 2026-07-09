@@ -39,7 +39,7 @@ UniWeb 是一套基于 **Spring Boot 3.5** 和 **Spring Cloud 2025** 构建的�
 | uw-mydb-center | 数据库运维中心，管理 MySQL 集群、慢查询统计、库表空间监控、数据备份恢复和 SAAS 动态建库 |
 | uw-mydb-proxy | MySQL 分库分表代理（基于 Netty），支持多种分库分表算法和 HINT 语法路由 |
 | uw-ops-center | 运维管理中心，基于 Docker 的全自动部署工具，管理宿主机、部署方案、镜像仓库和发布环境 |
-| uw-task-center | 任务管理中心，管理定时任务和队列任务的运维监控、报警规则和动态配置 |
+| uw-task-center | 任务管理中心，管理定时任务、队列任务和延迟任务的运维监控、报警规则和动态配置 |
 | uw-tinyurl-center | 短链接生成与解析服务 |
 | uw-notify-center | 基于 SSE 的实时通知推送中心 |
 | uw-ai-center | AI 服务中心，集成 Spring AI，支持 Ollama 本地模型、向量数据库和 RAG 检索增强生成 |

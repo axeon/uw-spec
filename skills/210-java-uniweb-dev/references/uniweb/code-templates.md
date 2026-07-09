@@ -19,9 +19,10 @@
 │   ├── service/                      # 新建 Helper
 │   │   ├── {ModuleA}Helper.java
 │   │   └── {ModuleB}Helper.java
-│   ├── task/                         # 定时/队列任务（TaskCroner/TaskRunner，需 @Component）
+│   ├── task/                         # 定时/队列/延迟任务（TaskCroner/TaskRunner/TaskDelayer，需 @Component）
 │   │   ├── {Module}CronerTask.java
 │   │   └── {Module}RunnerTask.java
+│   │   └── {Module}DelayerTask.java
 │   ├── constant/                     # 业务枚举（状态/类型/响应码）+ ResponseCode i18n
 │   ├── entity/                       # 保留不动
 │   ├── dto/                          # 裁剪后
@@ -986,7 +987,7 @@ ResponseData<Result> result = authRestClient.postForObject(url, request, Respons
 ## 任务框架模板
 
 > 规范约束见 [dev-standards.md](dev-standards.md)「任务框架规范」。
-> **关键区别**：`TaskCroner` / `TaskRunner` 是 **Spring Bean**（必须加 `@Component`），与 Helper（纯静态工具类，禁止 `@Component`）不同。
+> **关键区别**：`TaskCroner` / `TaskRunner` / `TaskDelayer` 是 **Spring Bean**（必须加 `@Component`），与 Helper（纯静态工具类，禁止 `@Component`）不同。
 > 放在 `task/` 包下，按 `task-project` 包名前缀扫描。API 细节见 [uw-task.md](uw-task.md)。
 
 ### TaskCroner 定时任务
@@ -1489,7 +1490,7 @@ public class ProductControllerTest extends SaasControllerTest {
 |---------|-------------|--------|
 | 带权限的CRUD接口 | dev-standards + uw-dao + uw-auth-service | DaoManager, AuthQueryParam, @MscPermDeclare |
 | 带缓存的详情查询 | uw-dao + uw-cache | DaoManager, FusionCache, CacheDataLoader |
-| 异步任务处理 | uw-task | TaskRunner, TaskCroner, TaskFactory |
+| 异步任务处理 | uw-task | TaskRunner, TaskCroner, TaskDelayer, TaskFactory |
 | 服务间RPC调用 | uw-auth-client | authRestClient |
 | 文件上传下载 | saas-base-common | SysOssHelper |
 | 支付订单 | saas-finance-client + saas-ais-module | FinPaymentHelper, AisHelper |

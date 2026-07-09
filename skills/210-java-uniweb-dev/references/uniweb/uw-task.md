@@ -75,7 +75,7 @@ uw:
 | runTarget | String | 运行目标，默认 "default" |
 | logLevel | int | 日志级别（见下表） |
 | logLimitSize | int | 日志大小限制，0=无限制 |
-| alertRunTimeout | int | 运行超时告警（秒） |
+| alertRunTimeout | int | 运行超时告警（毫秒） |
 | alertFailRate | int | 失败率告警阈值（百分比） |
 
 **TaskCronerConfig.runType 常量**：
@@ -157,7 +157,7 @@ public class OrderTimeoutCheckTask extends TaskCroner {
 | runType | int | 运行模式（见 TaskData 运行模式常量） |
 | logLevel | int | 日志级别（见 TASK_LOG_TYPE 常量） |
 | logLimitSize | int | 日志大小限制 |
-| alertRunTimeout | int | 超时告警（秒） |
+| alertRunTimeout | int | 超时告警（毫秒） |
 | alertFailRate | int | 失败率告警阈值 |
 
 > 注意：**没有 `retryTimesByProgram`**。程序异常（STATE_FAIL_PROGRAM）不重试。
