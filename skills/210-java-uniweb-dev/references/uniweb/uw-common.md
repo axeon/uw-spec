@@ -792,39 +792,71 @@ HMAC-SHA256 签名工具类。
 
 > **包路径**：`uw.common.util.LimitedVirtualThreadExecutor`
 
-背压限制虚拟线程执行器。基于虚拟线程 + Semaphore 实现最大并发数限制。
+背压限制虚拟线程执行器，基于虚拟线程（`Thread.ofVirtual`）+ `Semaphore` 限制最大并发数。两种模式：
 
-虚拟线程使用 `threadNamePrefix + 序号` 命名（如 "my-task-0"），便于在 JMC/JFR、线程堆栈与日志中区分任务来源；前缀建议以分隔符（如 "-"）结尾。
+| 模式 | queueCapacity | 行为 |
+|------|---------------|------|
+| 快速模式 | = 0 | 无队列缓冲，并发满直接走 `CallPolicy` |
+| 队列模式 | > 0 | 有界无锁队列（JCTools `MpmcArrayQueue`）缓冲；并发满先入队，队列满才走 `CallPolicy` |
 
-| 构造 | 说明 |
-|------|------|
-| `new LimitedVirtualThreadExecutor(String threadNamePrefix, int maxConcurrency)` | 默认阻塞等待策略 |
-| `new LimitedVirtualThreadExecutor(String threadNamePrefix, int maxConcurrency, CallPolicy)` | 自定义策略 |
+队列模式下 worker 跑**接力循环**：完成当前 task 后非阻塞 `poll` 队列取下一个（有则继续、不释放许可，消除"等外部 submit"的空窗；无则释放许可退出）。worker 退出与 submit 入队时均有扫尾补偿（`drainQueueIfPresent`），保证"入队成功 ⇒ 必有 worker 最终消费"，避免关闭时孤儿任务静默丢失。
+
+虚拟线程以 `threadNamePrefix + 序号` 命名（如 "my-task-0"），便于在 JMC/JFR、线程堆栈与日志中区分任务来源；前缀建议以分隔符（如 "-"）结尾。
+
+**构造**（4 个重载）：
+
+| 构造 | 模式 | 默认策略 |
+|------|------|---------|
+| `(String threadNamePrefix, int maxConcurrency)` | 快速 | `BlockPolicy` |
+| `(String threadNamePrefix, int maxConcurrency, CallPolicy)` | 快速 | 指定 |
+| `(String threadNamePrefix, int maxConcurrency, int queueCapacity)` | queueCapacity>0 队列 / =0 快速 | 队列 `FailFastPolicy` / 快速 `BlockPolicy` |
+| `(String threadNamePrefix, int maxConcurrency, int queueCapacity, CallPolicy)` | 全参 | 指定（null→`BlockPolicy`） |
+
+> 参数容错：`threadNamePrefix` 空→默认值；`maxConcurrency<=0`→1；`queueCapacity<0`→1。
+
+**方法**：
 
 | 方法 | 说明 |
 |------|------|
-| `submit(Runnable)` | 提交任务 |
-| `getActiveCount()` | 活跃任务数 |
-| `getQueuedTasks()` | 等待任务数 |
-| `getAvailablePermits()` | 可用许可数 |
-| `getRejectedCount()` | 拒绝任务数 |
-| `shutdown()` | 关闭执行器 |
+| `submit(Runnable)` | 提交任务（执行器已关闭抛 `IllegalStateException`） |
+| `shutdown()` | 优雅关闭：不再接受新任务，已提交任务（含队列缓冲）执行完毕 |
+| `shutdownNow()` | 立即关闭：中断运行中任务，**返回**队列中未执行任务 `List<Runnable>` |
+| `isShutdown()` | 是否已调用 shutdown/shutdownNow |
+| `awaitTermination(long, TimeUnit)` | 等待所有任务完成或超时 |
+| `getActiveCount()` | 正在执行的任务数（近似值，任务执行口径） |
+| `getIdleCount()` | 空闲并发槽位数（`semaphore.availablePermits()`，当前可立即 `startWorker` 不进队列/不被拒的新任务数） |
+| `getMaximumPoolSize()` | 最大并发数（= Semaphore 许可数） |
+| `getQueueCapacity()` | 队列容量（快速模式返回 0） |
+| `getQueueSize()` | 队列待执行任务数（快速模式返回 0） |
+| `getRejectedCount()` | 累计被拒绝任务数（走 `CallPolicy` 拒绝的） |
 
-**调用策略**：
+> ⚠️ 本类**没有** `getQueuedTasks()` 方法（查队列大小用 `getQueueSize()`）。查可用许可数用 `getIdleCount()`，查并发上限用 `getMaximumPoolSize()`。
 
-| 策略类 | 行为 |
-|--------|------|
-| `BlockPolicy`（默认） | 阻塞等待直到获取许可 |
-| `FailFastPolicy` | 快速失败，抛出 RejectedExecutionException |
-| `CallerRunsPolicy` | 由调用者线程直接执行 |
-| `DiscardPolicy` | 静默丢弃任务 |
+> **active/idle 口径差异（勿用减法估算空闲）**：`getActiveCount()` 只统计已进入 `task.run()` 的 worker（任务执行口径），不含「已 `tryAcquire` 持有许可、但虚拟线程尚未 mount 进 `run()`」的 worker（脉冲 submit 时虚拟线程排队等载体），也不含接力循环中 poll 间隙的 worker。因此**禁止用 `getMaximumPoolSize() - getActiveCount()` 估算空闲**——会高估空闲、导致批量偏大。`getIdleCount()` 直接读 `semaphore.availablePermits()`，精确反映可立即占用的并发槽位。判断"是否还能接受新任务/是否达上限"用 `getIdleCount()`；观察"实际执行负载"用 `getActiveCount()`。
+
+**调用策略**（`CallPolicy` 接口，对齐 JDK `RejectedExecutionHandler`）：
+
+| 策略类 | 行为 | 默认用于 |
+|--------|------|---------|
+| `BlockPolicy` | 阻塞等待直到获取许可 | 快速模式 |
+| `FailFastPolicy` | 抛出 `RejectedExecutionException` | 队列模式 |
+| `CallerRunsPolicy` | 由调用者线程直接执行（背压） | — |
+| `DiscardPolicy` | 静默丢弃任务 | — |
 
 ```java
-// 虚拟线程名为 "my-task-0"、"my-task-1" ...，便于 JMC/JFR 区分
-LimitedVirtualThreadExecutor executor = new LimitedVirtualThreadExecutor("my-task-", 100);
+// 队列模式：并发 100、队列 1000，队列满则快速失败
+LimitedVirtualThreadExecutor executor = new LimitedVirtualThreadExecutor("my-task-", 100, 1000);
 executor.submit(() -> doSomething());
 executor.shutdown();
+executor.awaitTermination(5, TimeUnit.SECONDS);
+
+// 快速模式 + 丢弃策略（异步更新访问时间，丢了无所谓）
+LimitedVirtualThreadExecutor updateExecutor =
+    new LimitedVirtualThreadExecutor("update-", 20, new LimitedVirtualThreadExecutor.DiscardPolicy());
+updateExecutor.submit(() -> updateLastVisitTime(id));
 ```
+
+> `shutdownNow()` 返回的 `List<Runnable>` 含队列中未开始执行的任务，调用方可遍历回收（如写回 Redis zset），避免丢失——对齐 `TaskDelayerContainer` 关闭时 drain + 写回 zset 的语义。
 
 ## 其他工具类
 
