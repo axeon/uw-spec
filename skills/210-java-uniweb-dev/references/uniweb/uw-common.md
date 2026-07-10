@@ -838,13 +838,13 @@ HMAC-SHA256 签名工具类。
 
 | 策略类 | 行为 | 默认用于 |
 |--------|------|---------|
-| `BlockPolicy` | 阻塞等待直到获取许可 | 快速模式 |
-| `FailFastPolicy` | 抛出 `RejectedExecutionException` | 队列模式 |
-| `CallerRunsPolicy` | 由调用者线程直接执行（背压） | — |
+| `BlockPolicy` | 阻塞等待直到获取许可 | 队列模式 |
+| `CallerRunsPolicy` | 由调用者线程直接执行（背压） | 快速模式 |
+| `FailFastPolicy` | 抛出 `RejectedExecutionException` | — |
 | `DiscardPolicy` | 静默丢弃任务 | — |
 
 ```java
-// 队列模式：并发 100、队列 1000，队列满则快速失败
+// 队列模式：并发 100、队列 1000，队列满则阻塞提交线程（BlockPolicy）
 LimitedVirtualThreadExecutor executor = new LimitedVirtualThreadExecutor("my-task-", 100, 1000);
 executor.submit(() -> doSomething());
 executor.shutdown();
