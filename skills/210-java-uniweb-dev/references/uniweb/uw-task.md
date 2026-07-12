@@ -307,7 +307,7 @@ public NotifyResult runTask(TaskData<OrderNotifyParam, NotifyResult> taskData) t
 | retryTimesByProgram | int | 0 | 程序异常重试次数（默认 0 不重试） |
 | alertFailRate / alertFailProgramRate / alertFailPartnerRate | int | — | 失败率报警阈值（%） |
 | alertRunTimeout | int | — | 平均运行耗时报警（毫秒） |
-| alertDelayOvertime | int | — | **Delayer 特有**：实际执行晚于 runAt 的平均超时报警（毫秒） |
+| alertWaitTimeout | int | — | Delayer 语义为"延迟超时"（实际执行晚于 runAt 的平均毫秒），区别于 Runner/Croner 的队列等待超时 |
 | logLevel | int | 0 | 日志类型，复用 `TaskRunnerConfig.TASK_LOG_TYPE_*` |
 
 **投递**：`taskFactory.delayTask(taskData)` — 完全异步、无返回值。taskData 需设 `taskClass`（TaskDelayer 实现类）+ `taskDelay`（延迟毫秒）+ `taskParam`。
@@ -329,7 +329,7 @@ public class OrderTimeoutTask extends TaskDelayer<OrderTimeoutParam, Void> {
         config.setConsumerNum(5);
         config.setPollInterval(3);
         config.setRetryTimesByPartner(3);       // 第三方失败：总计执行 4 次（1+3）
-        config.setAlertDelayOvertime(5000);     // 延迟超时报警（毫秒）
+        config.setAlertWaitTimeout(5000);     // 延迟超时报警（毫秒）
         return config;
     }
 
@@ -349,6 +349,8 @@ taskFactory.delayTask(data);
 ```
 
 > 与 TaskRunner 的选择：需"X 时间后执行"用 **TaskDelayer**（Redis zset，无队头阻塞）；需异步队列消费用 **TaskRunner**（RabbitMQ）。TaskRunner 的 `taskDelay` + `delayType=TYPE_DELAY_ON` 走 MQ 死信延时，有长延时阻塞短延时问题，优先用 TaskDelayer。
+
+> **按延时量级选型**：TaskDelayer 基于 zset poll、到期即执行（精度 ≈ `pollInterval`，默认 3s），适合**分钟级**延时（订单超时关单、回调通知、短时重试）；任务到期前常驻 Redis，**天级别及以上的长延时不宜用 TaskDelayer**（海量未来任务长期占内存 + poll 反复空扫），改用 **TaskCroner 定时扫表**——业务表记录到期时间，cron 周期扫描 `expire_time <= NOW()` 命中后触发执行，DB 持久化、可分页/游标增量、重启不丢。
 
 ## TaskFactory
 
