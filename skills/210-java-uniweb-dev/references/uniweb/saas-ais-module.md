@@ -55,7 +55,7 @@ AIS 模块提供可插拔的应用接口服务管理框架，通过 Linker（链
 
 ## JsonConfigParam
 
-`JsonConfigParam` 是接口（`uw.common.app.vo.JsonConfigParam`），通过**枚举实现**定义配置参数，不能用 `new` 实例化。完整方法表与枚举定义模板见 [uw-common-app.md](uw-common-app.md)「JsonConfigParam」。
+`JsonConfigParam` 是接口（`uw.common.vo.JsonConfigParam`），通过**枚举实现**定义配置参数，不能用 `new` 实例化。完整方法表与枚举定义模板见 [uw-common-app.md](uw-common-app.md)「JsonConfigParam」。
 
 > Linker 场景特有：`apiParam()`/`pubParam()`/`sysParam()`/`logParam()` 返回的 `List<JsonConfigParam>` 是编译期枚举集合（如 `Arrays.asList(WechatPayApiParam.values())`），参数定义本身不存库、不走 JSON 反序列化；存库的是用户填的配置数据（`pubData`/`apiData`/`sysData` JSON）。
 

@@ -872,3 +872,154 @@ updateExecutor.submit(() -> updateLastVisitTime(id));
 | `ExceptionUtils` | `exceptionToString(Throwable)` | 过滤框架堆栈的异常格式化（GlobalExceptionAdvice 使用） |
 
 > DigestUtils 见 [上文独立章节](#digestutils)，SystemClock 见 [上文独立章节](#systemclock)。
+
+---
+
+## constant 包 — 常量/枚举/响应码
+
+> 从 uw-common-app 迁入，包路径 `uw.common.constant`。
+
+### CommonConstants
+
+| 常量 | 值 | 说明 |
+|------|-----|------|
+| `EMPTY` / `SPACE` / `NULL` | `""` / `" "` / `"null"` | 空白常量 |
+| `EMPTY_JSON` | `"{}"` | 空 JSON |
+| `COLON` / `COMMA` / `SEMICOLON` | `:` / `,` / `;` | 分隔符 |
+| `ACCEPT_LANG` | `"Accept-Language"` | 请求头语言 |
+| `UTF_8` | `"UTF-8"` | 字符编码 |
+
+### CommonState — 通用状态枚举
+
+| 值 | 含义 |
+|------|------|
+| DELETED(-1) | 标记删除 |
+| DISABLED(0) | 禁用 |
+| ENABLED(1) | 启用 |
+
+方法：`valueOf(int)` / `getValue()` / `getLabel()`
+
+### CommonResponseCode — 通用响应码
+
+实现 ResponseCode，codePrefix = `uw.common`，i18n：`i18n/messages/uw_common`。
+
+| 枚举值 | 默认消息 |
+|--------|---------|
+| ENTITY_LIST/LOAD/SAVE/UPDATE/DELETE_ERROR | 数据列表/加载/保存/更新/删除失败 |
+| ENTITY_EXISTS_ERROR | 数据已存在 |
+| ENTITY_NOT_FOUND_ERROR | 数据未找到 |
+| ENTITY_STATE_ERROR | 数据状态错误 |
+
+### ValidateResponseCode — 校验响应码
+
+实现 ResponseCode，codePrefix = `uw.validate`，i18n：`i18n/messages/uw_validate`。
+
+| 枚举值 | 默认消息 |
+|--------|---------|
+| NOT_NULL / NOT_EMPTY | 不能为NULL / 不能为空 |
+| VALUE_TOO_SMALL / VALUE_TOO_LARGE | 不能小于最小值 / 不能大于最大值 |
+| LENGTH_TOO_SHORT / LENGTH_TOO_LONG | 不能小于最小长度 / 不能大于最大长度 |
+| DATA_FORMAT_ERROR / REGEX_FORMAT_ERROR | 数据格式错误 / 正则校验格式错误 |
+
+---
+
+## helper 包 — 工具类
+
+> 从 uw-common-app 迁入，包路径 `uw.common.helper`。
+
+### JsonConfigHelper — JSON配置参数
+
+全部静态方法。通过 `JsonConfigParam`（枚举）定义配置参数，构建 `JsonConfigBox` 获取强类型参数。
+
+| 方法 | 说明 |
+|------|------|
+| `buildParamBox(List<JsonConfigParam>, String json)` | 从 JSON 构建 |
+| `buildParamBox(List<JsonConfigParam>, Map data)` | 从 Map 构建 |
+| `validateConfigData(List<JsonConfigParam>, Map/String)` | 校验配置数据，返回 `ResponseData<List<ValidateResult>>` |
+
+> ⚠️ 参数定义（`List<JsonConfigParam>`）必须是编译期枚举（如 `MyConfig.values()`），`JsonConfigParam` 是接口，Jackson 无法反序列化。
+
+### SchemaValidateHelper — Schema注解校验
+
+基于 `@Schema` 注解自动校验 VO 对象（Caffeine 缓存反射元数据）。
+
+```java
+List<ValidateResult> errors = SchemaValidateHelper.validate(form);
+```
+
+| @Schema 属性 | 校验行为 |
+|------|---------|
+| `requiredMode = REQUIRED` | 非空校验 |
+| `minimum` / `maximum` | 数值范围 |
+| `minLength` / `maxLength` | 字符串长度 |
+| `pattern` | 正则校验 |
+
+### QueryParamHelper — URL查询参数构建
+
+将 QueryParam 对象属性展开为 URI 查询参数（Caffeine 缓存反射元数据）。
+
+```java
+String url = QueryParamHelper.buildUriWithParams("/api/list", queryParam);
+// → /api/list?name=foo&$pg=1&$rn=20
+```
+
+自动映射 PageQueryParam 魔法参数（PAGE→$pg 等），过滤 Auth 系参数，支持数组/Iterable 展开。
+
+---
+
+## vo 包 — 值对象
+
+> 从 uw-common-app 迁入，包路径 `uw.common.vo`。
+
+### JsonConfigBox — JSON配置参数盒子
+
+从 `Map<String, String>` 获取强类型参数值。`EMPTY_PARAM_BOX` 常量用于空配置。
+
+| 方法类别 | 说明 |
+|---------|------|
+| `getParam(name[, default])` | String，默认空串 |
+| `getIntParam` / `getLongParam` / `getFloatParam` / `getDoubleParam` | 数值类型（均含 default 版 + 数组版） |
+| `getBooleanParam` | boolean（含 default + 数组） |
+| `getMapParam` | `Map<String, String>` |
+
+> 所有 getXxx 方法也支持传入 `JsonConfigParam` 枚举作为参数。
+
+### JsonConfigParam — 配置参数定义接口
+
+使用枚举实现。实现类只需提供 `getParamData()`（返回 `ParamData`），`getKey()` 由枚举名自动派生，`getType/getValue/getTitle/getRegex` 由接口 default 委托。
+
+| 方法 | 返回 | 说明 |
+|------|------|------|
+| `getParamData()` | ParamData | **唯一抽象方法**（type/value/title/regex） |
+| `getKey()` | String | **default**，枚举名→点分隔（`MAX_TOKENS`→`max.tokens`） |
+| `getTitle()` | String | **default** 原始标题（`@JsonIgnore`） |
+| `getLocalizedTitle()` | String | **default** i18n 出口（`@JsonProperty("title")`），缺失回退 getTitle() |
+| `configPrefix()` | String | **default null**，i18n 资源前缀（可选） |
+
+**ParamType 枚举**：STRING/TEXT/TEXT_RICH/INT/LONG/BOOLEAN/FLOAT/DOUBLE/DATE/TIME/DATETIME/ENUM/MAP（及 SET_ 集合变体）。
+
+```java
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+public enum SystemConfig implements JsonConfigParam {
+    SITE_NAME(ParamType.STRING, "MySite", "站点名称", null),
+    MAX_UPLOAD_SIZE(ParamType.INT, "10485760", "最大上传大小", null),
+    ;
+    private final ParamData paramData;
+    SystemConfig(ParamType type, String value, String title, String regex) {
+        this.paramData = new ParamData(type, value, title, regex);
+    }
+    @Override public ParamData getParamData() { return paramData; }
+}
+```
+
+> ⚠️ 枚举必须标注 `@JsonFormat(shape = JsonFormat.Shape.OBJECT)`，否则 Jackson 序列化为枚举名而非对象。
+
+### ValidateResult — 校验结果
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| name | String | 属性名 |
+| title | String | 属性描述 |
+| errorCode | String | 完整错误码 |
+| errorMsg | String | 国际化错误信息 |
+| refData | String | 参考数据 |

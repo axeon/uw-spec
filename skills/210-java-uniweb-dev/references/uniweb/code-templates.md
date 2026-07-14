@@ -676,8 +676,8 @@ import {package}.constant.{Module}ResponseCode;
 import {package}.entity.*;
 import uw.cache.FusionCache;
 import uw.cache.CacheDataLoader;
-import uw.common.app.constant.CommonResponseCode;
-import uw.common.app.constant.CommonState;
+import uw.common.constant.CommonResponseCode;
+import uw.common.constant.CommonState;
 import uw.common.app.dto.AuthIdQueryParam;
 import uw.common.response.ResponseData;
 import uw.common.util.SystemClock;
@@ -747,7 +747,7 @@ public class {Module}Helper {
 }
 ```
 
-> **按需引入**：`uw.cache.GlobalCache`、`uw.cache.GlobalLocker`、`uw.common.app.constant.CommonState`、`uw.common.app.constant.CommonResponseCode` 等按实际业务需要引入。
+> **按需引入**：`uw.cache.GlobalCache`、`uw.cache.GlobalLocker`、`uw.common.constant.CommonState`、`uw.common.constant.CommonResponseCode` 等按实际业务需要引入。
 > FusionCache Config（缓存容量、过期时间）和 CacheDataLoader（数据加载器签名）在 Helper 的 `static {}` 块中一次性完成。GlobalCache 不需要 static 初始化（直接用 `GlobalCache.get(...)` 带行内 CacheDataLoader），但 FusionCache 必须在类加载时完成 config。
 
 ### Helper 间调用参考示例

@@ -4,27 +4,27 @@
 
 ## 架构概览
 
-UniWeb 是一套基于 **Spring Boot 3.5** 和 **Spring Cloud 2025** 构建的企业级微服务架构体系。采用模块化设计，由基础类库集合（uw-base）和多个微服务组成，提供从数据访问、缓存管理、认证授权到任务调度、日志收集、运维管理等全方位的基础设施支持。
+UniWeb 是一套基于 **Spring Boot 4.1** 和 **Spring Cloud 2025.1** 构建的企业级微服务架构体系。采用模块化设计，由基础类库集合（uw-base）和多个微服务组成，提供从数据访问、缓存管理、认证授权到任务调度、日志收集、运维管理等全方位的基础设施支持。
 
 ### 整体架构
 
-业务应用 → uw-gateway 统一入口（SSL/ACL/限流/负载均衡/HTTP2） → UniWeb微服务层（11个微服务） → 基础类库层（uw-base，10个模块） → 基础设施层（MySQL/Redis/RabbitMQ/Nacos/ES）。微服务通过 Nacos 注册发现，引入 uw-base 类库依赖。
+业务应用 → uw-gateway 统一入口（SSL/ACL/限流/负载均衡/HTTP2） → UniWeb微服务层（11个微服务） → 基础类库层（uw-base，20个模块含 uw-nacos-client） → 基础设施层（MySQL/Redis/RabbitMQ/Nacos/ES）。微服务通过 Nacos 注册发现，引入 uw-base 类库依赖。
 
 ### 技术版本基线
 
-| 技术 | 版本 | 说明 |
-|------|------|------|
-| Java | 21+ | 必须 Java 21 或更高 |
-| Spring Boot | 3.5 | 基础框架 |
-| Spring Cloud | 2025 | 微服务框架 |
-| Spring Cloud Alibaba | 2023.0.1.2 | Nacos 注册/配置中心 |
-| Maven | 3.8+ | 构建工具 |
-| MySQL | 8.4+ | 数据存储 |
-| Redis | 8.2+ | 缓存/分布式锁/序列 |
-| RabbitMQ | 3.10+ | 任务队列 |
-| Elasticsearch | 8.x | 日志存储与搜索 |
-| Docker | - | 容器化部署 |
-| Nacos | - | 服务注册与配置中心 |
+| 技术 | 版本     | 说明 |
+|------|--------|------|
+| Java | 25+    | 必须 Java 25 或更高 |
+| Spring Boot | 4.1    | 基础框架 |
+| Spring Cloud | 2025.1 | 微服务框架 |
+| uw-nacos-client | 1.0.0  | Nacos 注册/配置中心（脱离 Spring Cloud Alibaba）|
+| Maven | 3.8+   | 构建工具 |
+| MySQL | 9.7+   | 数据存储 |
+| Redis | 8.8+   | 缓存/分布式锁/序列 |
+| RabbitMQ | 4.3+   | 任务队列 |
+| Elasticsearch | 8.x    | 日志存储与搜索 |
+| Docker | -      | 容器化部署 |
+| Nacos | -      | 服务注册与配置中心 |
 
 ## UniWeb微服务
 

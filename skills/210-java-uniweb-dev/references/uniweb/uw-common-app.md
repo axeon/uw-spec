@@ -8,15 +8,11 @@
 
 | 我要做什么 | 用什么 | 关键约束 |
 |-----------|--------|---------|
-| 实体状态 | `CommonState.ENABLED/DISABLED/DELETED` | 禁止硬编码 0/1/-1 |
-| 通用响应码 | `CommonResponseCode.ENTITY_NOT_FOUND_ERROR` 等 | 实现 ResponseCode 接口 |
-| 校验响应码 | `ValidateResponseCode.NOT_NULL/NOT_EMPTY` 等 | 实现 ResponseCode 接口 |
-| Schema校验 | `SchemaValidateHelper.validate(form)` | 基于 @Schema 注解 |
 | 权限查询参数 | `AuthQueryParam`（自动注入saasId） | 仅限 Controller 层 |
 | 指定ID查询 | `new AuthIdQueryParam(saasId, id)` | Helper 层可用 |
 | 数据历史记录 | `SysDataHistoryHelper.saveHistory(entity, remark)` | 更新前保存 |
-| JSON配置 | `JsonConfigHelper.buildParamBox(params, json)` | 返回 JsonConfigBox |
-| URL参数构建 | `QueryParamHelper.buildUriWithParams(url, param)` | 自动展开查询参数 |
+
+> 以下能力已迁移到 uw-common：常量/响应码（CommonConstants/CommonState/CommonResponseCode/ValidateResponseCode）、JSON 配置（JsonConfigHelper/JsonConfigBox/JsonConfigParam）、Schema 校验（SchemaValidateHelper）、URL 参数构建（QueryParamHelper）、校验结果（ValidateResult）——详见 [uw-common.md](uw-common.md)。
 
 ## AppBootStrap — 应用启动引导
 
@@ -45,77 +41,9 @@ public static void main(String[] args) {
 | `enableCritLog` | boolean | true | 是否开启 CritLog 数据落库 |
 | `localeDefault` | Locale | zh_CN | 默认语言（Accept-Language 缺失或匹配失败时使用） |
 | `localeList` | List\<Locale\> | 12 种已覆盖语言 | 可选语言列表（参与 Accept-Language 匹配，默认收窄避免全量 Locale 的 lookup 开销） |
-| `shutdownTimeout` | Duration | 3s | Nacos 反注册后预留的优雅停机等待时长 |
 | `disableSwagger` | boolean | false | 是否禁用 Swagger 接口 |
 
-## 预置常量/枚举
-
-### CommonConstants — 常用常量
-
-> **包路径**：`uw.common.app.constant.CommonConstants`
-
-| 常量 | 值 | 说明 |
-|------|-----|------|
-| `EMPTY` | `""` | 空字符串 |
-| `SPACE` | `" "` | 空格字符串 |
-| `NULL` | `"null"` | null 字符串 |
-| `EMPTY_JSON` | `"{}"` | 空 JSON |
-| `COLON` / `COMMA` / `SEMICOLON` | `:` / `,` / `;` | 分隔符 |
-| `COMMA_CHAR` / `STAR` / `DOT` | 字符常量 | 单字符 |
-| `SLASH` / `BACK_SLASH` | `/` / `\` | 斜杠 |
-| `NEWLINE` / `TAB` | `\n` / `\t` | 控制符 |
-| `IO_BUFFER_SIZE` | 16384 | IO 缓冲区大小 |
-| `ACCEPT_LANG` | `"Accept-Language"` | 请求头语言 |
-| `UTF_8` | `"UTF-8"` | 字符编码 |
-
-### CommonState — 通用状态枚举
-
-| 值 | 含义 |
-|------|------|
-| DELETED(-1) | 标记删除 |
-| DISABLED(0) | 禁用 |
-| ENABLED(1) | 启用 |
-
-方法：`valueOf(int)` — 匹配不上返回 DELETED / `getValue()` / `getLabel()`
-
-```java
-entity.setState(CommonState.ENABLED.getValue());
-if (user.getState() == CommonState.DISABLED.getValue()) { ... }
-```
-
-### CommonResponseCode — 通用响应码
-
-实现 ResponseCode 接口，codePrefix = `uw.common`，i18n 资源：`i18n/messages/uw_common`。
-
-| 枚举值 | 默认消息 |
-|--------|---------|
-| ENTITY_LIST_ERROR | 数据列表失败 |
-| ENTITY_LOAD_ERROR | 数据加载失败 |
-| ENTITY_SAVE_ERROR | 数据保存失败 |
-| ENTITY_UPDATE_ERROR | 数据更新失败 |
-| ENTITY_DELETE_ERROR | 数据删除失败 |
-| ENTITY_EXISTS_ERROR | 数据已存在 |
-| ENTITY_NOT_FOUND_ERROR | 数据未找到 |
-| ENTITY_STATE_ERROR | 数据状态错误 |
-
-```java
-return ResponseData.warnCode(CommonResponseCode.ENTITY_NOT_FOUND_ERROR);
-```
-
-### ValidateResponseCode — 校验响应码
-
-实现 ResponseCode 接口，codePrefix = `uw.validate`，i18n 资源：`i18n/messages/uw_validate`。
-
-| 枚举值 | 默认消息 |
-|--------|---------|
-| NOT_NULL | 不能为NULL |
-| NOT_EMPTY | 不能为空 |
-| VALUE_TOO_SMALL | 不能小于最小值 |
-| VALUE_TOO_LARGE | 不能大于最大值 |
-| LENGTH_TOO_SHORT | 不能小于最小长度 |
-| LENGTH_TOO_LONG | 不能大于最大长度 |
-| DATA_FORMAT_ERROR | 数据格式错误 |
-| REGEX_FORMAT_ERROR | 正则校验格式错误 |
+> **注**：优雅停机已交由 uw-nacos-client 的 `NacosGracefulShutdownDelegate` 负责（`spring.cloud.nacos.discovery.graceful-shutdown-wait-time` 控制，默认 10s），本模块不再参与。Swagger 禁用与 LB 缓存禁用由 `CommonAppEnvPostProcessor` 在环境准备阶段注入默认项（可被 application.yml 覆盖）。
 
 ## 预置 QueryParam
 
@@ -262,186 +190,6 @@ result.onSuccess(updated -> {
 });
 ```
 
-### JsonConfigHelper — JSON配置参数
-
-> **包路径**：`uw.common.app.helper.JsonConfigHelper`
-
-全部静态方法。通过 JsonConfigParam 定义配置参数，构建 JsonConfigBox 获取结构化和类型化参数。
-
-**构建方法**：
-
-| 方法 | 说明 |
-|------|------|
-| `buildParamBox(List<JsonConfigParam>, String json)` | 从 JSON 数据构建 |
-| `buildParamBox(List<JsonConfigParam>, Map data)` | 从 Map 构建 |
-
-**校验方法**：
-
-| 方法 | 说明 |
-|------|------|
-| `validateConfigData(List<JsonConfigParam>, Map data)` | 校验配置数据 |
-| `validateConfigData(List<JsonConfigParam>, String json)` | 校验配置数据 |
-
-返回 `ResponseData<List<ValidateResult>>`：校验通过返回 `success`（data 为空），失败时 state=error 且 data 为校验结果列表。
-
-> ⚠️ 配置参数定义（`List<JsonConfigParam>`）必须是编译期枚举（如 `MyConfig.values()`），不存在"从 JSON 反序列化参数定义"的重载——`JsonConfigParam` 是接口，Jackson 无法反序列化。配置**数据**（用户填的值）才走 JSON/Map 入参。
-
-### SchemaValidateHelper — Schema注解校验
-
-> **包路径**：`uw.common.app.helper.SchemaValidateHelper`
-
-基于 `@Schema` 注解自动校验 VO 对象。使用 Caffeine 缓存反射元数据。
-
-```java
-List<ValidateResult> errors = SchemaValidateHelper.validate(form);
-if (!errors.isEmpty()) {
-    return ResponseData.error(errors, "", "数据校验失败！");
-}
-```
-
-支持的 `@Schema` 校验规则：
-
-| 属性 | 校验行为 |
-|------|---------|
-| `requiredMode = REQUIRED` | 非空校验 |
-| `minimum` / `maximum` | 数值范围校验 |
-| `minLength` / `maxLength` | 字符串长度校验 |
-| `pattern` | 正则校验 |
-
-### QueryParamHelper — URL查询参数构建
-
-> **包路径**：`uw.common.app.helper.QueryParamHelper`
-
-将 QueryParam 对象属性展开为 URI 查询参数。使用 Caffeine 缓存反射元数据。
-
-```java
-String url = QueryParamHelper.buildUriWithParams("/api/list", queryParam);
-// → /api/list?name=foo&$pg=1&$rn=20
-```
-
-**特性**：
-- 自动映射 PageQueryParam 魔法参数（PAGE→$pg, RESULT_NUM→$rn, START_INDEX→$si, REQUEST_TYPE→$rt, SORT_NAME→$sn, SORT_TYPE→$st）
-- 过滤 Auth 系参数（saasId / userId / mchId / userType）
-- 支持 数组 / Iterable 类型展开为多值参数
-
-## VO 值对象
-
-### JsonConfigBox — JSON配置参数盒子
-
-> **包路径**：`uw.common.app.vo.JsonConfigBox`
-
-从 `Map<String, String>` 获取强类型参数值。`EMPTY_PARAM_BOX` 常量用于空配置。
-
-| 方法 | 返回类型 | 说明 |
-|------|---------|------|
-| `getParam(name)` | String | 默认空字符串 |
-| `getParam(name, default)` | String | 带默认值 |
-| `getParams(name)` | String[] | 数组 |
-| `getIntParam(name)` / `getIntParam(name, default)` | int | 整数 |
-| `getIntParams(name)` | int[] | 整数数组 |
-| `getLongParam(name)` / `getLongParam(name, default)` | long | 长整数 |
-| `getLongParams(name)` | long[] | 长整数数组 |
-| `getFloatParam(name)` / `getFloatParam(name, default)` | float | 浮点 |
-| `getFloatParams(name)` | float[] | 浮点数组 |
-| `getDoubleParam(name)` / `getDoubleParam(name, default)` | double | 双精度 |
-| `getDoubleParams(name)` | double[] | 双精度数组 |
-| `getBooleanParam(name)` / `getBooleanParam(name, default)` | boolean | 布尔 |
-| `getBooleanParams(name)` | boolean[] | 布尔数组 |
-| `getMapParam(name)` | `Map<String, String>` | Map |
-
-> 所有 getXxx 方法也支持传入 `JsonConfigParam` 枚举作为参数。
-
-### JsonConfigParam — 配置参数定义接口
-
-> **包路径**：`uw.common.app.vo.JsonConfigParam`
-
-使用枚举实现此接口定义配置参数。实现类只需提供 {@link #getParamData()}（返回 `ParamData` 元数据载体），`getKey()` 由枚举名自动派生，`getType/getValue/getTitle/getRegex` 由接口 default 委托 `getParamData()`。`getLocalizedTitle()` 自动按 Locale 国际化。
-
-**接口方法**：
-
-| 方法 | 返回类型 | 说明 |
-|------|---------|------|
-| `getParamData()` | ParamData | **唯一抽象方法**，返回元数据载体（type/value/title/regex） |
-| `getKey()` | String | **default**，由枚举名自动派生（`MAX_TOKENS` → `max.tokens`） |
-| `getType()` | ParamType | **default**，委托 `getParamData().getType()` |
-| `getValue()` | String | **default**，委托 `getParamData().getValue()` |
-| `getTitle()` | String | **default**，委托 `getParamData().getTitle()`。原始标题（兜底文案），`@JsonIgnore` 不直接序列化 |
-| `getLocalizedTitle()` | String | **default**，按当前 Locale i18n（`@JsonProperty("title")` 输出），缺失回退 `getTitle()` |
-| `getRegex()` | String | **default**，委托 `getParamData().getRegex()` |
-| `configPrefix()` | String | **default null**，i18n 资源前缀（可选） |
-
-> ⚠️ **i18n 双方法模式（与 ResponseCode 同构）**：`getTitle()` 是原始值（`@JsonIgnore` 不输出），`getLocalizedTitle()` 是 i18n 出口（`@JsonProperty("title")` 输出）。即便实现类误覆写 i18n 出口，原始标题也不会泄漏到 JSON。
-
-**i18n basename 自动推导**：`messageSource()` 按 `configPrefix()` 推导 basename = `i18n/config/<前缀点转下划线>`（如 `openai.config` → `i18n/config/openai_config`），与 `ResponseCode` 的 `i18n/messages/` 目录对称区分（配置参数标题 vs 响应码文案）。资源 key 约定为 `getKey()`。未配置 `configPrefix()` 时 `getLocalizedTitle()` 直接返回原始标题。
-
-**ParamType 枚举**：
-
-| 类型 | 值 | 说明 |
-|------|-----|------|
-| STRING | string | 字符串 |
-| SET_STRING | set\<string\> | 字符串集合 |
-| TEXT | text | 长文本 |
-| TEXT_RICH | textRich | 富文本 |
-| INT | int | 整数 |
-| SET_INT | set\<int\> | 整数集合 |
-| LONG | long | 长整数 |
-| SET_LONG | set\<long\> | 长整数集合 |
-| BOOLEAN | boolean | 布尔 |
-| SET_BOOLEAN | set\<boolean\> | 布尔集合 |
-| FLOAT | float | 浮点 |
-| SET_FLOAT | set\<float\> | 浮点集合 |
-| DOUBLE | double | 双精度 |
-| SET_DOUBLE | set\<double\> | 双精度集合 |
-| DATE | date | 日期 |
-| SET_DATE | set\<date\> | 日期集合 |
-| TIME | time | 时间 |
-| SET_TIME | set\<time\> | 时间集合 |
-| DATETIME | datetime | 日期时间 |
-| SET_DATETIME | set\<datetime\> | 日期时间集合 |
-| ENUM | enum | 枚举 |
-| SET_ENUM | set\<enum\> | 枚举集合 |
-| MAP | map | Map 类型 |
-
-**枚举定义模板**：
-
-```java
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
-public enum SystemConfig implements JsonConfigParam {
-    SITE_NAME(ParamType.STRING, "MySite", "站点名称", null),
-    MAX_UPLOAD_SIZE(ParamType.INT, "10485760", "最大上传大小", null),
-    ;
-
-    private final ParamData paramData;
-
-    SystemConfig(ParamType type, String value, String title, String regex) {
-        this.paramData = new ParamData(type, value, title, regex);
-    }
-
-    @Override
-    public ParamData getParamData() {
-        return paramData;
-    }
-    // 启用 i18n 时覆写（资源 → i18n/config/system_config）：
-    // @Override public String configPrefix() { return "system.config"; }
-}
-```
-
-> `ParamData` 载体承载 type/value/title/regex 四项元数据；`key` 不在载体中（由接口 `getKey()` 从枚举名自动派生，避免实现类手写 `enumNameToDotCase(name())`）。需要 i18n 时覆写 `configPrefix()` 返回逻辑前缀（如 `system.config`），并配套 `i18n/config/system_config*.properties` 资源文件。
-
-> ⚠️ **实现枚举必须标注 `@JsonFormat(shape = JsonFormat.Shape.OBJECT)`**。否则 Jackson 默认把枚举序列化为枚举名字符串（`"SITE_NAME"`），前端拿不到 `{key,type,value,title,regex}` 对象。该注解决定序列化形态，与接口的 default 方法/`@JsonProperty` 无关。
-
-### ValidateResult — 校验结果
-
-> **包路径**：`uw.common.app.vo.ValidateResult`
-
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| name | String | 属性名 |
-| title | String | 属性描述 |
-| errorCode | String | 完整错误码（含前缀） |
-| errorMsg | String | 国际化错误信息 |
-| refData | String | 参考数据（如最小值/最大值） |
-
 ## Entity 实体类
 
 ### SysCritLog — 系统关键日志
@@ -511,15 +259,6 @@ public enum SystemConfig implements JsonConfigParam {
 - `uw-dao` 的 `QueryParamUtils.loadQueryParamMetaInfo` 会遍历整个继承链收集 `@QueryMeta`，子类与父类同名字段会导致同一 WHERE 条件被注入两次，且反射读取到错误的对象字段。
 - 如需新增权限维度（如 `groupId`），使用父类未占用的名称；`SysCritLogQueryParam` / `SysDataHistoryQueryParam` 已删除重复字段，仅保留父类未定义的 `groupId`。
 
-### JsonConfigHelper 全部为静态方法
-
-`JsonConfigHelper` 的 `buildParamBox` 与 `validateConfigData` **均为 static**，无需实例化即可调用：
-
-```java
-JsonConfigHelper.validateConfigData(params, json);   // ✅
-new JsonConfigHelper().validateConfigData(params, json); // ❌ 多余
-```
-
 ### 关键日志（CritLog）可靠性
 
 `SysCritLogStorageService` 通过虚拟线程异步落库，应用关闭时 `@PreDestroy shutdown` 会调用 `awaitTermination(10s)` 等待未完成任务完成；超时则 `shutdownNow` 并打印告警。落库失败仅记录错误日志，不影响主流程。可通过 `uw.common.app.enableCritLog=false` 关闭。
@@ -527,22 +266,6 @@ new JsonConfigHelper().validateConfigData(params, json); // ❌ 多余
 ### Nacos 依赖为可选
 
 `CommonAppAutoConfiguration` 通过 `ObjectProvider` 注入 `NacosAutoServiceRegistration`，**未启用 Nacos 服务发现的应用（如非 cloud 应用、本地测试）也能正常装配**。优雅停机逻辑在无 Nacos 时自动跳过。
-
-### LoadBalancer 缓存策略（系统设计）
-
-`CommonAppAutoConfiguration` 注册 `@Primary` 的 `LoadBalancerCacheManager` 返回 `NoOpCache`，**全局禁用** Spring LoadBalancer 缓存层，使每次请求直连 Nacos 获取实例列表，实现秒级感知服务上下线。此为系统级设计，**不要移除或改为有缓存实现**。
-
-### QueryParamHelper URL 构建
-
-`QueryParamHelper.buildUriWithParams` 将 QueryParam 展开为 URL 查询参数：
-
-- 自动映射 PageQueryParam 魔法参数（PAGE→`$pg` 等）；
-- 过滤 Auth 系字段与魔法字段；
-- **兼容基本类型数组**（int[]/long[]），不会因强转 `Object[]` 抛 CCE 而静默丢失参数。
-
-### SchemaValidateHelper 继承链校验
-
-`SchemaValidateHelper` 解析 `@Schema` 时**遍历整个继承链**（子类优先），父类带 `@Schema` 的字段同样参与校验；`minimum`/`maximum` 解析失败时按"不校验"处理（返回 NaN），不会中断整个类的解析。
 
 ### i18n 资源覆盖
 

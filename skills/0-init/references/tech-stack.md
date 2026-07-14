@@ -4,15 +4,15 @@
 
 ## 后端
 
-| 组件 | 版本 | 用途 |
-|------|------|------|
-| uw-base | 2026.x.x | UniWeb架构 |
-| saas-base | 2026.x.x | Saas架构 |
-| Spring Boot | 3.x | 微服务框架 |
-| Nacos | 2.3.2 | 配置中心 |
-| MySQL | 8.4 | 数据库 |
-| Redis | 8.2 | 缓存 |
-| RabbitMQ | - | 消息队列 |
+| 组件 | 版本        | 用途 |
+|------|-----------|------|
+| uw-base | 2026.0800 | UniWeb架构 |
+| saas-base | 2026.x.x  | Saas架构 |
+| Spring Boot | 4.1       | 微服务框架 |
+| Nacos | 3.0+      | 配置中心 |
+| MySQL | 9.7+      | 数据库 |
+| Redis | 8.8+      | 缓存 |
+| RabbitMQ | 4.3+      | 消息队列 |
 
 ### uw-base核心模块
 

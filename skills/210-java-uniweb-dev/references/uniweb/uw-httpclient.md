@@ -113,7 +113,7 @@ public JsonInterfaceHelper(HttpConfig httpConfig,
 helper.getForEntity(url, new TypeReference<List<User>>(){});
 helper.getForEntity(url, new TypeReference<Map<String,User>>(){}, params);
 // JavaType
-JavaType type = helper.getObjectMapper().constructParametricType(List.class, User.class);
+JavaType type = helper.getJsonMapper().constructParametricType(List.class, User.class);
 helper.getForEntity(url, type);
 ```
 
@@ -291,7 +291,7 @@ helper.getOkHttpClient().dispatcher(); // 兜底：可直接拿 client 做更多
 ```java
 import uw.httpclient.json.JsonInterfaceHelper;
 import uw.httpclient.http.*;
-import com.fasterxml.jackson.core.type.TypeReference;
+import tools.jackson.core.type.TypeReference;
 import java.util.*;
 
 public class HttpHelper {

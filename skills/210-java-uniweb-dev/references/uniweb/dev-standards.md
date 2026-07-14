@@ -557,7 +557,7 @@ return ResponseData.errorCode(CommonResponseCode.ENTITY_UPDATE_ERROR);
 |-----------|--------|--------|
 | `System.currentTimeMillis()` | `SystemClock.now()` / `SystemClock.nowDate()` | `uw.common.util.SystemClock` |
 | `new SimpleDateFormat(...)` | `DateTools.dateToString()` / `DateTools.stringToDate()` | `uw.common.util.DateTools` |
-| `new ObjectMapper()` / 手写 JSON 序列化 | `JsonUtils.toString()` / `JsonUtils.parse()` | `uw.common.util.JsonUtils` |
+| `new ObjectMapper()` / 手写 JSON 序列化 | `JsonUtils.toString()` / `JsonUtils.parse()` / `JsonUtils.getJsonMapper()` | `uw.common.util.JsonUtils` |
 | 手写 MD5/SHA256 | `DigestUtils.signHex(msg, Algorithm.SHA_256)` — 无独立 md5/sha256 方法 | `uw.common.util.DigestUtils` |
 | 手写 AES 加密 | `AESUtils.encryptString()` / `BizAESBox` | `uw.common.util` |
 | 手写金额计算（double/BigDecimal） | `MoneyUtils`（long 分单位） | `uw.common.util.MoneyUtils` |
@@ -565,10 +565,10 @@ return ResponseData.errorCode(CommonResponseCode.ENTITY_UPDATE_ERROR);
 | 手写 IP 匹配/CIDR | `IpMatchUtils.sortList()` 后 `matches()` | `uw.common.util.IpMatchUtils` |
 | `Math.random()` / `Random` 生成 ID | `SnowflakeIdGenerator.getInstance().generateId()` | `uw.common.util.SnowflakeIdGenerator` |
 | 手写位运算开关 | `BitConfigUtils.isOn()` / `on()` / `off()` | `uw.common.util.BitConfigUtils` |
-| 硬编码状态值 0/1/-1 | `CommonState.ENABLED/DISABLED/DELETED` | `uw.common.app.constant.CommonState` |
-| 硬编码错误消息字符串 | `ResponseData.warnCode(CommonResponseCode.XXX)` | `uw.common.app.constant.CommonResponseCode` |
-| 手写 `@Schema` 校验逻辑 | `SchemaValidateHelper.validate(entity)` | `uw.common.app.helper.SchemaValidateHelper` |
-| 手写 URL 查询参数拼接 | `QueryParamHelper.buildUriWithParams(url, param)` | `uw.common.app.helper.QueryParamHelper` |
+| 硬编码状态值 0/1/-1 | `CommonState.ENABLED/DISABLED/DELETED` | `uw.common.constant.CommonState` |
+| 硬编码错误消息字符串 | `ResponseData.warnCode(CommonResponseCode.XXX)` | `uw.common.constant.CommonResponseCode` |
+| 手写 `@Schema` 校验逻辑 | `SchemaValidateHelper.validate(entity)` | `uw.common.helper.SchemaValidateHelper` |
+| 手写 URL 查询参数拼接 | `QueryParamHelper.buildUriWithParams(url, param)` | `uw.common.helper.QueryParamHelper` |
 | 手写数据变更历史记录 | `SysDataHistoryHelper.saveHistory(entity, "操作")` | `uw.common.app.helper.SysDataHistoryHelper` |
 | 手写 JSON 配置管理 | `JsonConfigHelper` / `JsonConfigBox` | `uw.common.app.helper` / `uw.common.app.vo` |
 | `UUID.randomUUID()` 做业务 ID | `dao.getSequenceId(Class)` — 分布式序列 | `uw.dao.DaoManager` |

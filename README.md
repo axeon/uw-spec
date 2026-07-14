@@ -213,20 +213,20 @@ TDD（Test-Driven Development）是一种**先写测试、后写实现**的开�
 #### 基础框架
 | 技术 | 版本 | 说明 |
 |------|------|------|
-| Java | 21+ | 运行环境 |
-| Spring Boot | 3.5 | 微服务基础框架 |
-| Spring Cloud | 2025 | 微服务框架 |
-| Spring Cloud Alibaba | 2023.0.1.2 | Nacos 注册/配置中心 |
+| Java | 25+ | 运行环境 |
+| Spring Boot | 4.1 | 微服务基础框架 |
+| Spring Cloud | 2025.1 | 微服务框架 |
+| uw-nacos-client | 1.0.0 | Nacos 注册/配置中心（脱离 Spring Cloud Alibaba）|
 | Maven | 3.8+ | 构建工具 |
 
 #### 基础设施
-| 技术 | 版本 | 用途 |
+| 技术 | 版本   | 用途 |
 |------|------|------|
-| MySQL | 8.4+ | 数据存储 |
-| Redis | 8.2+ | 缓存/分布式锁/序列 |
-| RabbitMQ | 3.10+ | 消息队列 |
-| Elasticsearch | 8.x | 日志存储与搜索 |
-| Nacos | 2.3.2+ | 服务注册与配置中心 |
+| MySQL | 9.7+ | 数据存储 |
+| Redis | 8.8+ | 缓存/分布式锁/序列 |
+| RabbitMQ | 4.3+ | 消息队列 |
+| Elasticsearch | 8.x  | 日志存储与搜索 |
+| Nacos | 3.0+ | 服务注册与配置中心 |
 
 #### 核心类库（uw-base）
 | 模块 | 用途 |
