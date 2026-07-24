@@ -119,7 +119,7 @@ public JsonInterfaceHelper(HttpConfig httpConfig,
 helper.getForEntity(url, new TypeReference<List<User>>(){});
 helper.getForEntity(url, new TypeReference<Map<String,User>>(){}, params);
 // JavaType
-JavaType type = helper.getJsonMapper().constructParametricType(List.class, User.class);
+JavaType type = helper.getObjectMapper().constructParametricType(List.class, User.class);
 helper.getForEntity(url, type);
 ```
 
@@ -161,7 +161,7 @@ ForData 与 ForEntity 的方法矩阵完全一致（返回 `HttpData`，不做�
 | `responseHeaders` | `Map<String,List<String>>` | **完整响应头（大小写不敏感、不可变）**，同名多值头（如 `Set-Cookie`）用 List 表达 |
 | `getResponseHeader(name)` | String | `HttpDefaultData` 便捷方法：取单个响应头首值，大小写不敏感 |
 | `responseMessage` | String | HTTP 状态消息（reason phrase，如 "Not Found"） |
-| `elapsedMillis` | long | 请求整体耗时（毫秒，基于 OkHttp 时间戳，含连接/重试/传输耗时），-1 未设置 |
+| `elapsedMillis` | long | 请求整体耗时（毫秒，基于 OkHttp 时间戳，含连接与传输耗时），-1 未设置 |
 | `retryCount` | int | **重试/重定向次数**（物理网络请求次数 - 1，含连接失败重试与 follow-up），自动启用，默认 0 |
 | `errorInfo` | String | 错误信息 |
 | `requestDate` / `responseDate` | Date | 请求/响应时间 |
