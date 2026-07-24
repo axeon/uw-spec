@@ -16,9 +16,11 @@
 | GET + Header | `helper.getForEntity(url, Class, Map<String,String> headers, Map<String,String> queryParam)` | — |
 | POST 表单 | `helper.postFormForEntity(url, Class, Map<String,String> formData)` | application/x-www-form-urlencoded |
 | POST JSON body | `helper.postBodyForEntity(url, Class, Object body)` | body 自动序列化为配置的 mediaType |
-| PUT / PATCH | `helper.putXxxForEntity(...)` / `helper.patchXxxForEntity(...)` | 与 POST 同构（Form/Body 两种） |
-| DELETE | `helper.deleteForEntity(url, Class)` | 无 body，可带 queryParam |
-| 文件上传（multipart） | `helper.postFormFileForEntity(url, Class, formData, fileData)` | fileData 值支持 `byte[]`、`File`、其它(toString) |
+| PUT / PATCH | `helper.putXxxForEntity(...)` / `helper.patchXxxForEntity(...)` | 与 POST 同构：Form/FormFile/Body/BodyQuery |
+| DELETE（无 body） | `helper.deleteForEntity(url, Class)` 等 | 无 body + queryParam |
+| DELETE（带 body） | `helper.deleteBodyForEntity(url, Class, body)` / `deleteFormForEntity(...)` | DELETE 也支持 Form/Body/BodyQuery |
+| 文件上传（multipart） | `helper.postFormFileForEntity(...)` / `putFormFileForEntity` / `patchFormFileForEntity` | POST/PUT/PATCH 均支持；fileData 值 byte[]/File/其它 |
+| 请求体 + queryParam | `helper.{m}BodyQueryForEntity(url, Class, queryParam, body)` | POST/PUT/PATCH/DELETE 均有 BodyQuery 变体 |
 | 文件下载 | `helper.getForData(url)` → `.getResponseBytes()` | 取 HttpData 的 responseBytes（二进制友好） |
 | 泛型响应 | `helper.getForEntity(url, new TypeReference<List<User>>(){})` | 或 `JavaType` 重载 |
 | 自定义 OkHttp Request | `helper.requestForEntity(Request, Class)` | 走底层原生 Request |
@@ -75,11 +77,11 @@ public JsonInterfaceHelper(HttpConfig httpConfig,
 ```
 {httpMethod}{请求体形式}{返回形式}
   httpMethod: get / post / put / patch / delete
-  请求体形式: Form(表单) | Body(请求体) | FormFile(含文件上传) | 无(get/delete)
+  请求体形式: Form(表单) | Body(请求体) | FormFile(含文件上传) | BodyQuery(请求体+queryParam) | 无(GET 仅 queryParam；DELETE 另有无 body 的 queryParam 版)
   返回形式:   ForData(返回 HttpData) | ForEntity(返回 HttpEntity，含反序列化对象)
 ```
 
-例：`postBodyForEntity` = POST + JSON body + 返回 HttpEntity；`postFormFileForData` = POST multipart + 返回 HttpData。
+例：`postBodyForEntity` = POST + JSON body + 返回 HttpEntity；`postFormFileForData` = POST multipart + 返回 HttpData；`postBodyQueryForEntity` = POST + JSON body + queryParam + 返回 HttpEntity。
 
 每个 `ForEntity` 方法都提供 **三套响应类型重载**：`Class<T>`、`TypeReference<T>`、`JavaType`；每套再各有一个带 `Map<String,String> headers` 的重载。下表为代表性签名，其余按规律类推。
 
@@ -89,22 +91,26 @@ public JsonInterfaceHelper(HttpConfig httpConfig,
 
 ### ForEntity（返回 `HttpEntity<D, T>`，含反序列化对象）
 
-| 方法（Class 重载示例） | 说明 |
+各 HTTP 方法 × 请求体形式的覆盖（每个 ForEntity 方法都有 `Class<T>`/`TypeReference<T>`/`JavaType` 三套响应类型 × 带不带 `headers`）：
+
+| 请求体形式 | GET | POST | PUT | PATCH | DELETE |
+|---|:---:|:---:|:---:|:---:|:---:|
+| 无 body（queryParam） | ✅ | — | — | — | ✅ |
+| Form | — | ✅ | ✅ | ✅ | ✅ |
+| FormFile | — | ✅ | ✅ | ✅ | — |
+| Body | — | ✅ | ✅ | ✅ | ✅ |
+| Body+queryParam（BodyQuery） | — | ✅ | ✅ | ✅ | ✅ |
+
+代表性签名（Class 重载，其余按规律类推；`{m}` = post/put/patch/delete）：
+
+| 方法 | 说明 |
 |------|------|
-| `getForEntity(url, Class<T>)` | GET |
-| `getForEntity(url, Class<T>, Map queryParam)` | GET + 查询参数 |
-| `getForEntity(url, Class<T>, Map headers, Map queryParam)` | GET + Header + 参数 |
-| `postFormForEntity(url, Class<T>, Map<String,String> formData)` | POST 表单 |
-| `postFormForEntity(url, Class<T>, Map headers, Map formData)` | POST 表单 + Header |
-| `postBodyForEntity(url, Class<T>, Object body)` | POST JSON/请求体 |
-| `postBodyForEntity(url, Class<T>, Map headers, Object body)` | POST 请求体 + Header |
-| `postFormFileForEntity(url, Class<T>, Map formData, Map<String,Object> fileData)` | POST multipart 上传 |
-| `postFormFileForEntity(url, Class<T>, Map headers, Map formData, Map fileData)` | multipart 上传 + Header |
-| `putFormForEntity(...)` / `putBodyForEntity(...)` | PUT，与 POST 同构 |
-| `patchFormForEntity(...)` / `patchBodyForEntity(...)` | PATCH，与 POST 同构 |
-| `deleteForEntity(url, Class<T>)` | DELETE |
-| `deleteForEntity(url, Class<T>, Map queryParam)` | DELETE + 参数 |
-| `deleteForEntity(url, Class<T>, Map headers, Map queryParam)` | DELETE + Header + 参数 |
+| `getForEntity(url, Class<T>)` / `(url, Class, Map queryParam)` / `(url, Class, Map headers, Map queryParam)` | GET |
+| `{m}FormForEntity(url, Class<T>, Map formData)` / `(url, Class, Map headers, Map formData)` | 表单（POST/PUT/PATCH/DELETE） |
+| `{m}BodyForEntity(url, Class<T>, Object body)` / `(url, Class, Map headers, Object body)` | 请求体（POST/PUT/PATCH/DELETE） |
+| `{m}BodyQueryForEntity(url, Class<T>, Map queryParam, Object body)` / `(url, Class, Map headers, Map queryParam, Object body)` | 请求体 + queryParam |
+| `{m}FormFileForEntity(url, Class<T>, Map formData, Map<String,Object> fileData)` / `(url, Class, Map headers, Map formData, Map fileData)` | multipart 上传（{m}=post/put/patch） |
+| `deleteForEntity(url, Class<T>)` / `(url, Class, Map queryParam)` / `(url, Class, Map headers, Map queryParam)` | DELETE 无 body |
 | `requestForEntity(Request, Class<T>)` | 自定义 OkHttp Request + 反序列化 |
 
 泛型/复杂类型响应：
@@ -119,15 +125,16 @@ helper.getForEntity(url, type);
 
 ### ForData（返回 `HttpData`，不做响应反序列化，二进制友好）
 
+ForData 与 ForEntity 的方法矩阵完全一致（返回 `HttpData`，不做反序列化，二进制友好）。代表性签名（`{m}` = post/put/patch/delete）：
+
 | 方法 | 说明 |
 |------|------|
-| `getForData(url)` / `getForData(url, Map queryParam)` / `getForData(url, Map headers, Map queryParam)` | GET，可用于下载 |
-| `postFormForData(url, Map formData)` / `(url, Map headers, Map formData)` | POST 表单 |
-| `postBodyForData(url, Object body)` / `(url, Map headers, Object body)` | POST 请求体 |
-| `postFormFileForData(url, Map formData, Map<String,Object> fileData)` / `(..., Map headers, ...)` | multipart 上传 |
-| `putFormForData(...)` / `putBodyForData(...)` | PUT |
-| `patchFormForData(...)` / `patchBodyForData(...)` | PATCH |
-| `deleteForData(url)` / `(url, Map queryParam)` / `(url, Map headers, Map queryParam)` | DELETE |
+| `getForData(url)` / `(url, Map queryParam)` / `(url, Map headers, Map queryParam)` | GET，可用于下载 |
+| `{m}FormForData(url, Map formData)` / `(url, Map headers, Map formData)` | 表单 |
+| `{m}BodyForData(url, Object body)` / `(url, Map headers, Object body)` | 请求体 |
+| `{m}BodyQueryForData(url, Map queryParam, Object body)` / `(url, Map headers, Map queryParam, Object body)` | 请求体 + queryParam |
+| `{m}FormFileForData(url, Map formData, Map<String,Object> fileData)` / `(url, Map headers, Map formData, Map fileData)` | multipart 上传（{m}=post/put/patch） |
+| `deleteForData(url)` / `(url, Map queryParam)` / `(url, Map headers, Map queryParam)` | DELETE 无 body |
 | `requestForData(Request)` | 自定义 OkHttp Request |
 
 ## HttpEntity
@@ -368,3 +375,5 @@ public class HttpHelper {
 8. **`retryCount` 自动启用**：无需配置，所有请求都能拿到。语义是"物理网络请求次数 - 1"，含连接失败重试与重定向 follow-up；即便 `retryOnConnectionFailure=false`，发生 302 重定向跟随时 retryCount 也会 >0。
 9. **异常不吞**：`HttpDataProcessor` 抛出的 `DataMapperException` 会**直接冒泡**（不包装成 `HttpRequestException`），交由上层（uw-task/业务）按异常分类处理。生成 Processor 实现时不要在内部吞掉异常。
 10. **OkHttp 5.x artifact**：服务端必须用 `okhttp-jvm`（5.0+ 主 `okhttp` artifact 为空 jar）。本库已通过 `uw-httpclient` 传递引入，下游无需自行声明。
+11. **BodyQuery 命名**：请求体 + queryParam 用 `{m}BodyQueryForData/Entity`（如 `postBodyQueryForEntity`），**不能**用 `postBodyForEntity` 加 query 参数（headers 与 queryParam 同为 `Map<String,String>`，重载签名冲突）。BodyQuery 参数顺序固定 `url → [responseType] → headers → queryParam → body`。
+12. **DELETE 支持 body**：DELETE 除无 body（queryParam）外，也提供 `deleteBodyForData/Entity`（带 RequestBody）与 `deleteFormForData/Entity`，用于批量删除等场景；POST/PUT/PATCH/DELETE 的 Body 均提供 BodyQuery 变体。
