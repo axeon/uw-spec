@@ -1,6 +1,6 @@
 # UniApp 管理端开发示例
 
-> 展示 API 对接、页面开发、平台适配等通用模式。类型从 `@/api/` 导入。
+> 展示 API 对接、页面开发、平台适配等通用模式。类型从 `@/api/` 导入。示例以当前项目 `uw-uniapp-template-main` 的 `uwAuthCenter/root/account/group` 为参照。
 
 ## API 调用模式
 
@@ -9,30 +9,31 @@
 ### 列表页 API 对接
 
 ```typescript
-import { adminProductList } from '@/api/adminProduct'
-import type { ProductInfo } from '@/api/adminProduct'
+import { rootAccountGroupList } from '@/api/uwAuthCenterRootApi'
+import type { AccountGroupInfo } from '@/api/uwAuthCenterRootApi'
 
 const fetchList = async (isRefresh = false) => {
   if (loading.value) return
   loading.value = true
   try {
     if (isRefresh) pageNum.value = 1
-    const res = await adminProductList({
-      param: {
-        $pg: pageNum.value,
-        $rn: 20,
-        keyword: keyword.value || undefined,
-        status: currentFilter.value === 'all' ? undefined : currentFilter.value,
-      }
+    const res = await rootAccountGroupList({
+      $pg: pageNum.value,
+      $rn: 20,
+      keyword: keyword.value || undefined,
+      state: currentFilter.value === 'all' ? undefined : currentFilter.value,
     })
-    const results = res.data?.results || []
+    const list = res.data?.list || []
     if (isRefresh) {
-      listData.value = results
+      listData.value = list
     } else {
-      listData.value.push(...results)
+      listData.value.push(...list)
     }
-    hasMore.value = results.length >= 20
+    hasMore.value = list.length >= 20
     pageNum.value++
+  } catch (error) {
+    console.error('fetchList error', error)
+    uni.showToast({ title: '加载失败，请稍后重试', icon: 'none' })
   } finally {
     loading.value = false
   }
@@ -42,11 +43,11 @@ const fetchList = async (isRefresh = false) => {
 ### 详情页 API 对接
 
 ```typescript
-import { adminProductLoad } from '@/api/adminProduct'
-import type { ProductInfo } from '@/api/adminProduct'
+import { rootAccountGroupLoad } from '@/api/uwAuthCenterRootApi'
+import type { AccountGroupInfo } from '@/api/uwAuthCenterRootApi'
 
 const loadDetail = async (id: number) => {
-  const res = await adminProductLoad({ id })
+  const res = await rootAccountGroupLoad({ id })
   detail.value = res.data ?? null
 }
 ```
@@ -54,22 +55,74 @@ const loadDetail = async (id: number) => {
 ### 表单提交
 
 ```typescript
-import { adminProductCreate, adminProductUpdate } from '@/api/adminProduct'
-import type { ProductForm } from '@/api/adminProduct'
+import { useI18n } from 'vue-i18n'
+import { rootAccountGroupSave, rootAccountGroupUpdate } from '@/api/uwAuthCenterRootApi'
+import type { AccountGroupForm } from '@/api/uwAuthCenterRootApi'
+
+const { t } = useI18n()
 
 const handleSubmit = async () => {
-  if (!form.value.productName.trim()) {
-    uni.showToast({ title: '请输入名称', icon: 'none' })
-    return
+  const valid = await uvFormRef.value?.validate?.()
+  if (!valid) return
+  try {
+    if (isEdit.value) {
+      await rootAccountGroupUpdate({ data: form.value }, { remark: '' })
+    } else {
+      await rootAccountGroupSave(form.value)
+    }
+    uni.showToast({ title: t('saveSuccess'), icon: 'success' })
+    setTimeout(() => uni.navigateBack(), 1500)
+  } catch (error: any) {
+    uni.showToast({ title: error?.msg || t('submitError'), icon: 'none' })
   }
-  if (isEdit.value) {
-    await adminProductUpdate({ data: form.value })
-  } else {
-    await adminProductCreate({ data: form.value })
-  }
-  uni.showToast({ title: '保存成功', icon: 'success' })
-  setTimeout(() => uni.navigateBack(), 1500)
 }
+```
+
+## 主题变量使用示例
+
+### CSS 变量使用
+
+```scss
+/* 正确示例 */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+.btn-gradient {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-secondary));
+}
+
+.card-selected {
+  background-color: var(--color-primary-bg);
+}
+
+/* 错误示例 - 禁止硬编码 */
+.btn-primary {
+  background-color: #409EFF; /* ❌ 禁止 */
+}
+```
+
+### 组件中使用主题色
+
+```vue
+<template>
+  <view class="custom-card">
+    <text class="title">标题</text>
+    <uv-button type="primary">操作按钮</uv-button>
+  </view>
+</template>
+
+<style scoped lang="scss">
+.custom-card {
+  background-color: var(--card-bg);
+  border: 1rpx solid var(--border-color);
+}
+
+.title {
+  color: var(--text-primary);
+}
+</style>
 ```
 
 ## 平台适配
