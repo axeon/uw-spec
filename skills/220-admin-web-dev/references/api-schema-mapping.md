@@ -55,15 +55,15 @@ src/api/{模块名}{角色}Api.ts
 
 ### 搜索表单组件映射
 
-| API 类型 | SearchForm componentType | 额外属性 |
-|---------|------------------------|---------|
-| `string`（名称/编码） | `input` | `enterable: true` |
-| `number`（ID） | `inputNumber` | — |
+| API 类型 | SearchForm componentType | 额外属性                    |
+|---------|------------------------|-----------------------------|
+| `string`（名称/编码） | `input` | `enterable: true`           |
+| `number`（ID） | `inputNumber` | —                           |
 | `number`（状态码） | `select` | `selectOptions: xxxOptions` |
 | `string`（枚举） | `select` | `selectOptions: xxxOptions` |
-| `Date` / 时间戳 | `datePicker` | `type: datetime` |
-| `Date` 范围 | `datePicker` | `type: daterange` |
-| 外键 ID（关联查询） | `select` / `cascader` | 配合 liteList 接口 |
+| `Date` / 时间戳 | `datePicker` | `type: datetime`            |
+| `Date` 范围 | `datePicker` | `type: daterange`           |
+| 外键 ID（关联查询） | `select` / `cascader` | 配合 listLite 接口          |
 
 ### 表单组件映射
 
