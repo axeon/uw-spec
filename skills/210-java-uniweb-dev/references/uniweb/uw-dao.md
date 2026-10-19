@@ -405,6 +405,28 @@ String table2 = ShardingTableUtils.getTableNameById("user_profile", 1500000L);  
 dao.save(log, table);
 ```
 
+### 跨分表 UNION 查询（ShardingTableUtils）
+
+| 我要做什么 | 用什么 | 关键约束 |
+|-----------|--------|---------|
+| 表名推导 | `getTableNameByDate(name, date)` / `getTableNameById(name, id)` | day/month/year 规则由配置定 |
+| 跨分表 UNION（**确知全部分表存在**） | `unionAllShards(name, start, end, innerSelect, params, extraCond, extraCondParams)` | 盲拼窗口内全部分表名——引用缺失历史分表（升级首月/保留清理后）整条 1146 |
+| 分表存在性探测 | `getExistingShards(tableName)` | **一次 `show tables like '基名\_%'` 整体拉取**，绝不逐表探测；探测失败返回 null |
+| 窗口内实际存在的分表 | `getExistingShards(tableName, start, end)` | 窗口推导+一次探测过滤；当期窗口（全落当期分表且自动预建）免探测短路；未配置分片直返基表名 |
+| 按表名清单拼 UNION | `unionShards(tables, start, end, innerSelect, params, extraCond, extraCondParams)` | 纯拼装（不探测）；每表全窗口过滤 create_date 与逐表 clamp 等价（分表只存自身日期段数据）；tables 空数组由调用方短路 |
+| 跨分表分页查询管线 | `listShardUnion(entityClass, tableName, selectColumns, queryParam, start, end)` | 探测+过滤+UNION+动态条件/排序白名单/分页+仅计数短路；窗口无存在分表返回空分页 |
+
+```java
+// 常态：分页统计查询（存在性过滤 + 分页一步到位）
+return ShardingTableUtils.listShardUnion(OpsRedisStats.class, "ops_redis_stats",
+        STATS_SELECT_COLUMNS, queryParam, start, end);
+
+// 自组 SQL（趋势线等）：探测一次 + 拼装
+String[] tables = ShardingTableUtils.getExistingShards("ops_rabbit_stats", start, end);
+List<Object> params = new ArrayList<>();
+String union = ShardingTableUtils.unionShards(tables, start, end, STATS_SELECT_COLUMNS, params, extraCond, condParams);
+```
+
 ## SQL 执行统计
 
 ```yaml

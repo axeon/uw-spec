@@ -355,6 +355,9 @@ PageList<UserVO> result = pageRowSet.map(row -> {
 | `allocate(long total, long[] weights)` | 按比例分摊（尾差兜底，合计=total） |
 | `toYuan(long cents)` | 分 → 元字符串（"1.99"） |
 | `fromYuan(String yuan)` | 元字符串 → 分（199） |
+| `fromMajor(String major)` | 主单位字符串 → 分（"1.99"→199，别名语义） |
+| `toMajor(long cents)` | 分 → 主单位字符串 |
+| `exchange(long amount, double rate)` / `exchange(long, String rate)` | 汇率兑换（字符串倍率版免精度丢失） |
 | `toChinese(long cents)` | 分 → 中文大写（"贰佰伍拾伍元伍角整"） |
 
 **链式调用（Chain）**：
@@ -394,6 +397,8 @@ String cn = MoneyUtils.of(214748364700L)
 | `isLetters(String)` | 纯英文字母 |
 | `isAlphanumeric(String)` | 字母+数字组合 |
 | `isStrongPassword(String, int min, int max)` | 密码强度（至少含字母+数字） |
+| `isNegativeInteger(String)` / `isNegativeDecimal(String)` | 负整数 / 负浮点数 |
+| `isNonNegativeDecimal(String)` | 非负浮点数（>=0） |
 
 **数值校验**：
 
@@ -512,6 +517,10 @@ user.setMobile(MaskUtils.maskChinaMobile(user.getMobile()));
 | `parse(String, TypeReference<T>)` | JSON → 泛型对象（如 List<User>） |
 | `parseTree(String)` | JSON → JsonNode 树模型 |
 | `convert(Object, Class<T>)` | 对象类型转换（如 Map → POJO） |
+| `toBytes(Object)` | 对象 → JSON 字节数组 | 网络传输/落库字节场景 |
+| `write(Object, OutputStream)` | 流式写出 | 大对象免中间字符串 |
+| `constructParametricType(Class, Class...)` | 构造泛型 TypeReference | 嵌套泛型动态构造（静态字面量写不了的场景） |
+| `getJsonMapper()` | 取底层 JsonMapper | 高级定制最后手段（日常序列化勿直用） |
 
 > ⚠️ **parse/convert 失败会抛 `RuntimeException`，且 message 拼接了原始数据**
 >
@@ -530,7 +539,14 @@ user.setMobile(MaskUtils.maskChinaMobile(user.getMobile()));
 
 > **包路径**：`uw.common.util.KryoUtils`
 
-高性能二进制序列化，四种路径：整对象反射（`serialize(Object)`）、lambda 手工（`serialize(Consumer)`）、BiFunction 完整版（`serialize(BiConsumer)`）、KryoData 接口式（`serializeData/deserializeData`）。
+高性能二进制序列化，四种路径：
+
+| 方法 | 说明 |
+|------|------|
+| `serialize(Object)` / `deserialize(bytes, Class)` | 整对象反射路径（最常用） |
+| `serialize(Consumer)` / `serialize(BiConsumer)` | lambda 手工 / 完整版路径 |
+| `serializeData(KryoData)` / `deserializeData(bytes, Class)` | KryoData 接口式路径（实体自控字段序） |
+| `serializeWithClass(obj)` / `deserializeWithClass(bytes)` | 携带类信息的跨类型序列化 |
 
 > ⚠️ Kryo 反序列化要求**具体实现类**，不能用接口类型（List/Map/Set 要用 ArrayList/LinkedHashMap/HashSet）；`CacheDataLoader<V>` 的 V 必须是具体类。
 
@@ -561,9 +577,15 @@ user.setMobile(MaskUtils.maskChinaMobile(user.getMobile()));
 | `beginOfToday(Date)` | 当天开始 00:00:00 | 不是 getDayStart |
 | `endOfToday(Date)` | 当天结束 23:59:59 | 不是 getDayEnd |
 | `beginOfMonth/beginOfYear/beginOfYesterday/beginOfTomorrow` | 区间起点 | 同系列有 endXxx |
-| `daysDiff/hoursDiff/minutesDiff/monthsDiff/yearsDiff` | 时间差 | — |
+| `beginOfLastMonth/beginOfNextMonth/beginOfLastYear/beginOfNextYear` | 上/下月年起点 | 同系列有 endXxx |
+| `getDateList(startDate, endDate)` | 窗口内逐日 List&lt;Date&gt; | **跨天/跨月窗口迭代统一入口**（如逐日推导窗口分表）——不要手搓 LocalDate 迭代 |
+| `getDateStringList(startDate, endDate, format)` | 窗口内逐日格式串 List&lt;String&gt; | 直接产 `yyyyMMdd` 等后缀串 |
+| `daysDiff/hoursDiff/minutesDiff/weeksDiff/monthsDiff/yearsDiff` | 时间差 | — |
 | `dateToLocalDate/localDateToDate` | Date ↔ LocalDate 互转 | — |
 | `dayOfMonth/dayOfWeek` | 取日/星期 | — |
+| `getMillisOfDay(date)` | 当日已过毫秒 | — |
+| `offsetWeek(date, n)` / `offset(date, field, n)` | 周偏移 / Calendar 字段泛型偏移 | — |
+| `simplifyDateString(dateStr)` / `unsimplifyDateString(s)` | `yyyy-MM-dd HH:mm:ss` ⇄ `yyyyMMddHHmmss` | — |
 
 > ⚠️ **DateTools 没有 `now()` / `nowDate()`**。获取当前时间用 [`SystemClock`](#systemclock) 的 `now()` / `nowDate()`。
 
@@ -745,6 +767,7 @@ String decrypted = aesBox.decrypt(encrypted);
 | 方法 | 说明 |
 |------|------|
 | `sign(String msg, Algorithm)` | 摘要签名，返回 Base64 字符串 |
+| `digest(String/byte[], Algorithm)` | 摘要原始字节出参（KDF/密钥派生用，免 Base64/Hex 往返） |
 | `signHex(String msg, Algorithm)` | 摘要签名，返回十六进制字符串 |
 | `bytesToHex(byte[])` | 字节数组转十六进制 |
 
@@ -862,7 +885,7 @@ updateExecutor.submit(() -> updateLastVisitTime(id));
 
 | 类名 | 核心方法 | 用途 |
 |------|---------|------|
-| `RSAUtils` | `genKeyPair(keySize)` / `encrypt()` / `decrypt()` / `sign()` / `checkSign()` | RSA 非对称加密签名 |
+| `RSAUtils` | `genKeyPair(keySize)` / `encrypt()` / `decrypt()` / `sign()` / `checkSign()` / `loadPublicKeyFromBytes(Base64)` 系密钥加载 / `serializeRSAKeys` 密钥对序列化 | RSA 非对称加密签名 |
 | `IpMatchUtils` | `sortList(ipList)` / `matches(sortedList, ip)` / `parseInetAddress(ip)` | IP 段匹配（**先 sortList 排序再 matches 二分查找**），`IpRange` 支持 CIDR/范围 |
 | `ByteArrayUtils` | `intToByteArray` / `byteArrayToInt` / `longToByteArray` / `hexToByteArray` / `byteArrayToString`（均含 LittleEndian 版） | 数值 ↔ 字节数组大小端转换，底层协议开发 |
 | `NumCodeUtils` | `confuseNum(num)` / `clarifyNum(enc)` | 数字编码混淆 |
