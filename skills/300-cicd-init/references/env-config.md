@@ -95,7 +95,7 @@ Gitea自托管Runner需预装以下工具：
 
 ### 环境变量加载
 
-act_runner 执行 job 时使用 `bash --noprofile --norc`，不会自动加载 `~/.profile`。Shell 模式模板中通过 `source ~/.profile` 加载用户环境（SDKMAN/Java/Maven等）。
+gitea-runner 执行 job 时使用 `bash --noprofile --norc`，不会自动加载 `~/.profile`。Shell 模式模板中通过 `source ~/.profile` 加载用户环境（SDKMAN/Java/Maven等）。
 
 ### Git 克隆认证
 
@@ -123,9 +123,9 @@ git clone -q ${GIT_SERVER%%://*}://gitea:${{gitea.token}}@${GIT_SERVER#*://}/${{
 
 ### systemd 服务配置
 
-act_runner 通过 systemd 启动时，建议使用 `bash -l` 加载 login shell 环境：
+gitea-runner 通过 systemd 启动时，建议使用 `bash -l` 加载 login shell 环境：
 
 ```ini
 [Service]
-ExecStart=/bin/bash -lc 'source /etc/profile || true;/home/gitea/runner/bin/act_runner daemon --config /home/gitea/runner/config/config.yaml'
+ExecStart=/bin/bash -lc 'source /etc/profile || true;/home/gitea/runner/bin/gitea-runner daemon --config /home/gitea/runner/config/config.yaml'
 ```
