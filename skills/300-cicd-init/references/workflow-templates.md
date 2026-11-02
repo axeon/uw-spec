@@ -46,7 +46,7 @@ jobs:
 
           # 注册QEMU多架构支持（ARM64模拟），已注册则跳过
           [ -f /proc/sys/fs/binfmt_misc/qemu-aarch64 ] || docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-          # 创建或复用buildx多架构构建器，使用buildkitd.toml中的镜像加速配置
+          # 使用buildx默认多架构构建器
           docker buildx use default
 
           # 登录私有Docker Registry
@@ -186,7 +186,7 @@ jobs:
 
           # 注册QEMU多架构支持（ARM64模拟），已注册则跳过
           [ -f /proc/sys/fs/binfmt_misc/qemu-aarch64 ] || docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-          # 创建或复用buildx多架构构建器，使用buildkitd.toml中的镜像加速配置
+          # 使用buildx默认多架构构建器
           docker buildx use default
 
           # 登录私有Docker Registry
@@ -313,7 +313,7 @@ jobs:
 
           # 注册QEMU多架构支持（ARM64模拟），已注册则跳过
           [ -f /proc/sys/fs/binfmt_misc/qemu-aarch64 ] || docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-          # 创建或复用buildx多架构构建器，使用buildkitd.toml中的镜像加速配置
+          # 使用buildx默认多架构构建器
           docker buildx use default
 
           # 登录私有Docker Registry
