@@ -8,7 +8,7 @@ CI/CD流水线依赖以下平台级变量和密钥，需在 Gitea/GitHub 的仓�
 
 | 变量名 | 说明 | Gitea 示例 | GitHub 示例 |
 |--------|------|-----------|-------------|
-| `REGISTRY_SERVER` | 私有Docker Registry地址 | `192.168.88.21:5000` | `${{ vars.REGISTRY_SERVER }}` |
+| `REGISTRY_SERVER` | 私有Docker Registry地址 | `10.0.0.10:5000` | `${{ vars.REGISTRY_SERVER }}` |
 | `PUBLIC_REGISTRY_SERVER` | 公共Docker Registry地址（可选） | `registry.cn-hangzhou.aliyuncs.com` | 同左 |
 | `PUBLIC_REGISTRY_OWNER` | 公共Registry组织/用户名（可选） | `my-org` | 同左 |
 
@@ -76,9 +76,9 @@ APP_VERSION=$(node -p "require('./package.json').version")
 
 | 项目类型 | 镜像标签格式 | 示例 |
 |----------|-------------|------|
-| 后端 | `{REGISTRY_SERVER}/{APP_NAME}:{VERSION}` | `192.168.88.21:5000/zihu:1.0.0` |
-| 前端Web | `{REGISTRY_SERVER}/{APP_NAME}:{VERSION}` | `192.168.88.21:5000/zihu-saas-web:1.0.0` |
-| H5 | `{REGISTRY_SERVER}/{APP_NAME}:{VERSION}` | `192.168.88.21:5000/zihu-guest-h5:1.0.0` |
+| 后端 | `{REGISTRY_SERVER}/{APP_NAME}:{VERSION}` | `10.0.0.10:5000/zihu:1.0.0` |
+| 前端Web | `{REGISTRY_SERVER}/{APP_NAME}:{VERSION}` | `10.0.0.10:5000/zihu-saas-web:1.0.0` |
+| H5 | `{REGISTRY_SERVER}/{APP_NAME}:{VERSION}` | `10.0.0.10:5000/zihu-guest-h5:1.0.0` |
 | 公共镜像(可选) | `{PUBLIC_REGISTRY_SERVER}/{OWNER}/{APP_NAME}:{VERSION}` | `registry.cn-hangzhou.aliyuncs.com/my-org/zihu:1.0.0` |
 
 ## Gitea Runner 环境要求

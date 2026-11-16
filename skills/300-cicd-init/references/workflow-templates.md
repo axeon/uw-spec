@@ -473,5 +473,5 @@ jobs:
 | Docker构建 | Shell `docker buildx build` | `docker/build-push-action@v6` |
 | 小程序产物 | `tar -czf` 打包 | `actions/upload-artifact@v4` |
 | 部署 | `deploy-registry-app.sh` | 无（仅推送镜像） |
-| Nginx基础镜像 | `192.168.88.21:5000/nginx:stable-alpine`（私有Registry） | `nginx:stable-alpine`（Docker Hub） |
+| Nginx基础镜像 | `10.0.0.10:5000/nginx:stable-alpine`（私有Registry） | `nginx:stable-alpine`（Docker Hub） |
 | 版本输出 | Shell变量 `APP_VERSION` | `$GITHUB_OUTPUT` + `steps.ver.outputs.v` |

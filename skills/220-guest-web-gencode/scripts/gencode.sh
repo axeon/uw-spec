@@ -30,8 +30,8 @@ if [ ! -f "$INFO_FILE" ]; then
     echo "  前端项目名    可选，指定具体的前端项目目录名（如 my-shop-admin-web）"
     echo ""
     echo "示例:"
-    echo "  $0 /Users/user/project 'http://192.168.88.21/my-shop-app/v3/api-docs/adminApi'"
-    echo "  $0 /Users/user/project 'http://192.168.88.21/my-shop-app/v3/api-docs/adminApi' 'api,router'"
+    echo "  $0 /Users/user/project 'http://10.0.0.10/my-shop-app/v3/api-docs/adminApi'"
+    echo "  $0 /Users/user/project 'http://10.0.0.10/my-shop-app/v3/api-docs/adminApi' 'api,router'"
     exit 1
 fi
 
@@ -51,7 +51,7 @@ fi
 
 if [ -z "$PROJECT_SERVER" ]; then
     echo "ERROR: 未找到开发服务器地址"
-    echo "请在 ~/.uniweb/uniweb-system.config 中添加: SYSTEM_SERVER=192.168.88.21"
+    echo "请在 ~/.uniweb/uniweb-system.config 中添加: SYSTEM_SERVER=10.0.0.10"
     exit 1
 fi
 
@@ -196,7 +196,7 @@ echo "[2/6] 下载前端代码生成文件..."
 if [ -z "$SWAGGER_URL_PARAM" ]; then
     echo "ERROR: Swagger URL 必须提供"
     echo "用法: bash scripts/gencode.sh [目标目录] [Swagger地址] [生成类型] [前端项目名]"
-    echo "示例: bash scripts/gencode.sh /Users/user/project 'http://192.168.88.21/my-shop-app/v3/api-docs/adminApi'"
+    echo "示例: bash scripts/gencode.sh /Users/user/project 'http://10.0.0.10/my-shop-app/v3/api-docs/adminApi'"
     exit 1
 fi
 

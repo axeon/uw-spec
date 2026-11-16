@@ -122,19 +122,19 @@ bash scripts/gencode.sh [目标目录] [Swagger地址] [生成类型] [前端项
 
 **Swagger地址格式**：
 - 标准格式：`http://{SYSTEM_SERVER}/{project-name}-app/v3/api-docs/{role}Api`
-- 示例：`http://192.168.88.21/my-shop-app/v3/api-docs/adminApi`
+- 示例：`http://10.0.0.10/my-shop-app/v3/api-docs/adminApi`
 
 **执行示例**：
 
 ```bash
 # 自动查找唯一的移动端项目，使用指定 Swagger 地址
-bash scripts/gencode.sh /Users/user/project "http://192.168.88.21/my-shop-app/v3/api-docs/adminApi"
+bash scripts/gencode.sh /Users/user/project "http://10.0.0.10/my-shop-app/v3/api-docs/adminApi"
 
 # 指定 Swagger 地址和生成类型
-bash scripts/gencode.sh /Users/user/project "http://192.168.88.21/my-shop-app/v3/api-docs/adminApi" "page,i18n"
+bash scripts/gencode.sh /Users/user/project "http://10.0.0.10/my-shop-app/v3/api-docs/adminApi" "page,i18n"
 
 # 指定移动端项目名（多个项目时）
-bash scripts/gencode.sh /Users/user/project "http://192.168.88.21/my-shop-app/v3/api-docs/mchApi" "api,page" "my-shop-mch-uni"
+bash scripts/gencode.sh /Users/user/project "http://10.0.0.10/my-shop-app/v3/api-docs/mchApi" "api,page" "my-shop-mch-uni"
 ```
 
 **脚本输出说明**：
@@ -169,7 +169,7 @@ bash scripts/gencode.sh /Users/user/project "http://192.168.88.21/my-shop-app/v3
 
 | 配置项 | 说明 | 示例 |
 |--------|------|------|
-| `SYSTEM_SERVER` | 开发服务器地址 | `192.168.88.21` |
+| `SYSTEM_SERVER` | 开发服务器地址 | `10.0.0.10` |
 | `MSC_OPS_PASSWORD` | ops 用户密码 | `your_password` |
 
 **Swagger地址**:

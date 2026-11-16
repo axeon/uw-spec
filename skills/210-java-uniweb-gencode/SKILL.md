@@ -159,7 +159,7 @@ bash scripts/gencode.sh /Users/user/project "" "entity,dto" "my-shop"
 
 | 配置项 | 说明 | 示例 |
 |--------|------|------|
-| `SYSTEM_SERVER` | 开发服务器地址 | `192.168.88.21` |
+| `SYSTEM_SERVER` | 开发服务器地址 | `10.0.0.10` |
 | `MSC_OPS_PASSWORD` | ops 用户密码 | `your_password` |
 
 **Schema规则**：项目名中的 `-` 替换为 `_` 作为数据库schema名

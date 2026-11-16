@@ -48,7 +48,7 @@ fi
 
 if [ -z "$PROJECT_SERVER" ]; then
     echo "ERROR: 未找到开发服务器地址"
-    echo "请在 ~/.uniweb/uniweb-system.config 中添加: SYSTEM_SERVER=192.168.88.21"
+    echo "请在 ~/.uniweb/uniweb-system.config 中添加: SYSTEM_SERVER=10.0.0.10"
     exit 1
 fi
 
