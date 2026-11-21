@@ -1,6 +1,6 @@
 # uw-gateway-client — 网关客户端
 
-**Maven 坐标**: `com.umtone:uw-gateway-client`
+**Maven 坐标**: `pub.xili:uw-gateway-client`
 **配置前缀**: `uw.gateway`
 
 网关管理客户端，通过 HTTP RPC 调用 gateway-center 管理运营商（SAAS）限速策略。限速维度（按 IP / SAAS / 用户类型 / 用户 ID，及其带 URI 的组合）由调用方通过 `SaasRateLimitParam.limitType` 指定。
@@ -105,7 +105,11 @@ public class GatewayHelper {
 
 ## 接入步骤
 
-1. 引入依赖 `com.umtone:uw-gateway-client`（依赖链含 `uw-auth-client`）。
+1. 引入依赖 `pub.xili:uw-gateway-client`（依赖链含 `uw-auth-client`）。
 2. 按需配置 `uw.gateway.gateway-center-host`（默认 `http://uw-gateway-center`）。
 3. 确保容器中存在 `authRestClient`（由 `uw-auth-client` 提供）。
 4. 启动后自动装配，直接调用静态方法。
+
+## nacos 热更新
+
+`uw.gateway.client.*` 原地重绑（gateway-center 地址等 live-read 项即时生效）。

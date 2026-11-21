@@ -207,7 +207,7 @@ D. `IOException`
 
 ---
 
-## 6. 投票去重 + GlobalCache + GlobalHashSet（10 分）— uw-cache
+## 6. 投票去重 + GlobalCache + GlobalHashSet（10 分）— uw-kv
 
 **场景**：在线投票活动，每个用户只能投一次票，需要防止重复投票。投票结果需要缓存以支撑高并发读取。
 
@@ -267,7 +267,7 @@ D. `IOException`
 
 ## 1. FusionCache 与 GlobalCache 的选型决策（10 分）
 
-uw-cache 提供了 FusionCache（本地+Redis 融合）和 GlobalCache（纯 Redis）两种缓存方案。请论述：
+uw-kv 提供了 FusionCache（本地+Redis 融合）和 GlobalCache（纯 Redis）两种缓存方案。请论述：
 
 1. 两者的架构差异是什么？FusionCache 通过什么机制保证多实例一致性？
 2. 以下场景分别应该选哪个？说明理由：

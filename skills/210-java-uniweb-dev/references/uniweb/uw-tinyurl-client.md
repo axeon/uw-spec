@@ -1,6 +1,6 @@
 # uw-tinyurl-client — 短链接客户端
 
-**Maven 坐标**: `com.umtone:uw-tinyurl-client`
+**Maven 坐标**: `pub.xili:uw-tinyurl-client`
 **配置前缀**: `uw.tinyurl`
 
 短链接生成客户端，通过 HTTP RPC 调用 tinyurl-center 生成长链接对应的短链码，支持密语保护与过期时间。
@@ -67,7 +67,11 @@ public class ShortUrlHelper {
 
 ## 接入步骤
 
-1. 引入依赖 `com.umtone:uw-tinyurl-client`（依赖链含 `uw-auth-client`）。
+1. 引入依赖 `pub.xili:uw-tinyurl-client`（依赖链含 `uw-auth-client`）。
 2. 按需配置 `uw.tinyurl.tinyurl-center-host`（默认 `http://uw-tinyurl-center`）。
 3. 确保容器中存在 `authRestClient`（由 `uw-auth-client` 提供）。
 4. 启动后自动装配，直接调用静态方法。
+
+## nacos 热更新
+
+`uw.tinyurl.client.*` 原地重绑（tinyurl-center 地址等 live-read 项即时生效）。

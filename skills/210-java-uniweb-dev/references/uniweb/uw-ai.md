@@ -2,7 +2,7 @@
 
 `uw-ai` 是 UW Base 的 AI 集成客户端模块，封装了与 AI 服务中心（`uw-ai-center`）的交互，提供对话生成（同步/流式）、结构化输出、翻译、图片生成、模型与 API 配置查询，以及 AI 工具的自动注册与执行。
 
-- **Maven 坐标**：`com.umtone:uw-ai`
+- **Maven 坐标**：`pub.xili:uw-ai`
 - **配置前缀**：`uw.ai`
 - **入口**：静态门面 `uw.ai.AiClientHelper`（由 `UwAiAutoConfiguration` 自动装配注入底层 RPC Bean）
 
@@ -324,3 +324,7 @@ public class AiCallHelper {
     }
 }
 ```
+
+## nacos 热更新
+
+`uw.ai.*` 原地重绑（ai-center 地址等 live-read 项即时生效）。

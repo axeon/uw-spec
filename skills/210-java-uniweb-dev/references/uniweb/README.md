@@ -51,7 +51,7 @@ UniWeb 是一套基于 **Spring Boot 4.1** 和 **Spring Cloud 2025.1** 构建的
 | [uw-common.md](uw-common.md) | 通用工具类库 | ResponseData, JsonUtils, MoneyUtils, ValidateUtils | 使用统一响应、JSON处理、货币计算、数据校验 |
 | [uw-common-app.md](uw-common-app.md) | Web应用公共类库 | AuthQueryParam, SysDataHistoryHelper, JsonConfigHelper | 权限查询、数据历史、配置管理 |
 | [uw-dao.md](uw-dao.md) | 数据访问层 | DaoManager, DataEntity, QueryParam, BatchUpdateManager | 数据库CRUD、分页查询、批量操作 |
-| [uw-cache.md](uw-cache.md) | 缓存管理 | FusionCache | Redis缓存、本地+分布式融合缓存 |
+| [uw-kv.md](uw-kv.md) | 跨实例协调层 | FusionCache, GlobalFixedWindowRateLimiter, GlobalLeaderElector, GlobalSequence | Redis缓存、分布式锁/计数/限流/选举/发号 |
 | [uw-auth-service.md](uw-auth-service.md) | 认证服务端 | @MscPermDeclare, AuthServiceHelper | 权限声明、角色管理、鉴权 |
 | [uw-auth-client.md](uw-auth-client.md) | 认证客户端 | authRestClient, Token管理 | 服务间鉴权调用、Token自动管理 |
 | [uw-mfa.md](uw-mfa.md) | 多因素认证 | MFA验证、TOTP | 多因素认证集成 |

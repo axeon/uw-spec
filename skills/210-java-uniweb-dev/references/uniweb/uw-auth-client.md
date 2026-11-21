@@ -1,6 +1,6 @@
 # uw-auth-client — 认证客户端
 
-**Maven 坐标**: `com.umtone:uw-auth-client`
+**Maven 坐标**: `pub.xili:uw-auth-client`
 
 内部 RPC 鉴权客户端。
 
@@ -38,3 +38,7 @@ public class RemoteService {
     }
 }
 ```
+
+## nacos 热更新
+
+`uw.auth.client.*` 原地重绑（auth-center 地址等 live-read 项即时生效）。

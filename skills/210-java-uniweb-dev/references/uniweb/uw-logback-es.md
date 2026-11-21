@@ -1,6 +1,6 @@
 # uw-logback-es — Logback ES Appender
 
-**Maven 坐标**: `com.umtone:uw-logback-es`
+**Maven 坐标**: `pub.xili:uw-logback-es`
 
 无需 Logstash，直接将日志批量发送到 Elasticsearch。基于 Logback 的自定义 Appender，支持批量提交、JMX 监控和异常堆栈压缩。
 

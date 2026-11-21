@@ -1,6 +1,6 @@
 # uw-mydb-client — 数据库客户端
 
-**Maven 坐标**: `com.umtone:uw-mydb-client`
+**Maven 坐标**: `pub.xili:uw-mydb-client`
 **配置前缀**: `uw.mydb`
 
 MyDB 数据库运维中心客户端，通过 HTTP RPC 调用 mydb-center 动态分配运营商（SAAS）数据节点，实现分库分表路由。
@@ -79,7 +79,11 @@ public class DatabaseHelper {
 
 ## 接入步骤
 
-1. 引入依赖 `com.umtone:uw-mydb-client`（依赖链含 `uw-auth-client`）。
+1. 引入依赖 `pub.xili:uw-mydb-client`（依赖链含 `uw-auth-client`）。
 2. 按需配置 `uw.mydb.mydb-center-host`（默认 `http://uw-mydb-center`）。
 3. 确保容器中存在 `authRestClient`（由 `uw-auth-client` 提供）。
 4. 启动后自动装配，直接调用静态方法。
+
+## nacos 热更新
+
+`uw.mydb.client.*` 原地重绑（mydb-center 地址等 live-read 项即时生效）。

@@ -1,6 +1,6 @@
 # uw-oauth2-client — OAuth2客户端
 
-**Maven 坐标**: `com.umtone:uw-oauth2-client`
+**Maven 坐标**: `pub.xili:uw-oauth2-client`
 
 轻量级 OAuth2 客户端，支持 Google/Apple/GitHub/微信/支付宝等平台，提供扫码登录和用户信息获取能力。
 
@@ -310,7 +310,7 @@ public class OAuth2Controller {
 ## 自动装配与依赖
 
 - **自动配置**：`uw.oauth2.client.conf.OAuth2ClientAutoConfiguration`（已注册到 `spring.factories` / AutoConfiguration.imports），引入依赖后自动生效。
-- **依赖**：`uw-httpclient`（HTTP 调用）、`uw-cache`（GlobalCache 存储 stateId）、`uw-common`（ResponseData/JsonUtils/Snowflake）、`auth0/java-jwt`（id_token 解析与 Apple client_secret 签发）。
+- **依赖**：`uw-httpclient`（HTTP 调用）、`uw-kv`（GlobalCache 存储 stateId）、`uw-common`（ResponseData/JsonUtils/Snowflake）、`auth0/java-jwt`（id_token 解析与 Apple client_secret 签发）。
 - **Helper 设计**：`OAuth2ClientHelper` 核心方法为静态方法，配置在 Bean 构造时一次性注入静态字段，业务侧直接 `OAuth2ClientHelper.xxx()` 调用，无需注入。
 
 ## 注意事项
@@ -322,3 +322,6 @@ public class OAuth2Controller {
 5. **扫码登录流程**：手机端扫码后实际走的是网页授权流程（stateId 的 authType 为 qrcode），登录成功后 token 会暂存 GlobalCache 60 秒，由 PC 端轮询 CONFIRMED 后调 `getToken` 接口拉取（见项目 README 5.3 节）。
 6. **HTTP 客户端信任全部证书**：内部 HTTP 客户端配置了 trustAll，仅适用于对接三方 OAuth 网关；生产环境如需严格校验请覆盖 `AbstractOAuth2Provider.JSON_INTERFACE_HELPER`。
 
+## nacos 热更新
+
+`uw.oauth2.client.*` 原地重绑（服务地址等 live-read 项即时生效）。

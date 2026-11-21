@@ -282,7 +282,7 @@
 |------|---------|---------|
 | ① 授权检查 | SaaS AIP | `AipHelper.checkAndDeductLicense(saasId, "product-publish", 1)` 检查并扣减"商品上架"授权额度 |
 | ② 商品入库 | uw-dao | 分配序列 ID → 设置 createDate/saasId → `dao.save(product)` |
-| ③ 缓存预热 | uw-cache | `FusionCache.put(Product.class, id, product)` 主动写入缓存 |
+| ③ 缓存预热 | uw-kv | `FusionCache.put(Product.class, id, product)` 主动写入缓存 |
 | ④ 数据历史 | uw-common-app | `SysDataHistoryHelper.saveHistory(product, "商品上架")` |
 | ⑤ 发送通知 | SaaS AIS | 通过 `AisHelper.getFitLinkerInstanceByLinker()` 获取短信 Linker，发送通知给关注用户 |
 | ⑥ 操作日志 | uw-auth-service | `AuthServiceHelper.logRef(Product.class, product.getId())` + `logInfo("商品上架")` |
@@ -392,7 +392,7 @@
 
 ## 3.1 缓存架构设计
 
-**场景**：某 SaaS 平台有以下缓存需求，请为每个场景选择合适的 uw-cache 组件并说明理由。
+**场景**：某 SaaS 平台有以下缓存需求，请为每个场景选择合适的 uw-kv 组件并说明理由。
 
 | 场景 | 读 QPS | 数据特征 | 一致性要求 | 你的方案 |
 |------|--------|---------|-----------|---------|

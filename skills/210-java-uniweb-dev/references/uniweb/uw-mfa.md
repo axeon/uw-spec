@@ -1,6 +1,6 @@
 # uw-mfa — 多因素认证
 
-**Maven 坐标**: `com.umtone:uw-mfa`
+**Maven 坐标**: `pub.xili:uw-mfa`
 
 融合 **IP 限制 / Captcha / 设备验证码 / TOTP** 的多重认证库，对外统一入口为 `MfaFusionHelper`（全静态方法）。
 

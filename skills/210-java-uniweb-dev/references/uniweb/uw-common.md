@@ -1,6 +1,6 @@
 # uw-common — 通用工具类库
 
-**Maven 坐标**: `com.umtone:uw-common`
+**Maven 坐标**: `pub.xili:uw-common`
 
 ## AI 决策速查
 
@@ -34,6 +34,30 @@
 | SQL占位符 | `StringTools.buildPlaceholders(count)` / `buildInClause(ids)` | 空集合兜底`(0)`避免语法错；仅服务端白名单ID |
 | 命名风格转换 | `StringTools.toSnakeCase/toCamelCase/toKebabCase(str)` | 自动探测源格式，正确处理HTTPResponse缩写 |
 | 字符串相似度 | `StringTools.levenshteinSimilarity/lcsSimilarity/ngramSimilarity(s1,s2)` | 返回[0,1]；中文场景用ChineseUtils万分制版本 |
+
+## FixedWindowRateLimiter（单机固定窗口限速器）
+
+限速器家族的**本地形态**（零依赖纯内存，ReentrantLock）；跨实例精确限流用 `uw.kv.GlobalFixedWindowRateLimiter`（两形态窗口边界同为墙钟网格对齐）。
+
+**双维度通用命名**：`permits`（许可次数）+ `weight`（权重，网关场景即流量字节数）——仅需单维度用单参构造器与 `tryAcquire(permits)` 重载。
+
+| 方法 | 返回 | 说明 |
+|------|------|------|
+| `new FixedWindowRateLimiter(windowMillis, limitPermits)` | — | 单维度构造（weight 不限） |
+| `new FixedWindowRateLimiter(windowMillis, limitPermits, limitWeight)` | — | 双维度构造 |
+| `tryAcquire(int permits)` | `Result`/null | 单维度便捷重载（weight 不预占） |
+| `tryAcquire(int permits, long weight)` | `Result`/null | 双维度；**null=通过**，非 null=拒绝 |
+| `addPermits(int)` / `addWeight(long)` | void | 两阶段回填（入口不预占，结束后按实际量回填；负值按 0 防御） |
+
+**Result 三字段（统一"剩余"视角）**：`remainMillis`（窗口剩余毫秒，>0）/ `remainPermits` / `remainWeight`（剩余额度，拒绝时为负值，绝对值即超出量）。
+
+```java
+FixedWindowRateLimiter limiter = new FixedWindowRateLimiter(60_000L, 100);
+FixedWindowRateLimiter.Result r = limiter.tryAcquire(1);
+if (r != null) {
+    // 拒绝：sleep(r.remainMillis) 后重试即新窗口
+}
+```
 
 ## ResponseData
 
@@ -819,8 +843,8 @@ HMAC-SHA256 签名工具类。
 
 | 模式 | queueCapacity | 行为 |
 |------|---------------|------|
-| 快速模式 | = 0 | 无队列缓冲，并发满直接走 `CallPolicy` |
-| 队列模式 | > 0 | 有界无锁队列（JCTools `MpmcArrayQueue`）缓冲；并发满先入队，队列满才走 `CallPolicy` |
+| 快速模式 | = 0 | 无队列缓冲，并发满直接走 `RejectedPolicy` |
+| 队列模式 | > 0 | 有界无锁队列（JCTools `MpmcArrayQueue`）缓冲；并发满先入队，队列满才走 `RejectedPolicy` |
 
 队列模式下 worker 跑**接力循环**：完成当前 task 后非阻塞 `poll` 队列取下一个（有则继续、不释放许可，消除"等外部 submit"的空窗；无则释放许可退出）。worker 退出与 submit 入队时均有扫尾补偿（`drainQueueIfPresent`），保证"入队成功 ⇒ 必有 worker 最终消费"，避免关闭时孤儿任务静默丢失。
 
@@ -831,9 +855,9 @@ HMAC-SHA256 签名工具类。
 | 构造 | 模式 | 默认策略 |
 |------|------|---------|
 | `(String threadNamePrefix, int maxConcurrency)` | 快速 | `BlockPolicy` |
-| `(String threadNamePrefix, int maxConcurrency, CallPolicy)` | 快速 | 指定 |
+| `(String threadNamePrefix, int maxConcurrency, RejectedPolicy)` | 快速 | 指定 |
 | `(String threadNamePrefix, int maxConcurrency, int queueCapacity)` | queueCapacity>0 队列 / =0 快速 | 队列 `FailFastPolicy` / 快速 `BlockPolicy` |
-| `(String threadNamePrefix, int maxConcurrency, int queueCapacity, CallPolicy)` | 全参 | 指定（null→`BlockPolicy`） |
+| `(String threadNamePrefix, int maxConcurrency, int queueCapacity, RejectedPolicy)` | 全参 | 指定（null→`BlockPolicy`） |
 
 > 参数容错：`threadNamePrefix` 空→默认值；`maxConcurrency<=0`→1；`queueCapacity<0`→1。
 
@@ -851,13 +875,13 @@ HMAC-SHA256 签名工具类。
 | `getMaximumPoolSize()` | 最大并发数（= Semaphore 许可数） |
 | `getQueueCapacity()` | 队列容量（快速模式返回 0） |
 | `getQueueSize()` | 队列待执行任务数（快速模式返回 0） |
-| `getRejectedCount()` | 累计被拒绝任务数（走 `CallPolicy` 拒绝的） |
+| `getRejectedCount()` | 累计被拒绝任务数（走 `RejectedPolicy` 拒绝的） |
 
 > ⚠️ 本类**没有** `getQueuedTasks()` 方法（查队列大小用 `getQueueSize()`）。查可用许可数用 `getIdleCount()`，查并发上限用 `getMaximumPoolSize()`。
 
 > **active/idle 口径差异（勿用减法估算空闲）**：`getActiveCount()` 只统计已进入 `task.run()` 的 worker（任务执行口径），不含「已 `tryAcquire` 持有许可、但虚拟线程尚未 mount 进 `run()`」的 worker（脉冲 submit 时虚拟线程排队等载体），也不含接力循环中 poll 间隙的 worker。因此**禁止用 `getMaximumPoolSize() - getActiveCount()` 估算空闲**——会高估空闲、导致批量偏大。`getIdleCount()` 直接读 `semaphore.availablePermits()`，精确反映可立即占用的并发槽位。判断"是否还能接受新任务/是否达上限"用 `getIdleCount()`；观察"实际执行负载"用 `getActiveCount()`。
 
-**调用策略**（`CallPolicy` 接口，对齐 JDK `RejectedExecutionHandler`）：
+**调用策略**（`RejectedPolicy` 接口，对齐 JDK `RejectedExecutionHandler`）：
 
 | 策略类 | 行为 | 默认用于 |
 |--------|------|---------|

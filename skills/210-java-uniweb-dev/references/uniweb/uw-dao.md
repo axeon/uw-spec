@@ -1,6 +1,6 @@
 # uw-dao — 数据访问层
 
-**Maven 坐标**: `com.umtone:uw-dao`
+**Maven 坐标**: `pub.xili:uw-dao`
 **入口包**: `uw.dao`
 **配置前缀**: `uw.dao`
 
@@ -496,3 +496,7 @@ try {
 
 隔离级别：`tx.setTransactionIsolation(TransactionManager.TRANSACTION_READ_COMMITTED)`
 （仅显式调用后才应用到连接，未设置则保持驱动默认）。
+
+## nacos 热更新（5.3.69）
+
+`uw.dao.*` 原地重绑：连接路由（connRoute）/分表映射（tableShard）/环境标记即时生效（清路由缓存）；连接池参数（connPool）变更仅告警需重启；`UwDaoProperties`/`DaoPropertiesManager`（util 包）为属性与静态访问入口。

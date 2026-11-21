@@ -71,7 +71,7 @@
 | **方法级 Javadoc** | 每个方法有 `<ol>` 编号步骤 + `[类别]` 标注 + `@param`/`@return` | Step 4 |
 | **外部集成步骤具体性** | 外部调用步骤包含具体 SDK 类和方法签名。抽象描述视为 Critical | Step 4 |
 | **FusionCache 初始化** | 使用 FusionCache 的 Helper 有 `static {}` 初始化块 | Step 4 |
-| 缓存 API 正确性 | FusionCache/GlobalCache/GlobalLocker 方法名正确，Kryo 用具体实现类 | uw-cache.md |
+| 缓存 API 正确性 | FusionCache/GlobalCache/GlobalLocker 方法名正确，Kryo 用具体实现类 | uw-kv.md |
 
 ### §6. DTO/VO 质量（5分）
 

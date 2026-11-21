@@ -19,7 +19,7 @@
 │   ├── service/                      # 新建 Helper
 │   │   ├── {ModuleA}Helper.java
 │   │   └── {ModuleB}Helper.java
-│   ├── task/                         # 定时/队列/延迟任务（TaskCroner/TaskRunner/TaskDelayer，需 @Component）
+│   ├── task/                         # 定时/队列/延迟任务（TaskCroner/TaskRunner，需 @Component；延时=taskDelay>0）
 │   │   ├── {Module}CronerTask.java
 │   │   └── {Module}RunnerTask.java
 │   │   └── {Module}DelayerTask.java
@@ -674,8 +674,8 @@ package {package}.service;
 
 import {package}.constant.{Module}ResponseCode;
 import {package}.entity.*;
-import uw.cache.FusionCache;
-import uw.cache.CacheDataLoader;
+import uw.kv.FusionCache;
+import uw.kv.CacheDataLoader;
 import uw.common.constant.CommonResponseCode;
 import uw.common.constant.CommonState;
 import uw.common.app.dto.AuthIdQueryParam;
@@ -747,7 +747,7 @@ public class {Module}Helper {
 }
 ```
 
-> **按需引入**：`uw.cache.GlobalCache`、`uw.cache.GlobalLocker`、`uw.common.constant.CommonState`、`uw.common.constant.CommonResponseCode` 等按实际业务需要引入。
+> **按需引入**：`uw.kv.GlobalCache`、`uw.kv.GlobalLocker`、`uw.common.constant.CommonState`、`uw.common.constant.CommonResponseCode` 等按实际业务需要引入。
 > FusionCache Config（缓存容量、过期时间）和 CacheDataLoader（数据加载器签名）在 Helper 的 `static {}` 块中一次性完成。GlobalCache 不需要 static 初始化（直接用 `GlobalCache.get(...)` 带行内 CacheDataLoader），但 FusionCache 必须在类加载时完成 config。
 
 ### Helper 间调用参考示例
@@ -987,7 +987,7 @@ ResponseData<Result> result = authRestClient.postForObject(url, request, Respons
 ## 任务框架模板
 
 > 规范约束见 [dev-standards.md](dev-standards.md)「任务框架规范」。
-> **关键区别**：`TaskCroner` / `TaskRunner` / `TaskDelayer` 是 **Spring Bean**（必须加 `@Component`），与 Helper（纯静态工具类，禁止 `@Component`）不同。
+> **关键区别**：`TaskCroner` / `TaskRunner` 是 **Spring Bean**（必须加 `@Component`），与 Helper（纯静态工具类，禁止 `@Component`）不同。
 > 放在 `task/` 包下，按 `task-project` 包名前缀扫描。API 细节见 [uw-task.md](uw-task.md)。
 
 ### TaskCroner 定时任务
@@ -1088,7 +1088,7 @@ public class {Module}NotifyTask extends TaskRunner<{Module}NotifyParam, NotifyRe
     public TaskRunnerConfig initConfig() {
         TaskRunnerConfig config = new TaskRunnerConfig();
         config.setTaskName("{模块}通知任务");
-        config.setQueueType(TaskRunnerConfig.TYPE_QUEUE_PROJECT);
+        config.setQueueType(TaskRunnerConfig.QUEUE_TYPE_QUORUM);
         config.setConsumerNum(5);
         config.setPrefetchNum(1);
         config.setRateLimitType(TaskRunnerConfig.RATE_LIMIT_GLOBAL_TASK);  // 全局按任务隔离
@@ -1489,8 +1489,8 @@ public class ProductControllerTest extends SaasControllerTest {
 | 业务场景 | 需要加载的文档 | 核心类 |
 |---------|-------------|--------|
 | 带权限的CRUD接口 | dev-standards + uw-dao + uw-auth-service | DaoManager, AuthQueryParam, @MscPermDeclare |
-| 带缓存的详情查询 | uw-dao + uw-cache | DaoManager, FusionCache, CacheDataLoader |
-| 异步任务处理 | uw-task | TaskRunner, TaskCroner, TaskDelayer, TaskFactory |
+| 带缓存的详情查询 | uw-dao + uw-kv | DaoManager, FusionCache, CacheDataLoader |
+| 异步任务处理 | uw-task | TaskRunner, TaskCroner, TaskFactory（延时=taskDelay） |
 | 服务间RPC调用 | uw-auth-client | authRestClient |
 | 文件上传下载 | saas-base-common | SysOssHelper |
 | 支付订单 | saas-finance-client + saas-ais-module | FinPaymentHelper, AisHelper |
@@ -1510,14 +1510,14 @@ public class ProductControllerTest extends SaasControllerTest {
 
 ## POM 依赖速查
 
-groupId：`com.umtone`（以下标注 ★ 的为 `saas`）
+groupId：`pub.xili`（以下标注 ★ 的为 `saas`）
 
 | 需求 | artifactId |
 |------|-----------|
 | 通用工具（ResponseData/JsonUtils/DateTools） | uw-common |
 | Web应用基础（AuthQueryParam/CommonState/CommonResponseCode） | uw-common-app |
 | 数据库操作（DaoManager/DataEntity） | uw-dao |
-| 缓存（FusionCache/GlobalCache/GlobalLocker） | uw-cache |
+| 缓存/锁/计数/限流/选举/发号 | uw-kv |
 | 认证服务端（@MscPermDeclare/AuthServiceHelper） | uw-auth-service |
 | 认证客户端（authRestClient） | uw-auth-client |
 | 定时/队列任务（TaskCroner/TaskRunner） | uw-task |

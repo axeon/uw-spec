@@ -1,6 +1,6 @@
 # uw-common-app — Web应用公共类库
 
-**Maven 坐标**: `com.umtone:uw-common-app`
+**Maven 坐标**: `pub.xili:uw-common-app`
 
 基于 uw-auth-service 和 uw-dao 的后台应用通用功能。
 
@@ -43,7 +43,7 @@ public static void main(String[] args) {
 | `localeList` | List\<Locale\> | 12 种已覆盖语言 | 可选语言列表（参与 Accept-Language 匹配，默认收窄避免全量 Locale 的 lookup 开销） |
 | `disableSwagger` | boolean | false | 是否禁用 Swagger 接口 |
 
-> **注**：优雅停机已交由 uw-nacos-client 的 `NacosGracefulShutdownDelegate` 负责（`spring.cloud.nacos.discovery.graceful-shutdown-wait-time` 控制，默认 10s），本模块不再参与。Swagger 禁用与 LB 缓存禁用由 `CommonAppEnvPostProcessor` 在环境准备阶段注入默认项（可被 application.yml 覆盖）。
+> **注**：优雅停机已交由 uw-nacos-client 的 `NacosGracefulShutdownDelegate` 负责（`spring.cloud.nacos.discovery.graceful-shutdown-wait-time` 控制，默认 10s），本模块不再参与。Swagger 禁用与 LB 缓存禁用由 `UwCommonAppEnvPostProcessor` 在环境准备阶段注入默认项（可被 application.yml 覆盖）。
 
 ## 预置 QueryParam
 

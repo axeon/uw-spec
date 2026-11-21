@@ -232,7 +232,7 @@ TDD（Test-Driven Development）是一种**先写测试、后写实现**的开�
 | 模块 | 用途 |
 |------|------|
 | uw-dao | 数据访问层（DaoManager、DataEntity、QueryParam） |
-| uw-cache | 缓存管理（FusionCache） |
+| uw-kv | 跨实例协调层（缓存/计数/锁/限流/选举/发号，原 uw-cache 更名） |
 | uw-auth-service | 认证服务端 |
 | uw-auth-client | 认证客户端（Token自动管理） |
 | uw-mfa | 多因素认证（TOTP） |

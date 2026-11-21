@@ -1,6 +1,6 @@
 # uw-log-es — Elasticsearch 日志客户端
 
-**Maven 坐标**: `com.umtone:uw-log-es`
+**Maven 坐标**: `pub.xili:uw-log-es`
 **包路径根**: `uw.log.es`
 **配置前缀**: `uw.log.es`
 **自动装配入口**: `uw.log.es.LogClientAutoConfiguration`（Spring `@Configuration`，容器销毁时通过 `@PreDestroy` 关闭写入链路）

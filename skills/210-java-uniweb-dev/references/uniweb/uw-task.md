@@ -1,6 +1,6 @@
 # uw-task — 分布式任务框架
 
-**Maven 坐标**: `com.umtone:uw-task`
+**Maven 坐标**: `pub.xili:uw-task`
 
 支持定时任务和队列任务的分布式任务框架，依赖 RabbitMQ + Redis。配合服务端 uw-task-center 实现动态配置、状态上报与告警分发。
 
@@ -15,8 +15,6 @@ uw:
     task-project: com.demo.task
     # 运行目标，识别任务执行集群，默认 default
     run-target: default
-    # croner 调度线程数（建议 = croner 任务数 * 70%）
-    croner-thread-num: 3
     rabbitmq:
       host: 127.0.0.1
       port: 5672
@@ -48,9 +46,9 @@ uw:
 | 本地优先执行（高频短任务） | `taskFactory.runQueue(taskData)` | 本机有 runner 则本地跑，否则降级入队，不走同步 RPC |
 | 同步执行任务 | `taskFactory.runTask(taskData)` | 阻塞等待结果；taskData 不可复用 |
 | 构建任务数据 | `TaskData.builder(TaskClass.class, param).refId(id).build()` | Builder 模式 |
-| 延迟任务（到期执行） | 继承 `TaskDelayer<P,R>`，加 `@Component` | 第三种任务类型，基于 Redis zset poll，无队头阻塞 |
-| 投递延迟任务 | `taskFactory.delayTask(taskData)` | 异步无返回值，`taskDelay` 设延迟毫秒 |
-| 队列任务延时 | `TaskData.builder(...).taskDelay(5000)` + `delayType=ON` | 走 MQ TTL+死信，长延时阻塞短延时，建议改用 TaskDelayer |
+| 延时任务（到期执行） | `TaskData.builder(...).taskDelay(5000)`（任意 TaskRunner） | 全自动路由：1.0+4.4+quorum→MQ 原生延迟；否则→Redis zset 搬运（到期自动转投队列）；TaskDelayer 独立类型已退役 |
+| 投递延时任务 | `taskFactory.sendToQueue(taskData)`（taskDelay>0） | 延时任务三入口（sendToQueue/runQueue/runTask）完全等同，自动路由 |
+| 队列任务延时 | `TaskData.builder(...).taskDelay(5000)` | queueType=quorum 且 1.0+4.4：MQ 原生延迟；否则 Redis zset 搬运自动转投（勿依赖消费端 sleep） |
 | 触发重试 | 抛 `TaskPartnerException` | 第三方接口错误，按 retryTimesByPartner 重试 |
 | 超限流重试 | （框架自动，配置 retryTimesByOverrated） | STATE_FAIL_CONFIG 时重试 |
 | 不重试 | 抛 `TaskDataException` | 数据错误不重试 |
@@ -144,8 +142,7 @@ public class OrderTimeoutCheckTask extends TaskCroner {
 | 属性 | 类型 | 说明 |
 |------|------|------|
 | taskName | String | 任务名称（必填） |
-| queueType | int | 队列类型（见下表） |
-| delayType | int | 延迟类型：TYPE_DELAY_OFF=0 / TYPE_DELAY_ON=1 |
+| queueType | int | 队列形态：QUEUE_TYPE_CLASSIC=0 / QUEUE_TYPE_QUORUM=1（默认 quorum，见下表） |
 | consumerNum | int | 消费者并发数 |
 | prefetchNum | int | 预取数量 |
 | rateLimitType | int | 限流类型（见下表） |
@@ -162,19 +159,20 @@ public class OrderTimeoutCheckTask extends TaskCroner {
 
 > 注意：**没有 `retryTimesByProgram`**。程序异常（STATE_FAIL_PROGRAM）不重试。
 
-**TaskRunnerConfig.queueType 常量（TYPE_QUEUE）**：
+**TaskRunnerConfig.queueType 常量（QUEUE_TYPE，5.2.0 起队列形态语义）**：
 
 | 常量 | 值 | 说明 |
 |------|-----|------|
-| TYPE_QUEUE_PROJECT | 0 | 项目级队列（同项目共用） |
-| TYPE_QUEUE_PROJECT_PRIORITY | 1 | 项目级优先队列 |
-| TYPE_QUEUE_GROUP | 2 | 任务组队列（按 taskClass 所在包） |
-| TYPE_QUEUE_GROUP_PRIORITY | 3 | 任务组优先队列 |
-| TYPE_QUEUE_TASK | 5 | 任务级队列（按 taskClass+taskTag 独立） |
+| QUEUE_TYPE_CLASSIC | 0 | classic 队列：单副本、消息默认不落盘（transient，broker 崩溃丢失）、吞吐最优；全部任务级队列 |
+| QUEUE_TYPE_QUORUM | 1 | quorum 队列（**默认**）：Raft 复制、恒持久化（Raft WAL 必写盘）；原生延迟消息唯一载体（延时任务的路由判定=queueType 单一来源） |
+
+> 5.2.0 起组/项目级共享队列概念退役（全部任务级队列）；AMQP 协议启动期自动判定（0-9-1/1.0，无需配置，探测自动定），详见 uw-task README.md。
+>
+> **旧值对照（5.1.x，值域已退役）**：TYPE_QUEUE_PROJECT=0（项目级共享队列）/ TYPE_QUEUE_PROJECT_PRIORITY=1 / TYPE_QUEUE_GROUP=2（任务组队列，按 taskClass 所在包）/ TYPE_QUEUE_GROUP_PRIORITY=3 / TYPE_QUEUE_TASK=5（任务级队列）——旧行为为多任务共享队列降低队列数，新行为为全任务级队列 + 队列形态可选。
 
 **TaskRunnerConfig.rateLimitType 常量（RATE_LIMIT）**：
 
-本地限速（进程内 Guava 令牌桶）/ 全局限速（Redis 固定窗口）：
+本地限速（进程内固定窗口）/ 全局限速（Redis 固定窗口）：
 
 | 常量 | 值 | 限流 key 维度 | 说明 |
 |------|-----|--------------|------|
@@ -220,7 +218,7 @@ public class OrderNotifyTask extends TaskRunner<OrderNotifyParam, NotifyResult> 
         TaskRunnerConfig config = new TaskRunnerConfig();
         config.setTaskName("订单通知任务");
         config.setTaskDesc("发送订单状态变更通知给用户");
-        config.setQueueType(TaskRunnerConfig.TYPE_QUEUE_PROJECT);
+        config.setQueueType(TaskRunnerConfig.QUEUE_TYPE_QUORUM);  // 默认 quorum（可改 CLASSIC 换吞吐）
         config.setConsumerNum(5);
         config.setPrefetchNum(1);
         config.setRateLimitType(TaskRunnerConfig.RATE_LIMIT_GLOBAL_TASK);  // 全局按任务隔离
@@ -284,73 +282,20 @@ public NotifyResult runTask(TaskData<OrderNotifyParam, NotifyResult> taskData) t
 | RUN_TYPE_GLOBAL_RPC | 5 | 全局同步 RPC，不受流控 |
 | RUN_TYPE_AUTO_RPC | 6 | 自动选择本地或远程（默认） |
 
-## TaskDelayer 延迟任务
+## 延时任务（taskDelay，5.2.0 统一语义）
 
-> **包路径**：`uw.task.TaskDelayer`
+**没有独立的延迟任务类型**（TaskDelayer/delayTask 已随 5.2.0 大一统退役）：任何 TaskRunner 任务设置 `TaskData.taskDelay > 0` 即延时任务，三入口（`sendToQueue`/`runQueue`/`runTask`）完全等同，载体自动路由：
 
-构造：继承 `TaskDelayer<TP, RD>` 抽象类 + `@Component` — 泛型 TP=参数类型，RD=返回类型。三方法与 TaskRunner 对齐（`initConfig`/`initContact`/`run`），区别是 `run(TaskData)` 返回 **void**（结果经 taskData 回写）、载体是 **Redis zset 而非 RabbitMQ**。
+- **quorum 队列 + 1.0 + RabbitMQ 4.4+**：MQ 消息级原生延迟（`x-opt-delivery-time`），到期即执行
+- **其余**：Redis zset 搬运（Leader 单例 mover，到期自动转投目标队列）
 
-**机制**：投递时写入 Redis zset（key=`uw-task-delayer:`+configKey，score=到期时间戳=`queueDate+taskDelay`，member=Kryo 序列化 TaskData）；各 uw-task 实例独立 poll 同一 zset，Lua 原子 `ZRANGEBYSCORE+ZREM` 取出到期任务、虚拟线程即取即执行（无内存队列、并发许可耗尽则任务留 zset）。多实例竞争消费、**无队头阻塞、重启不丢存量**。
-
-**TaskDelayerConfig 构造**：`new TaskDelayerConfig()` setter 链式，或 `TaskDelayerConfig.builder()`
-
-| 属性 | 类型 | 默认 | 说明 |
-|------|------|------|------|
-| taskName | String | — | 任务名称（必填） |
-| consumerNum | int | 1 | 执行并发数（虚拟线程 + Semaphore） |
-| pollInterval | long | 3 | zset poll 间隔（秒），命中连续 poll、空才 sleep |
-| prefetchNum | int | 50 | 单次 poll 最大条数（实际取 `min(此值, 空闲并发许可)`） |
-| rateLimitType | int | 0 | 限流类型，复用 `TaskRunnerConfig.RATE_LIMIT_*` 常量 |
-| rateLimitValue / rateLimitTime / rateLimitWait | int | 10 / 1 / 30 | 限流值 / 窗口秒 / 触发限速等待秒 |
-| retryTimesByPartner | int | 0 | 合作方异常重试次数（N → 总计执行 N+1 次） |
-| retryTimesByOverrated | int | 3 | 连续限速超限放弃次数上限（防死循环），超限标 STATE_FAIL_CONFIG |
-| retryTimesByProgram | int | 0 | 程序异常重试次数（默认 0 不重试） |
-| alertFailRate / alertFailProgramRate / alertFailPartnerRate | int | — | 失败率报警阈值（%） |
-| alertRunTimeout | int | — | 平均运行耗时报警（毫秒） |
-| alertWaitTimeout | int | — | Delayer 语义为"延迟超时"（实际执行晚于 runAt 的平均毫秒），区别于 Runner/Croner 的队列等待超时 |
-| logLevel | int | 0 | 日志类型，复用 `TaskRunnerConfig.TASK_LOG_TYPE_*` |
-
-**投递**：`taskFactory.delayTask(taskData)` — 完全异步、无返回值。taskData 需设 `taskClass`（TaskDelayer 实现类）+ `taskDelay`（延迟毫秒）+ `taskParam`。
-
-**示例**：
 ```java
-@Component
-public class OrderTimeoutTask extends TaskDelayer<OrderTimeoutParam, Void> {
-
-    @Override
-    public void run(TaskData<OrderTimeoutParam, Void> task) throws Exception {
-        orderService.closeIfUnpaid(task.getTaskParam().getOrderId());
-    }
-
-    @Override
-    public TaskDelayerConfig initConfig() {
-        TaskDelayerConfig config = new TaskDelayerConfig();
-        config.setTaskName("订单超时关闭");
-        config.setConsumerNum(5);
-        config.setPollInterval(3);
-        config.setRetryTimesByPartner(3);       // 第三方失败：总计执行 4 次（1+3）
-        config.setAlertWaitTimeout(5000);     // 延迟超时报警（毫秒）
-        return config;
-    }
-
-    @Override
-    public TaskContact initContact() {
-        return TaskContact.builder("订单负责人").email("order@example.com").build();
-    }
-}
-
-// 投递：30 分钟后执行
-TaskData<OrderTimeoutParam, Void> data = TaskData
-    .<OrderTimeoutParam, Void>builder(OrderTimeoutTask.class, new OrderTimeoutParam(orderId))
-    .taskDelay(30 * 60 * 1000L)
-    .refId(orderId)
-    .build();
-taskFactory.delayTask(data);
+// 延时任务 = 普通队列任务 + taskDelay，无任何额外配置
+taskFactory.sendToQueue(TaskData.<String, String>builder(MyRunner.class, param).build()
+        .toBuilder().taskDelay(5000).build()); // 也可 builder 时直接 .taskDelay(5000)
 ```
 
-> 与 TaskRunner 的选择：需"X 时间后执行"用 **TaskDelayer**（Redis zset，无队头阻塞）；需异步队列消费用 **TaskRunner**（RabbitMQ）。TaskRunner 的 `taskDelay` + `delayType=TYPE_DELAY_ON` 走 MQ 死信延时，有长延时阻塞短延时问题，优先用 TaskDelayer。
-
-> **按延时量级选型**：TaskDelayer 基于 zset poll、到期即执行（精度 ≈ `pollInterval`，默认 3s），适合**分钟级**延时（订单超时关单、回调通知、短时重试）；任务到期前常驻 Redis，**天级别及以上的长延时不宜用 TaskDelayer**（海量未来任务长期占内存 + poll 反复空扫），改用 **TaskCroner 定时扫表**——业务表记录到期时间，cron 周期扫描 `expire_time <= NOW()` 命中后触发执行，DB 持久化、可分页/游标增量、重启不丢。
+配置沿用 TaskRunnerConfig（queueType 决定载体；quorum=默认）。详见 uw-task README「延时任务（taskDelay，全自动化）」。
 
 ## TaskFactory
 
@@ -360,8 +305,7 @@ taskFactory.delayTask(data);
 
 | 方法 | 返回类型 | 说明 |
 |------|---------|------|
-| `sendToQueue(TaskData)` | void | 发送到 MQ 队列（异步） |
-| `delayTask(TaskData)` | void | 投递延迟任务到 Redis zset，到期本机 poll 执行（异步，`taskDelay` 设延迟毫秒） |
+| `sendToQueue(TaskData)` | void | 发送到 MQ 队列（异步）；taskDelay>0 时自动延时路由（详见延时任务章节） |
 | `runQueue(TaskData)` | void | 本地线程池优先执行，满则降级入队；带 taskDelay 直接入队 |
 | `runTask(TaskData)` | `TaskData<TP, RD>` | 同步执行（阻塞，按 runType 选本地/远程 RPC） |
 | `runTaskLocal(TaskData)` | `TaskData<TP, RD>` | 强制本地同步执行（无 runner 抛异常） |
@@ -450,7 +394,7 @@ public class OrderHelper {
             .builder(OrderNotifyTask.class, param)
             .refId(orderId)
             .refTag("ORDER_NOTIFY")
-            .taskDelay(5000)          // 延迟5秒（需 delayType=ON）
+            .taskDelay(5000)          // 延迟5秒（自动路由，无需配置）
             .build();
 
         taskFactory.sendToQueue(taskData);  // 异步入队
@@ -475,3 +419,9 @@ public class OrderHelper {
     }
 }
 ```
+
+## 运行时形态（5.2.0）
+
+- **对外 bean 仅 `TaskFactory` 一个**：业务方经 `TaskFactory.getInstance()` / `getListenerManager()` 访问；内部组件（AMQP 操作面/私有 Redis/投递中心/延时搬运/容器）不进 Spring 容器，宿主零冲突面。
+- **全量虚拟线程**：croner 每 croner 一个 sleeping VT（自续期单飞天然有界）；runTaskAsync/runQueue 经 LimitedVirtualThreadExecutor（并发上限=背压闸门，`task-rpc-max-thread-num`/`task-local-max-thread-num`，满时分别 CallerRuns/溢出 MQ）。
+- **nacos 热更新**：`uw.task.*` 原地重绑（task-center-host、重试延时等 live-read 项即时生效；协议探测/连接类启动期定死）。

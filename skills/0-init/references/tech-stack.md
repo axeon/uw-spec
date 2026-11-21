@@ -1,92 +1,110 @@
-# 通用技术栈
+# UniWeb 技术栈参考文档
 
-> 跨技能共用技术栈版本和组件表，被 0-init、210-java-uniweb-design、310-java-uniweb-dev 等技能引用。
+> ⚠️ **按需加载**：以下文档包含大量 API 细节，**仅在当前任务涉及对应模块时才读取**，不要一次性全部加载。每个文件都是独立的，可单独引用。
 
-## 后端
+## 架构概览
 
-| 组件 | 版本        | 用途 |
-|------|-----------|------|
-| uw-base | 2026.0800 | UniWeb架构 |
-| saas-base | 2026.x.x  | Saas架构 |
-| Spring Boot | 4.1       | 微服务框架 |
-| Nacos | 3.0+      | 配置中心 |
-| MySQL | 9.7+      | 数据库 |
-| Redis | 8.8+      | 缓存 |
-| RabbitMQ | 4.3+      | 消息队列 |
+UniWeb 是一套基于 **Spring Boot 4.1** 和 **Spring Cloud 2025.1** 构建的企业级微服务架构体系。采用模块化设计，由基础类库集合（uw-base）和多个微服务组成，提供从数据访问、缓存管理、认证授权到任务调度、日志收集、运维管理等全方位的基础设施支持。
 
-### uw-base核心模块
+### 整体架构
 
-| 模块 | 用途 |
-|------|------|
-| uw-common | 通用工具类库 |
-| uw-common-app | Web应用公共类库 |
-| uw-dao | 数据访问层 |
-| uw-cache | 缓存管理 |
-| uw-auth-service | 认证服务端 |
-| uw-auth-client | 认证客户端 |
-| uw-mfa | 多因素认证 |
-| uw-task | 分布式任务框架 |
-| uw-httpclient | HTTP客户端 |
-| uw-log-es | Elasticsearch 日志客户端 |
-| uw-logback-es | Logback ES Appender |
-| uw-ai | AI集成模块 |
-| uw-oauth2-client | OAuth2客户端 |
-| uw-gateway-client | 网关客户端 |
-| uw-mydb-client | 数据库客户端 |
-| uw-notify-client | 通知客户端 |
-| uw-tinyurl-client | 短链接客户端 |
-| uw-webot | Web自动化框架 |
+业务应用 → uw-gateway 统一入口（SSL/ACL/限流/负载均衡/HTTP2） → UniWeb微服务层（11个微服务） → 基础类库层（uw-base，20个模块含 uw-nacos-client） → 基础设施层（MySQL/Redis/RabbitMQ/Nacos/ES）。微服务通过 Nacos 注册发现，引入 uw-base 类库依赖。
 
-### saas-base核心模块
-| 模块 | 用途 |
-|------|------|
-| saas-common | Saas应用基础类库 |
+### 技术版本基线
 
-## 前端Web管理端
+| 技术 | 版本     | 说明 |
+|------|--------|------|
+| Java | 25+    | 必须 Java 25 或更高 |
+| Spring Boot | 4.1    | 基础框架 |
+| Spring Cloud | 2025.1 | 微服务框架 |
+| uw-nacos-client | 1.0.0  | Nacos 注册/配置中心（脱离 Spring Cloud Alibaba）|
+| Maven | 3.8+   | 构建工具 |
+| MySQL | 9.7+   | 数据存储 |
+| Redis | 8.8+   | 缓存/分布式锁/序列 |
+| RabbitMQ | 4.3+   | 任务队列 |
+| Elasticsearch | 8.x    | 日志存储与搜索 |
+| Docker | -      | 容器化部署 |
+| Nacos | -      | 服务注册与配置中心 |
 
-| 技术 | 版本 | 用途 |
-|------|------|------|
-| Vue 3 + TypeScript | - | 前端框架 |
-| Element Plus | - | UI组件库 |
-| Vite 8 | - | 构建工具 |
-| Pinia | - | 状态管理 |
+## UniWeb微服务
 
-## 前端移动端
+以下微服务基于 uw-base 类库构建，通过 uw-ops-center 统一部署，业务开发无需关注其内部实现，仅需按需引入对应的客户端依赖即可使用。
 
-| 技术 | 版本 | 用途 |
-|------|------|------|
-| UniApp + Vue3 | - | 跨平台框架 |
-| TypeScript | - | 类型安全 |
-| Pinia | - | 状态管理 |
-| uni-ui | - | UI组件库 |
+| 微服务 | 功能说明 |
+|---|---|
+| uw-auth-center | 统一鉴权中心，负责用户 Token 分发（AES-256 加密）、API 权限管理、多方式登录、MFA 认证和鉴权日志 |
+| uw-gateway | API 网关，提供全局访问日志、ACME SSL、ACL 访问控制、全局限流和 SAAS 负载均衡，支持 HTTP/2 |
+| uw-gateway-center | 网关管理中心，管理灰度发布、请求监控、SSL 证书、Web ACL 和限速策略 |
+| uw-code-center | 代码生成服务，基于数据库/JSON/Swagger 元数据自动生成 Entity/Controller/DTO/Mapper 和前端代码 |
+| uw-mydb-center | 数据库运维中心，管理 MySQL 集群、慢查询统计、库表空间监控、数据备份恢复和 SAAS 动态建库 |
+| uw-mydb-proxy | MySQL 分库分表代理（基于 Netty），支持多种分库分表算法和 HINT 语法路由 |
+| uw-ops-center | 运维管理中心，基于 Docker 的全自动部署工具，管理宿主机、部署方案、镜像仓库和发布环境 |
+| uw-task-center | 任务管理中心，管理定时任务、队列任务和延迟任务的运维监控、报警规则和动态配置 |
+| uw-tinyurl-center | 短链接生成与解析服务 |
+| uw-notify-center | 基于 SSE 的实时通知推送中心 |
+| uw-ai-center | AI 服务中心，集成 Spring AI，支持 Ollama 本地模型、向量数据库和 RAG 检索增强生成 |
 
-**支持平台**: H5、Android、iOS、微信小程序
+## 核心基础类库（uw-base）
 
-## 测试工具
+| 文档 | 模块 | 核心类 | 适用场景 |
+|------|------|--------|---------|
+| [uw-common.md](uw-common.md) | 通用工具类库 | ResponseData, JsonUtils, MoneyUtils, ValidateUtils | 使用统一响应、JSON处理、货币计算、数据校验 |
+| [uw-common-app.md](uw-common-app.md) | Web应用公共类库 | AuthQueryParam, SysDataHistoryHelper, JsonConfigHelper | 权限查询、数据历史、配置管理 |
+| [uw-dao.md](uw-dao.md) | 数据访问层 | DaoManager, DataEntity, QueryParam, BatchUpdateManager | 数据库CRUD、分页查询、批量操作 |
+| [uw-kv.md](uw-kv.md) | 跨实例协调层 | FusionCache, GlobalFixedWindowRateLimiter, GlobalLeaderElector, GlobalSequence | Redis缓存、分布式锁/计数/限流/选举/发号 |
+| [uw-auth-service.md](uw-auth-service.md) | 认证服务端 | @MscPermDeclare, AuthServiceHelper | 权限声明、角色管理、鉴权 |
+| [uw-auth-client.md](uw-auth-client.md) | 认证客户端 | authRestClient, Token管理 | 服务间鉴权调用、Token自动管理 |
+| [uw-mfa.md](uw-mfa.md) | 多因素认证 | MFA验证、TOTP | 多因素认证集成 |
+| [uw-task.md](uw-task.md) | 分布式任务框架 | TaskCroner, TaskRunner | 定时任务、队列任务 |
+| [uw-httpclient.md](uw-httpclient.md) | HTTP客户端 | JsonInterfaceHelper, XmlInterfaceHelper | HTTP调用、连接池管理 |
+| [uw-log-es.md](uw-log-es.md) | ES日志客户端 | LogHelper | Elasticsearch日志写入与查询 |
+| [uw-logback-es.md](uw-logback-es.md) | Logback ES Appender | logback配置 | 日志自动推送到ES |
+| [uw-ai.md](uw-ai.md) | AI集成模块 | Spring AI, Ollama | AI服务集成、RAG |
+| [uw-oauth2-client.md](uw-oauth2-client.md) | OAuth2客户端 | OAuth2认证 | 第三方OAuth2登录 |
+| [uw-gateway-client.md](uw-gateway-client.md) | 网关客户端 | 网关API | 网关路由配置 |
+| [uw-mydb-client.md](uw-mydb-client.md) | 数据库客户端 | 分库分表中间件 | 数据库运维操作 |
+| [uw-notify-client.md](uw-notify-client.md) | 通知客户端 | SSE推送 | 实时通知 |
+| [uw-tinyurl-client.md](uw-tinyurl-client.md) | 短链接客户端 | 短链生成/解析 | 短链接功能 |
+| [uw-webot.md](uw-webot.md) | Web自动化框架 | 浏览器自动化 | Web自动化、爬虫 |
 
-| 类型 | 工具 | 用途 |
-|------|------|------|
-| 单元测试 | JUnit 5 / Vitest | Java / TypeScript |
-| 集成测试 | Spring Boot Test | 后端集成 |
-| API测试 | Playwright (request API) | 接口自动化测试 |
-| E2E测试 | Playwright (browser) | 端到端界面测试 |
-| 跨终端E2E | Playwright (Multi-BrowserContext) | 多终端协作流程测试 |
-| 性能测试 | JMeter | 压力/负载/稳定性测试 |
-| 安全扫描 | OWASP ZAP | Web应用漏洞扫描 |
-| 依赖扫描 | Trivy | 后端/前端/镜像漏洞扫描 |
-| 安全测试 | Playwright + 自定义脚本 | SQL注入/XSS/越权测试 |
-| 覆盖率 | JaCoCo / Vitest Coverage | 代码覆盖 |
+## SaaS 业务框架
 
-## 字段一致性原则
+SaaS 开发技术栈是基于 **UniWeb** 框架构建的多租户 SaaS 架构体系。采用微服务设计，由基础服务（saas-base）、财务服务（saas-finance）等多个微服务组成，提供租户管理、支付结算解决方案。
 
-本项目采用数据库驱动的全链路命名一致设计，数据库字段名作为唯一数据源头，贯穿后端参数和前端字段：
+### 微服务架构
 
-| 层级 | 命名规则 | 示例 |
-|------|---------|------|
-| 数据库字段 | snake_case | `user_name`, `email`, `order_status` |
-| 后端参数（JSON） | camelCase（自动映射） | `userName`, `email`, `orderStatus` |
-| 前端表单字段 | 与后端参数一致 | `userName`, `email`, `orderStatus` |
-| 前端表格列 | 与后端参数一致 | `userName`, `email`, `orderStatus` |
-| E2E测试选择器 | 基于语义属性定位（role/label/placeholder/text） | `getByLabel('用户名')`, `getByRole('button', { name: '提交' })` |
+SaaS 应用 → 引入 saas-base-common / saas-finance-client → SaaS 基础服务层（saas-base + saas-finance） → UniWeb 基础框架层（uw-base，详见上方核心类库）。
 
-**设计约束**：任何层级不得引入与数据库字段不一致的命名。E2E测试不需要额外添加 `data-testid`，直接使用元素自身属性定位。
+### SaaS 微服务
+
+| 微服务 | 功能说明 |
+|--------|---------|
+| saas-base | SaaS 平台核心基础设施服务，负责租户管理、商户管理、产品授权计费（AIP）、应用接口服务（AIS）等基础能力 |
+| saas-finance | SaaS 平台财务核心服务，负责支付通道管理、余额账户管理、对账管理、汇率管理等财务相关业务 |
+
+### SaaS 核心类库
+
+| 文档 | 模块 | 核心概念 | 适用场景 |
+|------|------|---------|---------|
+| [saas-base-common.md](saas-base-common.md) | 基础公共模块 | Maven依赖、uw-base依赖列表 | 了解SaaS公共依赖配置 |
+| [saas-aip-module.md](saas-aip-module.md) | AIP授权计费 | Vendor, License, AipHelper | 产品授权、计费扣减 |
+| [saas-ais-module.md](saas-ais-module.md) | AIS接口服务 | LinkerType, Linker, AisHelper | 第三方接口集成（支付/短信/邮件） |
+| [saas-finance-client.md](saas-finance-client.md) | Saas财务客户端 | FinBalanceHelper, FinPaymentHelper | 提供支付通道，在线支付，退款，余额管理、对账等财务相关功能 |
+
+## 使用建议
+
+| 阶段 | 加载策略 |
+|------|---------|
+| 早期设计/全局了解 | 仅读取本 README.md 建立全局认知 |
+| 模块设计 | 读取本 README 索引 + 对应模块的详细文档 |
+| 编码开发 | 读取 `dev-standards.md` + 当前使用的核心类库文档 |
+| 创建新项目 | 读取 `code-templates.md` §1 产出结构 |
+
+## 开发规范
+
+> 以下规范文档由 `210-java-uniweb-dev`、`211-java-uniweb-dev-review`、`620-feature-dev`、`720-bugfix-dev` 等技能**共同引用**，是编码规范的唯一权威来源。
+
+| 文档 | 内容 | 引用技能 |
+|------|------|---------|
+| [dev-standards.md](dev-standards.md) | 编码规范（约束、陷阱、原则） | 210/211/620/720/721 |
+| [code-templates.md](code-templates.md) | 代码模板（POM/YAML/Java/测试） | 210/211/620/720/721 |

@@ -1,6 +1,6 @@
 # uw-auth-service — 认证服务端
 
-**Maven 坐标**: `com.umtone:uw-auth-service`
+**Maven 坐标**: `pub.xili:uw-auth-service`
 
 为 Web 应用提供统一认证、授权和日志记录功能。包含全局异常处理、全局响应包裹、权限校验拦截器、操作日志自动记录等核心机制。
 
@@ -439,3 +439,7 @@ long userId = result.getData();
 | `TokenSudoException` | 需要超级权限（SUDO 模式） |
 
 > 这些异常由框架 Filter 自动抛出，GlobalExceptionAdvice 自动捕获并转为对应的 HTTP 状态码。开发者一般不需要手动抛出。
+
+## nacos 热更新
+
+`uw.auth.service.*` 原地重绑（开关/阈值类配置等 live-read 项即时生效）。

@@ -1,6 +1,6 @@
 # uw-webot — Web 自动化框架
 
-**Maven 坐标**：`com.umtone:uw-webot`　**配置前缀**：`uw.webot`
+**Maven 坐标**：`pub.xili:uw-webot`　**配置前缀**：`uw.webot`
 
 基于 Microsoft Playwright 的 Web 自动化框架。采用 **Hybrid 混合模式**：Browser 进程级别复用（同一个 BrowserInstance 可承载多个 BrowserTab），BrowserTab 级别的一次性 Context（每次新建 BrowserContext + Page，`close()` 后销毁、**不复用**，因为 Playwright Context 池化复用经实测不稳定）。
 

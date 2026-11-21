@@ -153,7 +153,7 @@ version: "3.0.0"
 | Controller 权限注解 | [uw-auth-service.md](references/uniweb/uw-auth-service.md) |
 | 响应格式、QueryParam | [uw-common.md](references/uniweb/uw-common.md) |
 | DaoManager 数据访问 | [uw-dao.md](references/uniweb/uw-dao.md) |
-| 缓存 FusionCache | [uw-cache.md](references/uniweb/uw-cache.md) |
+| 协调层（缓存/锁/计数/限流/选举/发号） | [uw-kv.md](references/uniweb/uw-kv.md) |
 | 异步/队列任务 | [uw-task.md](references/uniweb/uw-task.md) |
 | 外部HTTP调用 | [uw-httpclient.md](references/uniweb/uw-httpclient.md) |
 | AI对话/生成 | [uw-ai.md](references/uniweb/uw-ai.md) |

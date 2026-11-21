@@ -75,7 +75,7 @@ D. 差量更新仅适用于有 `saas_id` 的 SaaS 实体
 
 ## 1. 会员积分系统 — 签到 + 过期 + 缓存（12 分）
 
-**涉及模块**：uw-dao + uw-cache + uw-task + SaaS AIP + uw-auth-service + uw-common
+**涉及模块**：uw-dao + uw-kv + uw-task + SaaS AIP + uw-auth-service + uw-common
 
 **场景**：设计会员积分系统。用户每日签到获得积分（防重复），积分每年底过期清零。
 
@@ -106,7 +106,7 @@ D. 差量更新仅适用于有 `saas_id` 的 SaaS 实体
 
 ## 2. 用户社区系统 — 发帖 + 敏感词 + 评论计数 + 父子联查（12 分）
 
-**涉及模块**：uw-dao + uw-cache + uw-common-app + 开发规范 + uw-auth-service + uw-ai
+**涉及模块**：uw-dao + uw-kv + uw-common-app + 开发规范 + uw-auth-service + uw-ai
 
 **场景**：用户在社区发帖和评论。发帖时需 AI 内容审核和敏感词过滤，评论后实时更新帖子评论计数，帖子详情页需联查评论列表。
 
@@ -149,7 +149,7 @@ D. 差量更新仅适用于有 `saas_id` 的 SaaS 实体
 
 ## 3. 商品管理与加载优化 — Vo/Ex + 缓存 + 多语言（12 分）
 
-**涉及模块**：开发规范 + uw-dao + uw-cache + uw-common-app
+**涉及模块**：开发规范 + uw-dao + uw-kv + uw-common-app
 
 **场景**：SAAS 运营商管理商品。商品列表只展示基础信息（不含成本价），详情页展示 SKU 列表，商品支持多语言，详情页高并发读取需要缓存。
 
@@ -193,7 +193,7 @@ D. 差量更新仅适用于有 `saas_id` 的 SaaS 实体
 
 ## 4. 下单流程 — 防重 + 库存扣减 + 延迟取消 + 缓存（12 分）
 
-**涉及模块**：uw-dao + uw-cache + uw-task + uw-auth-service + uw-common-app
+**涉及模块**：uw-dao + uw-kv + uw-task + uw-auth-service + uw-common-app
 
 **场景**：用户下单需要防止重复提交、安全扣减库存、30 分钟后自动取消未支付订单。
 

@@ -1,14 +1,16 @@
-# uw-cache — 缓存管理
+# uw-kv — 跨实例协调层（原 uw-cache 更名）
 
-**Maven 坐标**: `com.umtone:uw-cache`
+**Maven 坐标**: `pub.xili:uw-kv`
 
-基于 Caffeine 和 Redis 的融合缓存类库，提供 cache / locker / counter / hashSet / sortedSet 五大组件。
+基于 Caffeine 和 Redis 的跨实例协调层，提供 cache / locker / counter / hashSet / sortedSet / rateLimiter / leaderElector / sequence 八大组件（全部 static API，自动配置注册 Bean 后零注入直调）。与业务 Redis（`spring.data.redis`）隔离。
 
-**配置前缀**: `uw.cache.redis`
+**框架 Redis 出口格局**：uw-kv（协调层，`uw.kv.*`）+ uw-dao（发号池独立连接，`uw.dao.redis.*`，故障域隔离）+ uw-mfa（安全域独立连接，`uw.mfa.redis.*`）——三域独立，其余模块一律经 uw-kv。
+
+**配置前缀**: `uw.kv.redis`（与 uw.mfa.redis / uw.dao.redis 等独立域同构的嵌套键）
 
 ```yaml
 uw:
-  cache:
+  kv:
     redis:
       database: 9
       host: 10.0.0.10
@@ -23,7 +25,7 @@ uw:
       timeout: 30s
 ```
 
-> 启动自动配置：`uw.cache.conf.UwCacheAutoConfiguration` 已声明 `@ConditionalOnClass(RedisTemplate)`，引入 starter-data-redis 即生效。它注册两个 RedisTemplate：`dataCacheRedisTemplate`（byte[] 值，用于 Cache/HashSet/SortedSet）与 `longCacheRedisTemplate`（Long 值，用于 Counter/Locker）。两个模板共享 `uw.cache.redis` 配置。**同一 JVM 仅支持一套 Redis 配置**（Global* 组件通过 static 字段持有 template，后注入覆盖先注入）。
+> 启动自动配置：`uw.kv.conf.UwKvAutoConfiguration` 已声明 `@ConditionalOnClass(RedisTemplate)`，引入 starter-data-redis 即生效。它注册唯一连接工厂 `kvRedisConnectionFactory`（standalone/sentinel/cluster 按 `uw.kv.redis.*` 自动判断）、两个 RedisTemplate（`dataCacheRedisTemplate` byte[] 值用于 Cache/HashSet/SortedSet；`longCacheRedisTemplate` Long 值用于 Counter/Locker/RateLimiter），以及全部 Global* 组件 Bean（含限速器/选举器/发号器）。**同一 JVM 仅支持一套 uw.kv.redis 配置**（Global* 组件通过 static 字段持有 template）。
 
 ## AI 决策速查
 
@@ -36,6 +38,10 @@ uw:
 | 纯Redis计数器 | `GlobalCounter` | increment/decrement/get/set/delete |
 | 去重/随机抽取 | `GlobalHashSet` | add/remove/contains/random/pop |
 | 延迟任务/定时触发 | `GlobalSortedSet` | 按score范围查询和删除 |
+| 单机限流（如网关ACL） | `uw.common.util.FixedWindowRateLimiter`（uw-common） | 双维度（permits/weight）+两阶段回填；放行返回 null |
+| 跨实例精确限流 | `uw.kv.GlobalFixedWindowRateLimiter` | 放行数==配额零偏差；单维度（INCREX）/双维度（Lua 双 key）；`tryAcquire(name, limitPermits, windowMillis, permits)` 返回 0=通过/>0=等待毫秒 |
+| Leader 选举（全局唯一执行） | `uw.kv.GlobalLeaderElector` | `config(name, instanceId)` 注册 + 周期 `checkLeader(name)`；稳定实例标识跨重启续回任期 |
+| 全局发号 | `uw.kv.GlobalSequence` | 号段模式（步长默认 10000，`config(name, step)` 覆盖；步长 1 走 INCR 快捷路径）；`nextId(name)` |
 | 缓存失效（单key） | `FusionCache.invalidate(Class, key)` | 默认通知集群；传 `key=null` 可全量清空 |
 | 缓存失效（GlobalCache） | `GlobalCache.invalidate(cacheName, key)` | 方法名是 invalidate 不是 delete |
 | 按前缀批量失效 | `GlobalCache.invalidatePrefix(cacheName, keyPrefix)` / `invalidateKeys(Class, prefix)` | 内部走 SCAN，注意大 keyset 阻塞 |
@@ -52,7 +58,7 @@ uw:
 
 ## FusionCache（本地 Caffeine + 全局 Redis）
 
-> **包路径**：`uw.cache.FusionCache`
+> **包路径**：`uw.kv.FusionCache`
 
 二级复合缓存：本地 Caffeine 兜性能，Redis 兜全局一致性，通过 Redis Pub/Sub（通道 `UW_CACHE_NOTIFY_CHANNEL`）做多实例失效同步。
 
@@ -97,7 +103,7 @@ uw:
 
 ## GlobalCache（纯 Redis）
 
-> **包路径**：`uw.cache.GlobalCache`
+> **包路径**：`uw.kv.GlobalCache`
 
 不占用 JVM 内存，适合大对象、列表、低频访问。`loadValueWrapper` 用**锁条带化（1024 stripes）+ 双重检查**防缓存击穿，loader 失败走 nullProtect/failProtect。
 
@@ -112,6 +118,7 @@ uw:
 | `get(String cacheName, key, CacheDataLoader, expireMillis)` | V | 获取+自动加载（自定义缓存名） |
 | `loadValueWrapper(...)` | `CacheValueWrapper<V>` | 获取 wrapper（带加载） |
 | `containsKey(Class, key)` | boolean | 判断是否存在 |
+| `getAndDelete(cacheName, key, Class<V>)` | `CacheValueWrapper<V>` | 一次性取出并删除（GETDEL 原子，防重放/一次性令牌场景） |
 | `invalidate(Class, key)` | boolean | 失效单个 key；**key=null 全量清空**该 cacheName |
 | `invalidatePrefix(cacheName, keyPrefix)` | boolean | 按前缀批量失效（SCAN） |
 | `invalidateKeys(Class, keyPrefix)` | boolean | `invalidatePrefix` 的 entityClass 重载 |
@@ -122,7 +129,7 @@ uw:
 
 ## GlobalLocker（分布式锁）
 
-> **包路径**：`uw.cache.GlobalLocker`
+> **包路径**：`uw.kv.GlobalLocker`
 
 基于 Redis setnx 的全局锁。**stamp 为 SnowflakeId（跨 JVM 全局唯一）**，解锁/续期用 **Lua CAS 脚本**保证原子性，避免锁过期被抢占后误删他人锁。
 
@@ -154,7 +161,7 @@ if (stamp > 0) {
 
 ## FusionCounter（本地+全局融合计数器）
 
-> **包路径**：`uw.cache.FusionCounter`
+> **包路径**：`uw.kv.FusionCounter`
 
 基于 AtomicLong（本地）和 Redis（全局）的复合计数器。本地高频累加，按 `syncGlobalMillis` 间隔原子化同步增量到 Redis。支持定期回写数据库（虚拟线程异步执行）。
 
@@ -192,21 +199,26 @@ FusionCounter.increment(User.class, userId, 5);
 
 ## GlobalCounter（纯 Redis 计数器）
 
-> **包路径**：`uw.cache.GlobalCounter`
+> **包路径**：`uw.kv.GlobalCounter`
 
 | 方法 | 返回类型 | 说明 |
 |------|---------|------|
 | `increment(Class, counterId, long)` | long | 增加计数 |
+| `incrementTtl(type, id, num, expireMillis)` | long | 增加+滑动 TTL（INCREX 单命令，需 Redis 8.8+，低版本自动降级裸 INCRBY） |
+| `incrementExpireAt(type, id, num, expireAtMillis)` | long | 增加+固定回收时刻（PXAT，周期窗口计数推荐） |
 | `decrement(Class, counterId, long)` | long | 减少计数 |
 | `set(Class, counterId, long)` | void | 设置数值 |
 | `setIfAbsent(Class, counterId, long)` | boolean | 仅在不存在时设置（初始化） |
 | `get(Class, counterId)` | long | 获取数值（不存在返回 0） |
+| `getRemainMillis(type, id)` | long | key 剩余存活毫秒（PTTL；配额/限流类计数的剩余时长提示） |
 | `delete(Class, counterId)` | boolean | 删除计数器 |
 | `getAndDelete(Class, counterId)` | long | 获取后删除（不存在返回 -1） |
 
+> INCREX 能力在启动时探测一次定路径（支持走 INCREX / 不支持走降级），运行期不重探。
+
 ## GlobalHashSet（Redis Set）
 
-> **包路径**：`uw.cache.GlobalHashSet`
+> **包路径**：`uw.kv.GlobalHashSet`
 
 元素经 Kryo 序列化后存入 Redis Set。`add/remove/contains` 三者序列化协议一致，**contains 会正确序列化 item 后比对**。
 
@@ -225,7 +237,7 @@ FusionCounter.increment(User.class, userId, 5);
 
 ## GlobalSortedSet（Redis ZSet，延迟任务场景）
 
-> **包路径**：`uw.cache.GlobalSortedSet`
+> **包路径**：`uw.kv.GlobalSortedSet`
 
 | 方法 | 返回类型 | 说明 |
 |------|---------|------|
@@ -307,3 +319,7 @@ public class UserHelper {
 - GlobalLocker 的 stamp 是 SnowflakeId，跨 JVM 唯一；unlock/keepLock 已是 Lua CAS 原子操作，无需自行加锁
 
 > 缓存使用的常见陷阱（CacheDataLoader 抽象类、GlobalCache 无 getIfPresent、FusionCache vs GlobalCache 选型）见 [dev-standards.md](dev-standards.md)「缓存使用常见陷阱」。
+
+## Bean 面（1.5.1）
+
+对外仅 `kvRedisConnectionFactory` 一个 bean（`defaultCandidate=false`，不干扰宿主自有 Redis 注入）；Global*/FusionCache 为静态门面（构造注入 static，零 bean），失效通知订阅由自动配置 SmartLifecycle 管理。

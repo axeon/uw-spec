@@ -2,7 +2,7 @@
 
 **Maven 坐标**: `saas:saas-base-common`
 
-**核心依赖**: uw-common / uw-common-app / uw-cache / uw-httpclient / uw-task / uw-mydb-client / uw-notify-client
+**核心依赖**: uw-common / uw-common-app / uw-kv / uw-httpclient / uw-task / uw-mydb-client / uw-notify-client
 
 ## AI 决策速查
 

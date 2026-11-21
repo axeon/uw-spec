@@ -384,7 +384,7 @@ return ResponseData.errorCode(CommonResponseCode.ENTITY_UPDATE_ERROR);
 | `GlobalHashSet` | 去重/随机抽取 | `contains` 会序列化 item 后比对，序列化协议与 add/remove 一致 |
 | `GlobalSortedSet` | 延迟任务/定时触发 | score 通常为时间戳，按范围查询和删除 |
 
-> 完整缓存组件方法签名与示例见 [uw-cache.md](uw-cache.md)。
+> 完整协调层组件方法签名与示例见 [uw-kv.md](uw-kv.md)。
 
 ## 响应包裹与异常处理规范
 
@@ -396,15 +396,15 @@ return ResponseData.errorCode(CommonResponseCode.ENTITY_UPDATE_ERROR);
 
 ## 任务框架规范
 
-定时任务（`TaskCroner`）、队列任务（`TaskRunner`）和延迟任务（`TaskDelayer`）由 `uw-task` 提供，配合服务端 `uw-task-center` 实现动态配置、状态上报与告警。
+定时任务（`TaskCroner`）与队列任务（`TaskRunner`）由 `uw-task` 提供（延时任务=任意 TaskRunner 设 taskDelay>0，独立 TaskDelayer 类型已退役），配合服务端 `uw-task-center` 实现动态配置、状态上报与告警。
 
-> **关键区别**：`TaskCroner` / `TaskRunner` / `TaskDelayer` 是 **Spring Bean**（必须加 `@Component`，由框架管理生命周期），**与 Helper（纯静态工具类，禁止 `@Component`）不同**。任务类放在 `task/` 包下，按 `task-project` 包名前缀扫描。
+> **关键区别**：`TaskCroner` / `TaskRunner` 是 **Spring Bean**（必须加 `@Component`，由框架管理生命周期），**与 Helper（纯静态工具类，禁止 `@Component`）不同**。任务类放在 `task/` 包下，按 `task-project` 包名前缀扫描。
 
 | 任务类型 | 基类 | 触发方式 | 多实例区分 |
 |---------|------|---------|-----------|
 | 定时任务 | `TaskCroner` | cron 表达式 | `taskParam` |
 | 队列任务 | `TaskRunner<TP, RD>` | MQ 队列消费 | `taskTag` |
-| 延迟任务 | `TaskDelayer<TP, RD>` | Redis zset 到期 poll | `taskTag` |
+| 延时任务 | `TaskRunner` + `taskDelay>0` | 全自动路由（MQ 原生延迟/Redis zset 搬运） | `taskTag` |
 
 **TaskRunner 是单例**：多消费者线程并发调用同一实例的 `runTask`，**勿使用非线程安全的实例变量**。
 
@@ -644,7 +644,7 @@ return ResponseData.errorCode(CommonResponseCode.ENTITY_UPDATE_ERROR);
 
 | ❌ 错误写法 | ✅ 正确写法 |
 |------------|-----------|
-| `TaskCroner` / `TaskRunner` / `TaskDelayer` 不加 `@Component` | 必须加 `@Component`（是 Spring Bean，与 Helper 不同） |
+| `TaskCroner` / `TaskRunner` 不加 `@Component` | 必须加 `@Component`（是 Spring Bean，与 Helper 不同） |
 | `TaskRunner` 使用非线程安全实例变量 | TaskRunner 是单例，多消费者线程并发调用，禁止非线程安全实例变量 |
 | 复用同一 `taskData` 对象多次提交 | run 系列方法会写入运行期字段（id/queueDate/runType），每次必须新建 |
 | `retryTimesByProgram` 配置 | **没有 `retryTimesByProgram`**，程序异常（STATE_FAIL_PROGRAM）不重试 |
@@ -757,7 +757,7 @@ return ResponseData.errorCode(CommonResponseCode.ENTITY_UPDATE_ERROR);
 | 权限声明 / 响应格式 | @MscPermDeclare + ResponseData\<T\> | 详见「Controller 规范」 |
 | Helper 依赖获取 / 方法风格 | 静态获取 + public static | 详见「Helper 设计规范」 |
 | 枚举 / 响应码 | CommonState + ResponseCode | 详见「枚举与响应码规范」 |
-| 定时/队列/延迟任务 | TaskCroner / TaskRunner / TaskDelayer + TaskFactory | 详见「任务框架规范」 |
+| 定时/队列/延时任务 | TaskCroner / TaskRunner + taskDelay + TaskFactory | 详见「任务框架规范」 |
 | AI 对话/翻译/工具 | AiClientHelper + AiTool | 详见「AI 集成规范」 |
 
 ### 原则四：代码可读性（Self-Documenting Code）
@@ -817,8 +817,8 @@ for enum_file in $(grep -rln 'implements ResponseCode' src/main/java/ --include=
     fi
 done
 
-# 10. 任务类 Spring Bean 检查（TaskCroner/TaskRunner/TaskDelayer 必须加 @Component）
-for task_file in $(grep -rln 'extends TaskCroner\|extends TaskRunner\|extends TaskDelayer' src/main/java/ --include="*.java"); do
+# 10. 任务类 Spring Bean 检查（TaskCroner/TaskRunner 必须加 @Component）
+for task_file in $(grep -rln 'extends TaskCroner\|extends TaskRunner' src/main/java/ --include="*.java"); do
     if ! grep -q '@Component' "$task_file"; then
         echo "MISSING @Component: $task_file"
     fi

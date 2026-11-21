@@ -1,6 +1,6 @@
 # uw-httpclient — HTTP客户端
 
-**Maven 坐标**: `com.umtone:uw-httpclient`
+**Maven 坐标**: `pub.xili:uw-httpclient`
 **底层实现**: OkHttp 5.3.x（`okhttp-jvm`，服务端 JVM 版）+ Jackson（JSON / XML 序列化）
 
 > 本文档方法签名与 `uw.httpclient.http.HttpInterface` 实际源码一一对应，AI 生成代码时请严格按此文档调用，勿臆造方法名。
