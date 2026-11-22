@@ -16,7 +16,6 @@ uw:
       ip-protected-paths: /rpc/*,/agent/*
       # IP白名单（配置了ip-protected-paths时必须配置，否则受保护路径无限制）
       ip-white-list: 127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
-      # （trusted-proxies 已退役：真实IP由容器层 web-server 策略承载，业务代码统一 request.getRemoteAddr()）
       # 请求日志body缓存上限（字节，默认8MB）
       log-body-cache-limit: 8388608
 ```
